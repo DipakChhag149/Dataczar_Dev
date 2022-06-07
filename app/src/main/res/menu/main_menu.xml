@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (c)  to Samrt Sense . Ai on 2022.
+  -->
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/menu_settings"
+        android:icon="@drawable/ic_setting"
+        app:showAsAction="ifRoom"
+        android:title="Add">
+    </item>
+</menu>

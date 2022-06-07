@@ -1,0 +1,26 @@
+<resources>
+    <string name="app_name">Dataczar</string>
+    <string name="login_emailid_hint">Enter Email Id</string>
+    <string name="login_password_hind">Enter Password</string>
+    <string name="login_page_title">@string/app_name</string>
+    <string name="login_button_text">Sign In</string>
+    <string name="login_no_account">Dont have an account?</string>
+    <string name="login_signup">Sign Up</string>
+    <string name="login_forgotpassword">Forgot password?</string>
+    <string name="login_password_text">Password</string>
+    <string name="login_email_text">Email</string>
+    <string name="login_img_title_desc">Title</string>
+    <string name="home">Home</string>
+    <string name="add_post">Add Posts</string>
+    <string name="Notification">Notifications</string>
+    <string name="Profile">Profile</string>
+    <string name="website">Website</string>
+    <string name="emails">Emails</string>
+    <string name="list">Lists</string>
+    <string name="domains">Domains</string>
+    <string name="content">Content</string>
+    <string name="SwitchAccount">Switch Account</string>
+    <string name="NotificationDetail">Notification Detail</string>
+
+
+</resources>

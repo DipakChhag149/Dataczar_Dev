@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/app_color_gray"
+    android:orientation="vertical"
+    android:gravity="center">
+
+    <ImageView
+        android:id="@+id/textView"
+        android:layout_width="match_parent"
+        android:layout_height="28dp"
+        android:scaleType="centerInside"
+        android:src="@drawable/ic_applogo"
+        android:layout_margin="8dp"
+        android:contentDescription="@string/login_img_title_desc" />
+
+    <TextView
+        android:id="@+id/tvtitlesignin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/login_button_text"
+        android:textSize="30dp"
+        android:textStyle="bold"
+        android:layout_marginTop="25dp"
+        android:gravity="center_horizontal"
+        android:layout_gravity="center_horizontal"
+        android:textColor="@android:color/black"/>
+
+    <TextView
+        android:id="@+id/tvtitleemail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="16sp"
+        android:layout_marginTop="32dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="16dp"
+        android:textStyle="bold"
+        android:text="@string/login_email_text"/>
+
+    <androidx.appcompat.widget.AppCompatEditText
+        android:id="@+id/edEmail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:autofillHints=""
+        android:layout_marginTop="8dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:paddingStart="16dp"
+        android:paddingEnd="8dp"
+        android:inputType="textEmailAddress"
+        android:background="@drawable/edittext_roundcorner"
+        android:minHeight="48dp"
+        android:padding="8dp" />
+
+    <TextView
+        android:id="@+id/tvtitlepass"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="16sp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="16dp"
+        android:textStyle="bold"
+        android:text="@string/login_password_text"/>
+
+    <androidx.appcompat.widget.AppCompatEditText
+        android:id="@+id/edPassword"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:autofillHints=""
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="16dp"
+        android:paddingStart="16dp"
+        android:paddingEnd="8dp"
+        android:layout_marginTop="8dp"
+        android:inputType="textPassword"
+        android:minHeight="48dp"
+        android:background="@drawable/edittext_roundcorner"
+        android:padding="8dp" />
+
+    <TextView
+        android:id="@+id/tvForgotPass"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|center_vertical"
+        android:gravity="end|center_vertical"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="16dp"
+        android:textSize="16dp"
+        android:textStyle="bold"
+        android:text="@string/login_forgotpassword"/>
+
+
+    <TextView
+        android:id="@+id/btnLogin"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/orange_roundcorner"
+        android:text="@string/login_button_text"
+        android:textColor="@color/app_color_white"
+        android:minWidth="200dp"
+        android:padding="8dp"
+        android:layout_margin="20dp"
+        android:backgroundTint="@color/app_color_primary"
+        android:gravity="center"
+        android:layout_gravity="center"
+        android:textSize="20dp"
+        android:textStyle="bold" />
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:foregroundGravity="center">
+
+        <TextView
+            android:id="@+id/tvtitlesignup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/login_no_account"
+            android:textSize="16dp"
+            android:textStyle="bold"/>
+
+        <TextView
+            android:id="@+id/tvtSignup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingStart="4dp"
+            android:paddingEnd="8dp"
+            android:textSize="18dp"
+            android:textColor="@color/app_color_primary"
+            android:text="@string/login_signup"
+            android:textStyle="bold"/>
+
+    </LinearLayout>
+
+
+    <com.google.android.gms.common.SignInButton
+        android:id="@+id/GoogleSignIn"
+        android:layout_width="225dp"
+        android:layout_height="wrap_content"
+        android:minWidth="225dp"
+        android:layout_gravity="center"
+        app:colorScheme="dark"
+        app:buttonSize="wide"
+        android:layout_marginTop="16dp"
+        android:visibility="visible" />
+
+</LinearLayout>

@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "762954311229",
+    "project_id": "dzr-client-connect",
+    "storage_bucket": "dzr-client-connect.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:762954311229:android:c6f17e00ed20cb55036c54",
+        "android_client_info": {
+          "package_name": "com.dataczar"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "762954311229-9kvb5mte5kjubttns6go9ocik72cht24.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.dataczar",
+            "certificate_hash": "81f4eec7b8cbdc80a4ddb4a5d20f06508928d6f7"
+          }
+        },
+        {
+          "client_id": "762954311229-vtif3b52rtgmpramu5si54avh512e8t8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCf7wzrOpWZhprpN0vImDVXWHI3CC30fvM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "762954311229-ac5o41nqhgpdrfjn8ns3mv1gfav58cor.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
