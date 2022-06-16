@@ -39,11 +39,14 @@ public class ClsCommon
     public static final String LEGAL            = "Legal";
     public static final String BILLINGS         = "Billing";
     public static final String WEBSITE          = "Website";
+    public static final String URL          = "url";
     public static final String EMAIL            = "Emails";
     public static final String LIST             = "Lists";
     public static final String DOMAIN           = "Domains";
     public static final String CONTENT          = "Content";
     public static final String HELP             = "Help";
+    public static final String FCM_TOKEN             = "fcm_token";
+    public static final String NOTIFICATION_STATUS             = "notification_status";
 
     public static final String PROFILE = "Profile";
     public boolean isNotificationRead = false;

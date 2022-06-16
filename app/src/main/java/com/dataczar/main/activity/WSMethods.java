@@ -45,4 +45,6 @@ public class WSMethods
     public static String NOTIFICATION_ARCHIVED  = WSURL + "/notification/archive/";
 
     public static String LOGOUT  = WSURL + "/api/logout";
+    public static String ADD_NOTIFICATION  = WSURL + "/api/notifications/token";
+    public static String DELETE_NOTIFICATION  = WSURL + "/api/notifications/token";
 }

@@ -22,5 +22,6 @@
     <string name="SwitchAccount">Switch Account</string>
     <string name="NotificationDetail">Notification Detail</string>
 
-
+    <string name="default_notification_channel_id" translatable="false">fcm_default_channel</string>
+    <string name="default_notification_channel_name" translatable="true">Weather</string>
 </resources>

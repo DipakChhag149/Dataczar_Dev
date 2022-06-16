@@ -341,6 +341,32 @@
                         android:layout_height="1dp"
                         android:background="@color/app_color_gray" />
 
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="12dp"
+                        android:layout_weight="2"
+                        android:orientation="horizontal"
+                        android:padding="12dp"
+                        android:weightSum="10">
+
+                        <Switch
+                            android:id="@+id/notificationSwitch"
+                            android:theme="@style/SCBSwitch"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="10"
+                            android:gravity="center_vertical"
+                            android:text="Notification"
+                            android:textColor="@color/black"
+                            android:textSize="16dp"
+                            android:textStyle="bold" />
+
+                    </LinearLayout>
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/app_color_gray" />
 
                     <LinearLayout
                         android:id="@+id/llLogout"

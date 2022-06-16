@@ -50,6 +50,7 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -311,14 +312,12 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                             {
                                 try {
                                     JSONObject jsonResponse = new JSONObject(response);
-                                    JSONObject data_response = jsonResponse.getJSONObject("response");
-                                    if(!data_response.getBoolean("success"))
+                                    if(!jsonResponse.getBoolean("success"))
                                     {
                                         //Toast.makeText(context, "Login failed - Move to Login", Toast.LENGTH_SHORT).show();
                                     }else
                                     {
-                                        //Toast.makeText(context, "Login success - Dashboard", Toast.LENGTH_SHORT).show();
-                                        //startActivity(new Intent(context, Dashboard.class));
+                                        getFirebaseToken();
                                         Intent iv = new Intent(context, Dashboard.class);
                                         iv.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NEW_TASK);
                                         iv.putExtra("NeedNavigate", ClsCommon.LOGIN);
@@ -410,6 +409,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                                     }else
                                     {
                                         //Toast.makeText(context, "Login success - Dashboard", Toast.LENGTH_SHORT).show();
+                                        getFirebaseToken();
                                         Intent iv = new Intent(context, Dashboard.class);
                                         iv.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NEW_TASK);
                                         iv.putExtra("NeedNavigate", ClsCommon.LOGIN);
@@ -617,6 +617,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                                         showAlertDialog("OOPS", "These credentials dose not match in our records");
                                     }else
                                     {
+                                        getFirebaseToken();
                                         //Toast.makeText(context, "Login success - Dashboard", Toast.LENGTH_SHORT).show();
                                         Intent iv = new Intent(context, Dashboard.class);
                                         iv.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -708,4 +709,127 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         }
     }
 
+    private void getFirebaseToken() {
+        FirebaseMessaging.getInstance().getToken()
+                .addOnCompleteListener(new OnCompleteListener<String>() {
+                    @Override
+                    public void onComplete(@NonNull Task<String> task) {
+                        if (!task.isSuccessful()) {
+                            return;
+                        }
+                        // Get new FCM registration token
+                        String token = task.getResult();
+                        editor.putString(ClsCommon.FCM_TOKEN, token);
+                        editor.apply();
+
+                        new AddNotificationToken(LoginActivity.this,token).execute();
+                    }
+                });
+    }
+
+
+    class AddNotificationToken extends AsyncTask<String, Void, Boolean> {
+        ProgressDialog pd;
+        String token;
+
+        public AddNotificationToken(Context context, String token) {
+            pd = new ProgressDialog(context, R.style.ProgressDialog);
+            pd.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+            this.token = token;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            pd.setCancelable(false);
+            if (!pd.isShowing())
+                pd.show();
+        }
+
+        @Override
+        protected Boolean doInBackground(String... strings) {
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean aBoolean) {
+            super.onPostExecute(aBoolean);
+
+            StringRequest stringRequest = new StringRequest(Request.Method.POST, WSMethods.ADD_NOTIFICATION,
+                    new Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String response) {
+                            if (pd.isShowing())
+                                pd.dismiss();
+
+                            if (response != null && !response.isEmpty()) {
+                                try {
+                                    JSONObject jsonResponse = new JSONObject(response);
+                                    JSONObject data_response = jsonResponse.getJSONObject("response");
+                                    if (!data_response.getBoolean("success")) {
+
+                                    } else {
+                                        //Toast.makeText(context, "Login success - Dashboard", Toast.LENGTH_SHORT).show();
+
+                                    }
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+
+                        }
+                    }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    if (pd != null && pd.isShowing())
+                        pd.dismiss();
+
+                    //Toast.makeText(context,"Response Error: "+ error + " Can't Connect to server.", Toast.LENGTH_LONG).show();
+                }
+            }
+            ) {
+                @Override
+                public Map<String, String> getHeaders() {
+                    Map<String, String> params = new HashMap<String, String>();
+                    params.put(ClsCommon.COOKIE, getCookie());
+                    return params;
+                }
+
+                @Override
+                protected Map<String, String> getParams() {
+                    Map<String, String> params = new HashMap<String, String>();
+                    params.put("token", token);
+                    params.put("description", "Android");
+                    return params;
+                }
+
+                @Override
+                protected Response<String> parseNetworkResponse(NetworkResponse response) {
+                    try {
+                        //String jsonString = new String(response.data, HttpHeaderParser.parseCharset(response.headers,"utf-8"));
+
+                        List<Header> jsonheader = response.allHeaders;
+
+                        String Cookie = "";
+                        for (int i = 0; i < jsonheader.size(); i++) {
+                            Header header = jsonheader.get(i);
+                            if (header.getName().equals("Set-Cookie")) {
+                                Cookie += header.getValue().split(";")[0] + ";";
+                            }
+                        }
+
+                        Cookie = Cookie.substring(0, Cookie.length() - 1);
+                        editor.putString(ClsCommon.COOKIE, Cookie);
+                        editor.apply();
+
+                    } catch (Exception je) {
+                        return Response.error(new ParseError(je));
+                    }
+
+                    return super.parseNetworkResponse(response);
+                }
+            };
+            requestQueue.add(stringRequest);
+        }
+    }
 }

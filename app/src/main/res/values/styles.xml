@@ -53,4 +53,10 @@
       <item name="alpha">0.5</item>
    </style>
 
+   <style name="SCBSwitch" parent="Theme.AppCompat.Light">
+      <item name="colorControlActivated">#f1592a</item>
+      <item name="colorSwitchThumbNormal">#8F8E8E</item>
+      <item name="android:colorForeground">#42221f1f
+      </item>
+   </style>
 </resources>

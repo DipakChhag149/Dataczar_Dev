@@ -7,31 +7,28 @@ package com.dataczar.main.activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.TextView;
+import android.widget.Switch;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.Header;
+import com.android.volley.NetworkResponse;
+import com.android.volley.ParseError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -40,13 +37,13 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.dataczar.R;
 import com.dataczar.main.viewmodel.ClsCommon;
-import com.google.android.material.badge.BadgeDrawable;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class Setting extends AppCompatActivity implements View.OnClickListener {
@@ -58,6 +55,11 @@ public class Setting extends AppCompatActivity implements View.OnClickListener {
     RequestQueue requestQueue;
     LinearLayout llUserName, llLegal, llBilling, llLogout, llManageAccount, llChangePass, llNotification;
     ImageView img_bedge_billing;
+    Switch notificationSwitch;
+
+    SharedPreferences.Editor editor;
+    SharedPreferences sharedPref;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,6 +67,8 @@ public class Setting extends AppCompatActivity implements View.OnClickListener {
         setContentView(R.layout.setting);
         context = Setting.this;
         requestQueue = Volley.newRequestQueue(context);
+        sharedPref = getSharedPreferences(ClsCommon.PREFDATA, Context.MODE_PRIVATE);
+        editor = sharedPref.edit();
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -72,16 +76,23 @@ public class Setting extends AppCompatActivity implements View.OnClickListener {
         ImageView imgBack = findViewById(R.id.imgBack);
         ImageView imgHelp = findViewById(R.id.imgHelp);
 
-        llUserName      = findViewById(R.id.llUserName);
-        llLegal         = findViewById(R.id.llLegal);
-        llNotification  = findViewById(R.id.llNotification);
-        llBilling       = findViewById(R.id.llBilling);
+        llUserName = findViewById(R.id.llUserName);
+        llLegal = findViewById(R.id.llLegal);
+        llNotification = findViewById(R.id.llNotification);
+        llBilling = findViewById(R.id.llBilling);
         llManageAccount = findViewById(R.id.llManageAccount);
-        llChangePass    = findViewById(R.id.llChangePass);
-        llUserName      = findViewById(R.id.llUserName);
-        llLogout        = findViewById(R.id.llLogout);
+        llChangePass = findViewById(R.id.llChangePass);
+        llUserName = findViewById(R.id.llUserName);
+        llLogout = findViewById(R.id.llLogout);
+        notificationSwitch = findViewById(R.id.notificationSwitch);
 
         img_bedge_billing = findViewById(R.id.img_bedge_billing);
+
+        if (sharedPref.getBoolean(ClsCommon.NOTIFICATION_STATUS,true)){
+            notificationSwitch.setChecked(true);
+        }else {
+            notificationSwitch.setChecked(false);
+        }
 
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(true);
@@ -105,8 +116,7 @@ public class Setting extends AppCompatActivity implements View.OnClickListener {
         llChangePass.setOnClickListener(this);
 
 
-        llLogout.setOnClickListener(new View.OnClickListener()
-        {
+        llLogout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
@@ -119,16 +129,16 @@ public class Setting extends AppCompatActivity implements View.OnClickListener {
                 builder.setMessage("Are you sure you want to logout?");
 
                 // Set the positive button
-                builder.setPositiveButton("Yes",null);
+                builder.setPositiveButton("Yes", null);
 
                 // Set the negative button
                 builder.setNegativeButton("No", null);
 
-               // Create the alert dialog
+                // Create the alert dialog
                 AlertDialog dialog = builder.create();
 
                 // Finally, display the alert dialog
-                if(!dialog.isShowing())
+                if (!dialog.isShowing())
                     dialog.show();
 
                 // Get the alert dialog buttons reference
@@ -144,9 +154,8 @@ public class Setting extends AppCompatActivity implements View.OnClickListener {
 
                 positiveButton.setOnClickListener(new View.OnClickListener() {
                     @Override
-                    public void onClick(View view)
-                    {
-                        if(dialog.isShowing())
+                    public void onClick(View view) {
+                        if (dialog.isShowing())
                             dialog.dismiss();
 
                         new Logout(context).execute();
@@ -154,21 +163,32 @@ public class Setting extends AppCompatActivity implements View.OnClickListener {
                 });
 
 
+            }
+        });
 
+
+        notificationSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                String token=sharedPref.getString(ClsCommon.FCM_TOKEN,"");
+                if (isChecked) {
+                    editor.putBoolean(ClsCommon.NOTIFICATION_STATUS,true).apply();
+                    new AddNotificationToken(Setting.this,token).execute();
+                } else {
+                    editor.putBoolean(ClsCommon.NOTIFICATION_STATUS,false).apply();
+                    new DeleteNotification(Setting.this,token).execute();
+                }
             }
         });
 
     }
 
     @Override
-    public void onClick(View view)
-    {
+    public void onClick(View view) {
         int id = view.getId();
 
-                Intent iv = new Intent(context, WebviewLP.class);
+        Intent iv = new Intent(context, WebviewLP.class);
 
-        switch (id)
-        {
+        switch (id) {
             case R.id.imgHelp:
                 iv.putExtra(ClsCommon.WEBSITE, ClsCommon.HELP);
                 break;
@@ -195,12 +215,16 @@ public class Setting extends AppCompatActivity implements View.OnClickListener {
         startActivity(iv);
     }
 
+    public String getCookie() {
+        SharedPreferences prefs = getSharedPreferences(ClsCommon.PREFDATA, Context.MODE_PRIVATE);
+        String Cookie = prefs.getString(ClsCommon.COOKIE, "");
+        return Cookie;
+    }
 
-    class getHomeData extends AsyncTask<String, Void, Boolean>
-    {
+    class getHomeData extends AsyncTask<String, Void, Boolean> {
         ProgressDialog pd;
-        public getHomeData(Context context)
-        {
+
+        public getHomeData(Context context) {
             pd = new ProgressDialog(context, R.style.ProgressDialog);
             pd.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
         }
@@ -209,52 +233,42 @@ public class Setting extends AppCompatActivity implements View.OnClickListener {
         protected void onPreExecute() {
             super.onPreExecute();
             pd.setCancelable(false);
-            if(!pd.isShowing())
+            if (!pd.isShowing())
                 pd.show();
 
         }
 
         @Override
-        protected Boolean doInBackground(String... strings)
-        {
+        protected Boolean doInBackground(String... strings) {
             return null;
         }
 
         @Override
-        protected void onPostExecute(Boolean aBoolean)
-        {
+        protected void onPostExecute(Boolean aBoolean) {
             super.onPostExecute(aBoolean);
 
             StringRequest stringRequest = new StringRequest(Request.Method.GET, WSMethods.GETUSERPROFILE,
-                    new Response.Listener<String>()
-                    {
+                    new Response.Listener<String>() {
                         @Override
-                        public void onResponse(String response)
-                        {
-                            if(pd.isShowing())
+                        public void onResponse(String response) {
+                            if (pd.isShowing())
                                 pd.dismiss();
 
-                            if(response!= null && !response.isEmpty())
-                            {
-                                try
-                                {
+                            if (response != null && !response.isEmpty()) {
+                                try {
                                     JSONObject jsonObject = new JSONObject(response);
 
-                                    if(jsonObject.has("data"))
-                                    {
-                                        JSONObject uDatas =  jsonObject.getJSONObject("data");
+                                    if (jsonObject.has("data")) {
+                                        JSONObject uDatas = jsonObject.getJSONObject("data");
 
-                                        if(uDatas.has("team"))
-                                        {
+                                        if (uDatas.has("team")) {
                                             JSONObject userdata = uDatas.getJSONObject("team");
 
-                                            String status  = userdata.get("status").toString();
+                                            String status = userdata.get("status").toString();
 
-                                            if(!status.equals("active"))
-                                            {
+                                            if (!status.equals("active")) {
                                                 img_bedge_billing.setVisibility(View.VISIBLE);
-                                            }else
-                                            {
+                                            } else {
                                                 img_bedge_billing.setVisibility(View.INVISIBLE);
                                             }
                                         }
@@ -263,26 +277,22 @@ public class Setting extends AppCompatActivity implements View.OnClickListener {
                                 } catch (JSONException e) {
                                     e.printStackTrace();
                                 }
-                            }else
-                            {
-                                Toast.makeText(context," Can't Connect to server.", Toast.LENGTH_LONG).show();
+                            } else {
+                                Toast.makeText(context, " Can't Connect to server.", Toast.LENGTH_LONG).show();
                             }
                         }
                     }, new Response.ErrorListener() {
                 @Override
-                public void onErrorResponse(VolleyError error)
-                {
-                    if(pd != null && pd.isShowing())
+                public void onErrorResponse(VolleyError error) {
+                    if (pd != null && pd.isShowing())
                         pd.dismiss();
 
-                    Toast.makeText(context,"Response Error: "+ error + " Can't Connect to server.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(context, "Response Error: " + error + " Can't Connect to server.", Toast.LENGTH_LONG).show();
                 }
-            })
-            {
+            }) {
                 @Override
-                public Map<String, String> getHeaders() throws AuthFailureError
-                {
-                    Map<String, String>  params = new HashMap<String, String>();
+                public Map<String, String> getHeaders() throws AuthFailureError {
+                    Map<String, String> params = new HashMap<String, String>();
                     params.put(ClsCommon.COOKIE, getCookie());
                     return params;
                 }
@@ -292,11 +302,10 @@ public class Setting extends AppCompatActivity implements View.OnClickListener {
         }
     }
 
-    class Logout extends AsyncTask<String, Void, Boolean>
-    {
+    class Logout extends AsyncTask<String, Void, Boolean> {
         ProgressDialog pd;
-        public Logout(Context context)
-        {
+
+        public Logout(Context context) {
             pd = new ProgressDialog(context, R.style.ProgressDialog);
             pd.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
         }
@@ -305,54 +314,46 @@ public class Setting extends AppCompatActivity implements View.OnClickListener {
         protected void onPreExecute() {
             super.onPreExecute();
             pd.setCancelable(false);
-            if(!pd.isShowing())
+            if (!pd.isShowing())
                 pd.show();
 
         }
 
         @Override
-        protected Boolean doInBackground(String... strings)
-        {
+        protected Boolean doInBackground(String... strings) {
             return null;
         }
 
         @Override
-        protected void onPostExecute(Boolean aBoolean)
-        {
+        protected void onPostExecute(Boolean aBoolean) {
             super.onPostExecute(aBoolean);
 
             StringRequest stringRequest = new StringRequest(Request.Method.GET, WSMethods.LOGOUT,
-                    new Response.Listener<String>()
-                    {
+                    new Response.Listener<String>() {
                         @Override
-                        public void onResponse(String response)
-                        {
-                            if(pd.isShowing() && !Setting.this.isFinishing())
+                        public void onResponse(String response) {
+                            if (pd.isShowing() && !Setting.this.isFinishing())
                                 pd.dismiss();
 
-                            if(response!= null && !response.isEmpty())
-                            {
-                                try
-                                {
+                            if (response != null && !response.isEmpty()) {
+                                try {
                                     JSONObject jsonObject = new JSONObject(response);
 
 
-                                    if(jsonObject.has("response"))
-                                    {
+                                    if (jsonObject.has("response")) {
                                         JSONObject responsejson = jsonObject.getJSONObject("response");
 
-                                        if(responsejson.has("success"))
-                                        {
+                                        if (responsejson.has("success")) {
                                             String issuccess = responsejson.getString("success");
 
-                                            if(issuccess.equals("true"))
-                                            {
+                                            if (issuccess.equals("true")) {
                                                 try {
-                                                    while (getSupportFragmentManager().getBackStackEntryCount() > 0)
-                                                    {
+                                                    while (getSupportFragmentManager().getBackStackEntryCount() > 0) {
                                                         getSupportFragmentManager().popBackStackImmediate();
                                                     }
-                                                }catch (Exception ex){ex.printStackTrace();}
+                                                } catch (Exception ex) {
+                                                    ex.printStackTrace();
+                                                }
 
                                                 Intent iv = new Intent(context, LoginActivity.class);
                                                 iv.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -364,26 +365,22 @@ public class Setting extends AppCompatActivity implements View.OnClickListener {
                                 } catch (JSONException e) {
                                     e.printStackTrace();
                                 }
-                            }else
-                            {
-                                Toast.makeText(context," Can't Connect to server.", Toast.LENGTH_LONG).show();
+                            } else {
+                                Toast.makeText(context, " Can't Connect to server.", Toast.LENGTH_LONG).show();
                             }
                         }
                     }, new Response.ErrorListener() {
                 @Override
-                public void onErrorResponse(VolleyError error)
-                {
-                    if(pd != null && pd.isShowing())
+                public void onErrorResponse(VolleyError error) {
+                    if (pd != null && pd.isShowing())
                         pd.dismiss();
 
-                    Toast.makeText(context,"Response Error: "+ error + " Can't Connect to server.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(context, "Response Error: " + error + " Can't Connect to server.", Toast.LENGTH_LONG).show();
                 }
-            })
-            {
+            }) {
                 @Override
-                public Map<String, String> getHeaders() throws AuthFailureError
-                {
-                    Map<String, String>  params = new HashMap<String, String>();
+                public Map<String, String> getHeaders() throws AuthFailureError {
+                    Map<String, String> params = new HashMap<String, String>();
                     params.put(ClsCommon.COOKIE, getCookie());
                     return params;
                 }
@@ -393,11 +390,213 @@ public class Setting extends AppCompatActivity implements View.OnClickListener {
         }
     }
 
+    class DeleteNotification extends AsyncTask<String, Void, Boolean> {
+        ProgressDialog pd;
+        String token;
 
-    public String getCookie()
-    {
-        SharedPreferences prefs = getSharedPreferences(ClsCommon.PREFDATA, Context.MODE_PRIVATE);
-        String Cookie = prefs.getString(ClsCommon.COOKIE, "");
-        return  Cookie;
+        public DeleteNotification(Context context, String token) {
+            pd = new ProgressDialog(context, R.style.ProgressDialog);
+            pd.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+            this.token = token;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            pd.setCancelable(false);
+            if (!pd.isShowing())
+                pd.show();
+        }
+
+        @Override
+        protected Boolean doInBackground(String... strings) {
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean aBoolean) {
+            super.onPostExecute(aBoolean);
+
+            StringRequest stringRequest = new StringRequest(Request.Method.DELETE, WSMethods.DELETE_NOTIFICATION,
+                    new Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String response) {
+                            if (pd.isShowing())
+                                pd.dismiss();
+
+                            if (response != null && !response.isEmpty()) {
+                                try {
+                                    JSONObject jsonResponse = new JSONObject(response);
+                                    JSONObject data_response = jsonResponse.getJSONObject("response");
+                                    if (!data_response.getBoolean("success")) {
+
+                                    } else {
+                                        //Toast.makeText(context, "Login success - Dashboard", Toast.LENGTH_SHORT).show();
+
+                                    }
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+
+                        }
+                    }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    if (pd != null && pd.isShowing())
+                        pd.dismiss();
+
+                    //Toast.makeText(context,"Response Error: "+ error + " Can't Connect to server.", Toast.LENGTH_LONG).show();
+                }
+            }
+            ) {
+                @Override
+                public Map<String, String> getHeaders() {
+                    Map<String, String> params = new HashMap<String, String>();
+                    params.put(ClsCommon.COOKIE, getCookie());
+                    return params;
+                }
+
+                @Override
+                protected Map<String, String> getParams() {
+                    Map<String, String> params = new HashMap<String, String>();
+                    params.put("token", token);
+                    return params;
+                }
+
+                @Override
+                protected Response<String> parseNetworkResponse(NetworkResponse response) {
+                    try {
+                        //String jsonString = new String(response.data, HttpHeaderParser.parseCharset(response.headers,"utf-8"));
+
+                        List<Header> jsonheader = response.allHeaders;
+
+                        String Cookie = "";
+                        for (int i = 0; i < jsonheader.size(); i++) {
+                            Header header = jsonheader.get(i);
+                            if (header.getName().equals("Set-Cookie")) {
+                                Cookie += header.getValue().split(";")[0] + ";";
+                            }
+                        }
+
+                        Cookie = Cookie.substring(0, Cookie.length() - 1);
+                        editor.putString(ClsCommon.COOKIE, Cookie);
+                        editor.apply();
+
+                    } catch (Exception je) {
+                        return Response.error(new ParseError(je));
+                    }
+
+                    return super.parseNetworkResponse(response);
+                }
+            };
+            requestQueue.add(stringRequest);
+        }
+    }
+
+
+    class AddNotificationToken extends AsyncTask<String, Void, Boolean> {
+        ProgressDialog pd;
+        String token;
+
+        public AddNotificationToken(Context context, String token) {
+            pd = new ProgressDialog(context, R.style.ProgressDialog);
+            pd.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+            this.token = token;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            pd.setCancelable(false);
+            if (!pd.isShowing())
+                pd.show();
+        }
+
+        @Override
+        protected Boolean doInBackground(String... strings) {
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean aBoolean) {
+            super.onPostExecute(aBoolean);
+
+            StringRequest stringRequest = new StringRequest(Request.Method.POST, WSMethods.DELETE_NOTIFICATION,
+                    new Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String response) {
+                            if (pd.isShowing())
+                                pd.dismiss();
+
+                            if (response != null && !response.isEmpty()) {
+                                try {
+                                    JSONObject jsonResponse = new JSONObject(response);
+                                    JSONObject data_response = jsonResponse.getJSONObject("response");
+                                    if (!data_response.getBoolean("success")) {
+
+                                    } else {
+                                        //Toast.makeText(context, "Login success - Dashboard", Toast.LENGTH_SHORT).show();
+
+                                    }
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+
+                        }
+                    }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    if (pd != null && pd.isShowing())
+                        pd.dismiss();
+
+                    //Toast.makeText(context,"Response Error: "+ error + " Can't Connect to server.", Toast.LENGTH_LONG).show();
+                }
+            }
+            ) {
+                @Override
+                public Map<String, String> getHeaders() {
+                    Map<String, String> params = new HashMap<String, String>();
+                    params.put(ClsCommon.COOKIE, getCookie());
+                    return params;
+                }
+
+                @Override
+                protected Map<String, String> getParams() {
+                    Map<String, String> params = new HashMap<String, String>();
+                    params.put("token", token);
+                    params.put("description", "Android");
+                    return params;
+                }
+
+                @Override
+                protected Response<String> parseNetworkResponse(NetworkResponse response) {
+                    try {
+                        //String jsonString = new String(response.data, HttpHeaderParser.parseCharset(response.headers,"utf-8"));
+
+                        List<Header> jsonheader = response.allHeaders;
+
+                        String Cookie = "";
+                        for (int i = 0; i < jsonheader.size(); i++) {
+                            Header header = jsonheader.get(i);
+                            if (header.getName().equals("Set-Cookie")) {
+                                Cookie += header.getValue().split(";")[0] + ";";
+                            }
+                        }
+
+                        Cookie = Cookie.substring(0, Cookie.length() - 1);
+                        editor.putString(ClsCommon.COOKIE, Cookie);
+                        editor.apply();
+
+                    } catch (Exception je) {
+                        return Response.error(new ParseError(je));
+                    }
+
+                    return super.parseNetworkResponse(response);
+                }
+            };
+            requestQueue.add(stringRequest);
+        }
     }
 }

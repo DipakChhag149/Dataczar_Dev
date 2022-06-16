@@ -65,6 +65,14 @@
         </activity>
 
         <activity
+            android:name=".main.activity.WebviewActivity"
+            android:exported="false"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|uiMode"
+            android:theme="@style/Theme.DataCzar"
+            android:screenOrientation="portrait">
+        </activity>
+
+        <activity
             android:name=".main.activity.SwitchProfileList"
             android:exported="false"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|uiMode"

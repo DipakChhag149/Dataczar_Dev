@@ -31,6 +31,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.FragmentTransaction;
@@ -44,6 +45,7 @@ import com.android.volley.toolbox.JsonRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.dataczar.R;
+import com.dataczar.main.fragment.AddPostFragment;
 import com.dataczar.main.fragment.HomeFragment;
 import com.dataczar.main.fragment.NotificationFragment;
 import com.dataczar.main.fragment.ProfileFragment;
@@ -82,6 +84,8 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
     TextView tvActionbartitle;
     ImageView imgActionbarlogo, imgSettingMenu;
     ClsCommon clsCommon;
+    ConstraintLayout llLinks;
+    ImageView ivExpand;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -93,6 +97,8 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
         tvActionbartitle = findViewById(R.id.tvActionbartitle);
         imgActionbarlogo = findViewById(R.id.imgActionbarlogo);
         imgSettingMenu   = findViewById(R.id.imgSettingMenu);
+        llLinks   = findViewById(R.id.llLinks);
+        ivExpand   = findViewById(R.id.ivExpand);
 
         imgSettingMenu.setVisibility(View.INVISIBLE);
 
@@ -137,17 +143,27 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
                 fragmentTransaction.replace(R.id.llFargment, new ProfileFragment(context, bottomNavigationView, imgSettingMenu));
                 bottomNavigationView.setSelectedItemId(R.id.ic_profile);
                 bottomNavigationView.setSelected(true);
+                imgActionbarlogo.setVisibility(View.GONE);
+                tvActionbartitle.setVisibility(View.VISIBLE);
+                tvActionbartitle.setText("Profile");
+                fragmentTransaction.commit();
+            }else if(moveto!=null && moveto.equals(ClsCommon.NOTIFICATION)){
+                fragmentTransaction.add(R.id.llFargment, new NotificationFragment(context, bottomNavigationView, imgSettingMenu));
+                bottomNavigationView.setSelectedItemId(R.id.ic_notification);
+                bottomNavigationView.setSelected(true);
                 fragmentTransaction.commit();
             }
             else {
-                fragmentTransaction.add(R.id.llFargment, new HomeFragment(context, ClsCommon.DASHBOARD, bottomNavigationView, imgSettingMenu));
+                llLinks.setVisibility(View.VISIBLE);
+                fragmentTransaction.add(R.id.llFargment, new HomeFragment(context, ClsCommon.DASHBOARD, bottomNavigationView, imgSettingMenu,llLinks,ivExpand,true));
                 bottomNavigationView.setSelectedItemId(R.id.ic_home);
                 bottomNavigationView.setSelected(true);
                 fragmentTransaction.commit();
             }
         }else
         {
-            fragmentTransaction.add(R.id.llFargment, new HomeFragment(context, ClsCommon.DASHBOARD, bottomNavigationView,  imgSettingMenu));
+            llLinks.setVisibility(View.VISIBLE);
+            fragmentTransaction.add(R.id.llFargment, new HomeFragment(context, ClsCommon.DASHBOARD, bottomNavigationView,  imgSettingMenu,llLinks,ivExpand,true));
             bottomNavigationView.setSelected(true);
             bottomNavigationView.setSelectedItemId(R.id.ic_home);
             fragmentTransaction.commit();
@@ -174,35 +190,38 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
                     {
                         case R.id.ic_home:
                             bottomNavigationView.setSelected(true);
-                            imgSettingMenu.setVisibility(View.GONE);
+                            imgSettingMenu.setVisibility(View.INVISIBLE);
                             tvActionbartitle.setVisibility(View.GONE);
                             imgActionbarlogo.setVisibility(View.VISIBLE);
-                            fragmentTransaction.replace(R.id.llFargment, new HomeFragment(context, ClsCommon.DASHBOARD, bottomNavigationView, imgSettingMenu));
+                            llLinks.setVisibility(View.VISIBLE);
+                            fragmentTransaction.replace(R.id.llFargment, new HomeFragment(context, ClsCommon.DASHBOARD, bottomNavigationView, imgSettingMenu,llLinks,ivExpand,true));
                             fragmentTransaction.commit();
                             return true;
 
                         case R.id.ic_addpost:
-                            imgSettingMenu.setVisibility(View.GONE);
+                            imgSettingMenu.setVisibility(View.INVISIBLE);
                             tvActionbartitle.setVisibility(View.VISIBLE);
                             imgActionbarlogo.setVisibility(View.GONE);
+                            llLinks.setVisibility(View.GONE);
                             tvActionbartitle.setText("Add Post");
-                            fragmentTransaction.replace(R.id.llFargment, new HomeFragment(context, ClsCommon.ADDPOST, bottomNavigationView, imgSettingMenu));
+                            fragmentTransaction.replace(R.id.llFargment, new AddPostFragment(context, bottomNavigationView, imgSettingMenu));
                             fragmentTransaction.commit();
                             return true;
 
                         case R.id.ic_notification:
-                            imgSettingMenu.setVisibility(View.GONE);
+                            imgSettingMenu.setVisibility(View.INVISIBLE);
                             tvActionbartitle.setVisibility(View.VISIBLE);
                             imgActionbarlogo.setVisibility(View.GONE);
+                            llLinks.setVisibility(View.GONE);
                             tvActionbartitle.setText("Notifications");
                             fragmentTransaction.replace(R.id.llFargment, new NotificationFragment(context, bottomNavigationView, imgSettingMenu));
                             fragmentTransaction.commit();
                             return true;
 
                         case R.id.ic_profile:
-                            imgSettingMenu.setVisibility(View.GONE);
                             tvActionbartitle.setVisibility(View.VISIBLE);
                             imgActionbarlogo.setVisibility(View.GONE);
+                            llLinks.setVisibility(View.GONE);
                             tvActionbartitle.setText("Profile");
                             fragmentTransaction.replace(R.id.llFargment, new ProfileFragment(context, bottomNavigationView, imgSettingMenu));
                             fragmentTransaction.commit();
@@ -494,7 +513,7 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
                                 Toast.makeText(context," Can't Connect to server.", Toast.LENGTH_LONG).show();
                             }
 
-                            new getNotificatioCount(context).execute();
+                            //new getNotificatioCount(context).execute();
                         }
                     }, new Response.ErrorListener() {
                 @Override

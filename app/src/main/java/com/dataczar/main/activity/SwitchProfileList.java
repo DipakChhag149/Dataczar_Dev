@@ -221,7 +221,7 @@ public class SwitchProfileList extends AppCompatActivity
                                             Intent iv = new Intent(SwitchProfileList.this, Dashboard.class);
                                             iv.putExtra("NeedNavigate", ClsCommon.PROFILE);
                                             startActivity(iv);
-
+                                            finishAffinity();
                                             SwitchProfileList.this.finish();
 
                                             //Toast.makeText(context, "Profile Switch successfully to : " + ProfileName, Toast.LENGTH_LONG).show();
