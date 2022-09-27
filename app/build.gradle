@@ -11,7 +11,7 @@ android {
         minSdk 21
         targetSdk 31
         versionCode 7
-        versionName "1.2.1"
+        versionName "1.2.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -36,6 +36,7 @@ android {
 dependencies {
 
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
+    implementation 'androidx.lifecycle:lifecycle-process:2.5.1'
     def lifecycle_version = "2.4.0"
     def arch_version = "2.1.0"
 
@@ -82,4 +83,9 @@ dependencies {
     implementation 'androidx.biometric:biometric:1.1.0'
 
     implementation 'info.androidhive:fontawesome:0.0.5'
+
+    implementation 'com.github.whytot:BadgeForAppIcon:v1.0.0-beta.2'
+
+    implementation "me.leolin:ShortcutBadger:1.1.22@aar"
+    implementation 'me.pie:android-badgify:1.0.2'
 }
