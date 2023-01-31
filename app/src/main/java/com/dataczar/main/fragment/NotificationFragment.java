@@ -65,6 +65,9 @@ public class NotificationFragment extends Fragment
     Boolean isLoaded;
     BottomNavigationView bottomNavigationView;
 
+    SharedPreferences.Editor editor;
+    SharedPreferences sharedPref;
+
     public NotificationFragment(Context context, BottomNavigationView bottomNavigationView, ImageView imgSettingMenu)
     {
         this.context= context;
@@ -96,6 +99,9 @@ public class NotificationFragment extends Fragment
                 }, 1000); // Delay in millis
             }
         });
+
+        sharedPref =getContext().getSharedPreferences(ClsCommon.PREFDATA, Context.MODE_PRIVATE);
+        editor = sharedPref.edit();
 
        /* if (savedInstanceState != null) {
             isLoaded = savedInstanceState.getBoolean("ISLOADED", false);
@@ -162,6 +168,9 @@ public class NotificationFragment extends Fragment
                                         String count =  jsonObject.getString("count");
                                         String unreadcount =  jsonObject.getString("unread_count");
 
+                                        editor.putString(ClsCommon.NOTIFICATION_COUNT, unreadcount);
+                                        editor.apply();
+                                        
                                         if(unreadcount != null && unreadcount.trim().length()>0 && !unreadcount.equals("0"))
                                         {
                                             BadgeDrawable NotifiationBadge = bottomNavigationView.getOrCreateBadge(R.id.ic_notification);
@@ -471,6 +480,7 @@ public class NotificationFragment extends Fragment
                                 pd.dismiss();
 
                             new getAllNotification(context).execute();
+                            new getNotificatioCount(context).execute();
 
                         }
                     }, new Response.ErrorListener() {

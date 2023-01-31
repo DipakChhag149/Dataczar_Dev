@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -59,11 +60,23 @@ public class SplashScreen extends AppCompatActivity {
 
         View view = findViewById(R.id.imgLogo);
 
-        if (clsCommon.checkConnection())
-            checkUserLoginStatus();
-        else
-            clsCommon.showSnackBar(false, view);
 
+        if (clsCommon.checkConnection()){
+            checkUserLoginStatus();
+            /*if(getIntent() != null){
+                String action= getIntent().getAction();
+                if (action!=null && action.equalsIgnoreCase("com.notification")){
+                    startActivity(new Intent(context, Dashboard.class).putExtra("NeedNavigate", ClsCommon.NOTIFICATION).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK));
+                    SplashScreen.this.finish();
+                }else {
+                    checkUserLoginStatus();
+                }
+            }else {
+                checkUserLoginStatus();
+            }*/
+        }else {
+            clsCommon.showSnackBar(false, view);
+        }
     }
 
     private void checkUserLoginStatus() {
@@ -87,15 +100,22 @@ public class SplashScreen extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<String> task) {
                         if (!task.isSuccessful()) {
-                            startActivity(new Intent(context, Dashboard.class).putExtra("NeedNavigate", ClsCommon.LOGIN).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK));
-                            SplashScreen.this.finish();
+                            String action= getIntent().getAction();
+                            if (action!=null && action.equalsIgnoreCase("com.notification")){
+                                startActivity(new Intent(context, Dashboard.class).putExtra("NeedNavigate", ClsCommon.NOTIFICATION).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK));
+                                SplashScreen.this.finish();
+                            }else {
+                                startActivity(new Intent(context, Dashboard.class).putExtra("NeedNavigate", ClsCommon.LOGIN).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK));
+                                SplashScreen.this.finish();
+                            }
+
                             return;
                         }
                         // Get new FCM registration token
                         String token = task.getResult();
                         editor.putString(ClsCommon.FCM_TOKEN, token);
                         editor.apply();
-
+                        Log.e("Device Token",""+token);
                         new AddNotificationToken(SplashScreen.this,token).execute();
                     }
                 });
@@ -144,9 +164,6 @@ public class SplashScreen extends AppCompatActivity {
                                         SplashScreen.this.finish();
                                     } else {
                                         getFirebaseToken();
-                                        //Toast.makeText(context, "Login success - Dashboard", Toast.LENGTH_SHORT).show();
-                                        /*startActivity(new Intent(context, Dashboard.class).putExtra("NeedNavigate", ClsCommon.LOGIN).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK));
-                                        SplashScreen.this.finish();*/
                                     }
                                 } catch (JSONException e) {
                                     e.printStackTrace();
@@ -213,9 +230,17 @@ public class SplashScreen extends AppCompatActivity {
 
                             if (response != null && !response.isEmpty()) {
                                 try {
+
                                     JSONObject jsonResponse = new JSONObject(response);
-                                    startActivity(new Intent(context, Dashboard.class).putExtra("NeedNavigate", ClsCommon.LOGIN).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK));
-                                    SplashScreen.this.finish();
+                                    String action= getIntent().getAction();
+                                    if (action!=null && action.equalsIgnoreCase("com.notification")){
+                                        startActivity(new Intent(context, Dashboard.class).putExtra("NeedNavigate", ClsCommon.NOTIFICATION).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK));
+                                        SplashScreen.this.finish();
+                                    }else {
+                                        startActivity(new Intent(context, Dashboard.class).putExtra("NeedNavigate", ClsCommon.LOGIN).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK));
+                                        SplashScreen.this.finish();
+                                    }
+
                                 } catch (JSONException e) {
                                     e.printStackTrace();
                                 }

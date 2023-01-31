@@ -763,18 +763,20 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                                 pd.dismiss();
 
                             if (response != null && !response.isEmpty()) {
-                                try {
-                                    JSONObject jsonResponse = new JSONObject(response);
+                                Log.e("TOKEN Response",""+response);
+                                /*try {
+
+                                    *//*JSONObject jsonResponse = new JSONObject(response);
                                     JSONObject data_response = jsonResponse.getJSONObject("response");
                                     if (!data_response.getBoolean("success")) {
 
                                     } else {
                                         //Toast.makeText(context, "Login success - Dashboard", Toast.LENGTH_SHORT).show();
 
-                                    }
+                                    }*//*
                                 } catch (JSONException e) {
                                     e.printStackTrace();
-                                }
+                                }*/
                             }
 
                         }

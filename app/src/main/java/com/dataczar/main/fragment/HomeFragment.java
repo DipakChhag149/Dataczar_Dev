@@ -86,6 +86,8 @@ public class HomeFragment extends Fragment {
     private NestedScrollView scrollview;
     private ImageView ivExpand;
     private boolean isQuickLinks=false;
+    SharedPreferences.Editor editor;
+    SharedPreferences sharedPref;
 
     public HomeFragment() {
     }
@@ -109,7 +111,8 @@ public class HomeFragment extends Fragment {
         rvQuickLinks = view.findViewById(R.id.rvQuickLinks);
         clQuickLink = view.findViewById(R.id.clQuickLink);
         scrollview = view.findViewById(R.id.scrollview);
-
+        sharedPref = getContext().getSharedPreferences(ClsCommon.PREFDATA, Context.MODE_PRIVATE);
+        editor = sharedPref.edit();
 
         if (context == null)
             this.context = getActivity().getApplicationContext();
@@ -350,7 +353,8 @@ public class HomeFragment extends Fragment {
                                     if (jsonObject.has("count")) {
                                         String count = jsonObject.getString("count");
                                         String unreadcount = jsonObject.getString("unread_count");
-
+                                        editor.putString(ClsCommon.NOTIFICATION_COUNT, unreadcount);
+                                        editor.apply();
                                         if (unreadcount != null && unreadcount.trim().length() > 0 && !unreadcount.equals("0")) {
                                             BadgeDrawable NotifiationBadge = bottomNavigationView.getOrCreateBadge(R.id.ic_notification);
                                             NotifiationBadge.setNumber(Integer.parseInt(unreadcount));

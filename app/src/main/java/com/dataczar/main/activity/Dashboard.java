@@ -9,8 +9,10 @@ import static com.dataczar.main.activity.MyApplication.userprofile;
 import android.Manifest;
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -35,6 +37,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -86,7 +89,8 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
     ClsCommon clsCommon;
     ConstraintLayout llLinks;
     ImageView ivExpand;
-
+    SharedPreferences.Editor editor;
+    SharedPreferences sharedPref;
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -101,7 +105,8 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
         ivExpand   = findViewById(R.id.ivExpand);
 
         imgSettingMenu.setVisibility(View.INVISIBLE);
-
+        sharedPref = getSharedPreferences(ClsCommon.PREFDATA, Context.MODE_PRIVATE);
+        editor = sharedPref.edit();
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         toolbar.setTitle("");
@@ -133,33 +138,41 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
         bottomNavigationView = findViewById(R.id.bottom_navigation);
 
         fragmentTransaction = getSupportFragmentManager().beginTransaction();
-
         if(getIntent() != null)
         {
-            String moveto = getIntent().getStringExtra("NeedNavigate");
-
-            if(moveto != null && moveto.equals(ClsCommon.PROFILE))
-            {
-                fragmentTransaction.replace(R.id.llFargment, new ProfileFragment(context, bottomNavigationView, imgSettingMenu));
-                bottomNavigationView.setSelectedItemId(R.id.ic_profile);
-                bottomNavigationView.setSelected(true);
-                imgActionbarlogo.setVisibility(View.GONE);
-                tvActionbartitle.setVisibility(View.VISIBLE);
-                tvActionbartitle.setText("Profile");
-                fragmentTransaction.commit();
-            }else if(moveto!=null && moveto.equals(ClsCommon.NOTIFICATION)){
+            String action= getIntent().getAction();
+            if (action!=null && action.equalsIgnoreCase("com.notification")){
                 fragmentTransaction.add(R.id.llFargment, new NotificationFragment(context, bottomNavigationView, imgSettingMenu));
                 bottomNavigationView.setSelectedItemId(R.id.ic_notification);
                 bottomNavigationView.setSelected(true);
                 fragmentTransaction.commit();
+            }else {
+                String moveto = getIntent().getStringExtra("NeedNavigate");
+
+                if(moveto != null && moveto.equals(ClsCommon.PROFILE))
+                {
+                    fragmentTransaction.replace(R.id.llFargment, new ProfileFragment(context, bottomNavigationView, imgSettingMenu));
+                    bottomNavigationView.setSelectedItemId(R.id.ic_profile);
+                    bottomNavigationView.setSelected(true);
+                    imgActionbarlogo.setVisibility(View.GONE);
+                    tvActionbartitle.setVisibility(View.VISIBLE);
+                    tvActionbartitle.setText("Profile");
+                    fragmentTransaction.commit();
+                }else if(moveto!=null && moveto.equals(ClsCommon.NOTIFICATION)){
+                    fragmentTransaction.add(R.id.llFargment, new NotificationFragment(context, bottomNavigationView, imgSettingMenu));
+                    bottomNavigationView.setSelectedItemId(R.id.ic_notification);
+                    bottomNavigationView.setSelected(true);
+                    fragmentTransaction.commit();
+                }
+                else {
+                    llLinks.setVisibility(View.VISIBLE);
+                    fragmentTransaction.add(R.id.llFargment, new HomeFragment(context, ClsCommon.DASHBOARD, bottomNavigationView, imgSettingMenu,llLinks,ivExpand,true));
+                    bottomNavigationView.setSelectedItemId(R.id.ic_home);
+                    bottomNavigationView.setSelected(true);
+                    fragmentTransaction.commit();
+                }
             }
-            else {
-                llLinks.setVisibility(View.VISIBLE);
-                fragmentTransaction.add(R.id.llFargment, new HomeFragment(context, ClsCommon.DASHBOARD, bottomNavigationView, imgSettingMenu,llLinks,ivExpand,true));
-                bottomNavigationView.setSelectedItemId(R.id.ic_home);
-                bottomNavigationView.setSelected(true);
-                fragmentTransaction.commit();
-            }
+
         }else
         {
             llLinks.setVisibility(View.VISIBLE);
@@ -168,6 +181,8 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
             bottomNavigationView.setSelectedItemId(R.id.ic_home);
             fragmentTransaction.commit();
         }
+
+
 
         //fragmentTransaction.commit();
 
@@ -398,7 +413,7 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
     @Override
     protected void onResume() {
         super.onResume();
-
+        context.registerReceiver(broadcastReceiver, new IntentFilter("notification_update"));
        /* if(getIntent() != null)
         {
             String moveto = getIntent().getStringExtra("NeedNavigate");
@@ -416,6 +431,12 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
 
         new getHomeData(context).execute();
 
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        context.unregisterReceiver(broadcastReceiver);
     }
 
     @Override
@@ -513,7 +534,7 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
                                 Toast.makeText(context," Can't Connect to server.", Toast.LENGTH_LONG).show();
                             }
 
-                            //new getNotificatioCount(context).execute();
+                            new getNotificatioCount(context).execute();
                         }
                     }, new Response.ErrorListener() {
                 @Override
@@ -596,6 +617,8 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
                                         String count =  jsonObject.getString("count");
                                         String unreadcount =  jsonObject.getString("unread_count");
 
+                                        editor.putString(ClsCommon.NOTIFICATION_COUNT, unreadcount);
+                                        editor.apply();
                                         if(unreadcount != null && unreadcount.trim().length()>0 && !unreadcount.equals("0"))
                                         {
                                             BadgeDrawable NotifiationBadge = bottomNavigationView.getOrCreateBadge(R.id.ic_notification);
@@ -649,4 +672,24 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
         return  Cookie;
     }
 
+    private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+        // we will receive data updates in onReceive method.
+        @Override
+        public void onReceive(Context context, Intent intent) {
+
+            new getNotificatioCount(context).execute();
+        }
+    };
+
+    // This function will create an intent. This intent must take as parameter the "unique_name" that you registered your activity with
+    public static void updateMyActivity(Context context, String message) {
+
+        Intent intent = new Intent("notification_update");
+
+        //put whatever data you want to send, if any
+        intent.putExtra("message", message);
+
+        //send broadcast
+        context.sendBroadcast(intent);
+    }
 }
