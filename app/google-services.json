@@ -22,6 +22,30 @@
           }
         },
         {
+          "client_id": "762954311229-c6gmrcieokliusai5stfotjo0fjjoio7.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.dataczar",
+            "certificate_hash": "62ef49bf73533e7e7634adfa4c35cee15019b1de"
+          }
+        },
+        {
+          "client_id": "762954311229-cipc7aqte5b42h906mf9ha00amku8cau.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.dataczar",
+            "certificate_hash": "b4b8828ee9b5d6cb102c35f82fbdc0bbe3a59e36"
+          }
+        },
+        {
+          "client_id": "762954311229-ir8gr7la5utmash5loc09uvmq4c0jtuo.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.dataczar",
+            "certificate_hash": "99b3c955380dd8e8bf43bce14b4a7966a45044e8"
+          }
+        },
+        {
           "client_id": "762954311229-vtif3b52rtgmpramu5si54avh512e8t8.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -37,6 +61,14 @@
             {
               "client_id": "762954311229-ac5o41nqhgpdrfjn8ns3mv1gfav58cor.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "762954311229-3n78ec5qrq0e3om6hi9tae14jk6mf7kd.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.dataczar.dataczar",
+                "app_store_id": "1591796916"
+              }
             }
           ]
         }
