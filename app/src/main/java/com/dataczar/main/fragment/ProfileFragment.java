@@ -27,9 +27,11 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.dataczar.R;
+import com.dataczar.main.activity.Setting;
 import com.dataczar.main.activity.SwitchProfileList;
 import com.dataczar.main.activity.WSMethods;
 import com.dataczar.main.activity.WebviewLP;
+import com.dataczar.main.utils.CustomHorizontalProgressBar;
 import com.dataczar.main.viewmodel.ClsCommon;
 import com.dataczar.main.viewmodel.network.NetworkUtil;
 import com.google.android.material.badge.BadgeDrawable;
@@ -43,10 +45,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import ru.nikartm.support.ImageBadgeView;
+
 public class ProfileFragment extends Fragment
 {
     TextView tvName, tvEmail, tvPhone, tvUserName, llblank;
-    ImageView imgSwitchProf, imgVerifyEmail, imgHelp, imgVerifyPhone;
+    ImageView imgSwitchProf, imgVerifyEmail, imgHelp, imgVerifyPhone,ivSettingBadge;
     ArrayList<Map<String, String>> userprofile;
     Context context;
     RequestQueue requestQueue;
@@ -54,9 +58,10 @@ public class ProfileFragment extends Fragment
     HashMap<String, String> myteam = new HashMap<>();
     ArrayList<HashMap<String, String>> teammap = new ArrayList<>();
     BottomNavigationView bottomNavigationView;
-    ImageView imgSettingMenu;
+    ImageBadgeView imgSettingMenu;
 
-    LinearLayout llswitfprof;
+    LinearLayout llswitfprof,llSetting;
+    CustomHorizontalProgressBar horizontalProgress;
 
     public ProfileFragment()
     {
@@ -65,7 +70,7 @@ public class ProfileFragment extends Fragment
         userprofile = new ArrayList<>();
     }
 
-    public ProfileFragment(Context context, BottomNavigationView bottomNavigationView, ImageView imgSettingMenu) {
+    public ProfileFragment(Context context, BottomNavigationView bottomNavigationView, ImageBadgeView imgSettingMenu) {
         this.context = context;
         requestQueue = Volley.newRequestQueue(context);
         userprofile = new ArrayList<>();
@@ -88,6 +93,7 @@ public class ProfileFragment extends Fragment
     {
         View view = inflater.inflate(R.layout.frag_user_profile, container, false);
 
+        ivSettingBadge     = view.findViewById(R.id.ivSettingBadge);
         tvName     = view.findViewById(R.id.tvName);
         tvEmail    = view.findViewById(R.id.tvEmail);
         tvPhone    = view.findViewById(R.id.tvPhone);
@@ -97,6 +103,8 @@ public class ProfileFragment extends Fragment
         imgVerifyPhone = view.findViewById(R.id.imgVerifyPhone);
         imgHelp = view.findViewById(R.id.imgHelp);
         llswitfprof = view.findViewById(R.id.llswitfprof);
+        horizontalProgress = view.findViewById(R.id.horizontalProgress);
+        llSetting = view.findViewById(R.id.llSetting);
 
         if(NetworkUtil.isNetworkConnected(getContext()))
         {
@@ -131,6 +139,13 @@ public class ProfileFragment extends Fragment
             }
         });
 
+        llSetting.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(requireContext(),Setting.class));
+            }
+        });
+
         new getNotificatioCount(context).execute();
 
         return view;
@@ -141,17 +156,17 @@ public class ProfileFragment extends Fragment
         ProgressDialog pd;
         public getNotificatioCount(Context context)
         {
-            pd = new ProgressDialog(context, R.style.ProgressDialog);
-            pd.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+//            pd = new ProgressDialog(context, R.style.ProgressDialog);
+//            pd.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
         }
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            pd.setCancelable(false);
-            if(!pd.isShowing())
-                pd.show();
-
+//            pd.setCancelable(false);
+//            if(!pd.isShowing())
+//                pd.show();
+            horizontalProgress.setVisibility(View.VISIBLE);
         }
 
         @Override
@@ -171,8 +186,8 @@ public class ProfileFragment extends Fragment
                         @Override
                         public void onResponse(String response)
                         {
-                            if(pd.isShowing())
-                                pd.dismiss();
+//                            if(pd.isShowing())
+//                                pd.dismiss();
 
                             if(response!= null && !response.isEmpty())
                             {
@@ -187,14 +202,16 @@ public class ProfileFragment extends Fragment
 
                                         if(unreadcount != null && unreadcount.trim().length()>0 && !unreadcount.equals("0"))
                                         {
-                                            BadgeDrawable NotifiationBadge = bottomNavigationView.getOrCreateBadge(R.id.ic_notification);
+                                            imgSettingMenu.setBadgeValue(Integer.parseInt(unreadcount));
+                                           /* BadgeDrawable NotifiationBadge = bottomNavigationView.getOrCreateBadge(R.id.imgSettingMenu);
                                             NotifiationBadge.setNumber(Integer.parseInt(unreadcount));
-                                            NotifiationBadge.setBackgroundColor(Color.parseColor("#f1592a"));
+                                            NotifiationBadge.setBackgroundColor(Color.parseColor("#f1592a"));*/
                                         }else
                                         {
-                                            BadgeDrawable NotifiationBadge = bottomNavigationView.getOrCreateBadge(R.id.ic_notification);
+                                            imgSettingMenu.setBadgeValue(0);
+                                            /*BadgeDrawable NotifiationBadge = bottomNavigationView.getOrCreateBadge(R.id.imgSettingMenu);
                                             NotifiationBadge.setNumber(Integer.parseInt(unreadcount));
-                                            NotifiationBadge.setBackgroundColor(Color.parseColor("#00000000"));
+                                            NotifiationBadge.setBackgroundColor(Color.parseColor("#00000000"));*/
                                         }
                                     }
                                 } catch (JSONException e) {
@@ -210,8 +227,9 @@ public class ProfileFragment extends Fragment
                 @Override
                 public void onErrorResponse(VolleyError error)
                 {
-                    if(pd != null && pd.isShowing())
-                        pd.dismiss();
+//                    if(pd != null && pd.isShowing())
+//                        pd.dismiss();
+                    horizontalProgress.setVisibility(View.INVISIBLE);
 
                     Toast.makeText(context,"Response Error: "+ error + " Can't Connect to server.", Toast.LENGTH_LONG).show();
                 }
@@ -235,16 +253,17 @@ public class ProfileFragment extends Fragment
         ProgressDialog pd;
         public getUserProfile(Context context)
         {
-            pd = new ProgressDialog(context, R.style.ProgressDialog);
-            pd.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+//            pd = new ProgressDialog(context, R.style.ProgressDialog);
+//            pd.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
         }
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            pd.setCancelable(false);
-            if(!pd.isShowing())
-                pd.show();
+//            pd.setCancelable(false);
+//            if(!pd.isShowing())
+//                pd.show();
+            horizontalProgress.setVisibility(View.VISIBLE);
 
         }
 
@@ -266,8 +285,8 @@ public class ProfileFragment extends Fragment
                         @Override
                         public void onResponse(String response)
                         {
-                            if(pd.isShowing())
-                                pd.dismiss();
+                            horizontalProgress.setVisibility(View.INVISIBLE);
+
 
                             if(response!= null && !response.isEmpty())
                             {
@@ -352,7 +371,20 @@ public class ProfileFragment extends Fragment
 
 
                                         }
+
+                                        if (uDatas.has("team")) {
+                                            JSONObject userdata = uDatas.getJSONObject("team");
+
+                                            String status = userdata.get("status").toString();
+
+                                            if (!status.equals("active")) {
+                                                ivSettingBadge.setVisibility(View.VISIBLE);
+                                            } else {
+                                                ivSettingBadge.setVisibility(View.INVISIBLE);
+                                            }
+                                        }
                                     }
+
                                 } catch (JSONException e) {
                                     e.printStackTrace();
                                 }
@@ -366,8 +398,9 @@ public class ProfileFragment extends Fragment
                 @Override
                 public void onErrorResponse(VolleyError error)
                 {
-                    if(pd != null && pd.isShowing())
-                        pd.dismiss();
+//                    if(pd != null && pd.isShowing())
+//                        pd.dismiss();
+                    horizontalProgress.setVisibility(View.INVISIBLE);
 
                     Toast.makeText(context,"Response Error: "+ error + " Can't Connect to server.", Toast.LENGTH_LONG).show();
                 }

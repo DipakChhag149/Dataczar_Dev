@@ -41,6 +41,7 @@ import com.android.volley.toolbox.Volley;
 import com.dataczar.R;
 import com.dataczar.databinding.FragmentAddPostBinding;
 import com.dataczar.main.activity.WSMethods;
+import com.dataczar.main.utils.CustomHorizontalProgressBar;
 import com.dataczar.main.viewmodel.ClsCommon;
 import com.google.android.material.badge.BadgeDrawable;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -64,7 +65,7 @@ public class AddPostFragment extends Fragment {
     private FragmentAddPostBinding mBinding;
     private ValueCallback<Uri[]> mFilePathCallback;
     private String mCameraPhotoPath;
-
+    CustomHorizontalProgressBar horizontalProgress;
     public AddPostFragment(Context context, BottomNavigationView bottomNavigationView, ImageView imgSettingMenu) {
         this.context = context;
         requestQueue = Volley.newRequestQueue(context);
@@ -86,6 +87,7 @@ public class AddPostFragment extends Fragment {
 
         requestQueue = Volley.newRequestQueue(context);
         imgSettingMenu.setVisibility(View.INVISIBLE);
+        horizontalProgress = mBinding.getRoot().findViewById(R.id.horizontalProgress);
         pd = new ProgressDialog(context, R.style.ProgressDialog);
         pd.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
 
@@ -93,17 +95,19 @@ public class AddPostFragment extends Fragment {
             @Override
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
                 super.onPageStarted(view, url, favicon);
-                pd.setCancelable(true);
-                if (pd != null && !pd.isShowing()) //&& !getActivity().isFinishing())
-                    pd.show();
+//                pd.setCancelable(true);
+//                if (pd != null && !pd.isShowing()) //&& !getActivity().isFinishing())
+//                    pd.show();
+                horizontalProgress.setVisibility(View.VISIBLE);
+
             }
 
             @Override
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
-
-                if (pd.isShowing()) //&& !getActivity().isFinishing())
-                    pd.dismiss();
+                horizontalProgress.setVisibility(View.INVISIBLE);
+//                if (pd.isShowing()) //&& !getActivity().isFinishing())
+//                    pd.dismiss();
             }
         });
 
@@ -123,7 +127,7 @@ public class AddPostFragment extends Fragment {
         webSettings.setDatabaseEnabled(true);
         webSettings.setAllowContentAccess(true);
         webSettings.setAllowUniversalAccessFromFileURLs(true);
-        webSettings.setAppCacheEnabled(true);
+        webSettings.setCacheMode(WebSettings.LOAD_NO_CACHE);
         webSettings.setDomStorageEnabled(true);
         webSettings.setUserAgentString("Chrome/56.0.0.0 Mobile");
 
@@ -232,18 +236,18 @@ public class AddPostFragment extends Fragment {
         ProgressDialog pd;
 
         public getNotificatioCount(Context context) {
-            pd = new ProgressDialog(context, R.style.ProgressDialog);
-            pd.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+//            pd = new ProgressDialog(context, R.style.ProgressDialog);
+//            pd.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
         }
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-
-            pd.setCancelable(false);
-            if (pd != null && !pd.isShowing() && !getActivity().isFinishing()) {
-                pd.show();
-            }
+            horizontalProgress.setVisibility(View.VISIBLE);
+//            pd.setCancelable(false);
+//            if (pd != null && !pd.isShowing() && !getActivity().isFinishing()) {
+//                pd.show();
+//            }
 
         }
 
@@ -260,8 +264,10 @@ public class AddPostFragment extends Fragment {
                     new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {
-                            if (pd != null && pd.isShowing() && !getActivity().isFinishing())
-                                pd.dismiss();
+                            horizontalProgress.setVisibility(View.INVISIBLE);
+
+//                            if (pd != null && pd.isShowing() && !getActivity().isFinishing())
+//                                pd.dismiss();
 
                             if (response != null && !response.isEmpty()) {
                                 try {
@@ -291,8 +297,7 @@ public class AddPostFragment extends Fragment {
                     }, new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError error) {
-                    if (pd != null && pd.isShowing() && !getActivity().isFinishing())
-                        pd.dismiss();
+                    horizontalProgress.setVisibility(View.INVISIBLE);
 
                     Toast.makeText(context, "Response Error: " + error + " Can't Connect to server.", Toast.LENGTH_LONG).show();
                 }

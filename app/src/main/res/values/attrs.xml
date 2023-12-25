@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="MyHorizontalProgress">
+        <attr name="animationDuration" format="integer"/>
+        <attr name="gradientStartColor" format="color"/>
+        <attr name="gradientEndColor" format="color"/>
+        <attr name="gradientCeterColor" format="color"/>
+    </declare-styleable>
+</resources>

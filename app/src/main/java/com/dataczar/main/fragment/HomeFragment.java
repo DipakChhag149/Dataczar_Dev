@@ -2,7 +2,6 @@ package com.dataczar.main.fragment;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -47,7 +46,7 @@ import com.dataczar.main.activity.WSMethods;
 import com.dataczar.main.activity.WebviewLP;
 import com.dataczar.main.adapter.QuickLinksAdapter;
 import com.dataczar.main.model.QuickLinkData;
-import com.dataczar.main.utils.ObservableWebView;
+import com.dataczar.main.utils.CustomHorizontalProgressBar;
 import com.dataczar.main.viewmodel.ClsCommon;
 import com.google.android.material.badge.BadgeDrawable;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -60,6 +59,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import ru.nikartm.support.ImageBadgeView;
+
 public class HomeFragment extends Fragment {
     private static final int INPUT_FILE_REQUEST_CODE = 1;
     private static final int FILECHOOSER_RESULTCODE = 1;
@@ -68,7 +69,6 @@ public class HomeFragment extends Fragment {
     WebView myWebView;
     String Title;
     ClsCommon clsCommon;
-    ProgressDialog pd;
     RequestQueue requestQueue;
     BottomNavigationView bottomNavigationView;
     private ValueCallback<Uri> mUploadMessage;
@@ -88,11 +88,11 @@ public class HomeFragment extends Fragment {
     private boolean isQuickLinks=false;
     SharedPreferences.Editor editor;
     SharedPreferences sharedPref;
-
+    CustomHorizontalProgressBar horizontalProgress;
     public HomeFragment() {
     }
 
-    public HomeFragment(Context context, String Title, BottomNavigationView bottomNavigationView, ImageView imgSettingMenu,ConstraintLayout llLinks,ImageView ivExpand,boolean isQuickLinks) {
+    public HomeFragment(Context context, String Title, BottomNavigationView bottomNavigationView, ImageBadgeView imgSettingMenu, ConstraintLayout llLinks, ImageView ivExpand, boolean isQuickLinks) {
         this.context = context;
         this.Title = Title;
         clsCommon = new ClsCommon(context);
@@ -111,6 +111,7 @@ public class HomeFragment extends Fragment {
         rvQuickLinks = view.findViewById(R.id.rvQuickLinks);
         clQuickLink = view.findViewById(R.id.clQuickLink);
         scrollview = view.findViewById(R.id.scrollview);
+        horizontalProgress = view.findViewById(R.id.horizontalProgress);
         sharedPref = getContext().getSharedPreferences(ClsCommon.PREFDATA, Context.MODE_PRIVATE);
         editor = sharedPref.edit();
 
@@ -120,24 +121,19 @@ public class HomeFragment extends Fragment {
         requestQueue = Volley.newRequestQueue(context);
         initwebview();
 
-        pd = new ProgressDialog(context, R.style.ProgressDialog);
-        pd.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
 
         myWebView.setWebViewClient(new WebViewClient() {
             @Override
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
                 super.onPageStarted(view, url, favicon);
-                pd.setCancelable(true);
-                if (pd != null && !pd.isShowing()) //&& !getActivity().isFinishing())
-                    pd.show();
+               horizontalProgress.setVisibility(View.VISIBLE);
             }
 
             @Override
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
 
-                if (pd.isShowing()) //&& !getActivity().isFinishing())
-                    pd.dismiss();
+                horizontalProgress.setVisibility(View.GONE);
             }
         });
 
@@ -162,7 +158,7 @@ public class HomeFragment extends Fragment {
         webSettings.setDatabaseEnabled(true);
         webSettings.setAllowContentAccess(true);
         webSettings.setAllowUniversalAccessFromFileURLs(true);
-        webSettings.setAppCacheEnabled(true);
+        webSettings.setCacheMode(WebSettings.LOAD_NO_CACHE);
         webSettings.setDomStorageEnabled(true);
         webSettings.setUserAgentString("Chrome/56.0.0.0 Mobile");
 
@@ -312,21 +308,20 @@ public class HomeFragment extends Fragment {
     }
 
     class getNotificatioCount extends AsyncTask<String, Void, Boolean> {
-        ProgressDialog pd;
+
 
         public getNotificatioCount(Context context) {
-            pd = new ProgressDialog(context, R.style.ProgressDialog);
-            pd.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+
         }
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-
-            pd.setCancelable(false);
-            if (pd != null && !pd.isShowing() && !getActivity().isFinishing()) {
-                pd.show();
-            }
+horizontalProgress.setVisibility(View.VISIBLE);
+//            pd.setCancelable(false);
+//            if (pd != null && !pd.isShowing() && !getActivity().isFinishing()) {
+//                pd.show();
+//            }
 
         }
 
@@ -343,8 +338,9 @@ public class HomeFragment extends Fragment {
                     new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {
-                            if (pd != null && pd.isShowing() && !getActivity().isFinishing())
-                                pd.dismiss();
+                            horizontalProgress.setVisibility(View.INVISIBLE);
+//                            if (pd != null && pd.isShowing() && !getActivity().isFinishing())
+//                                pd.dismiss();
 
                             if (response != null && !response.isEmpty()) {
                                 try {
@@ -375,9 +371,9 @@ public class HomeFragment extends Fragment {
                     }, new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError error) {
-                    if (pd != null && pd.isShowing() && !getActivity().isFinishing())
-                        pd.dismiss();
-
+//                    if (pd != null && pd.isShowing() && !getActivity().isFinishing())
+//                        pd.dismiss();
+                    horizontalProgress.setVisibility(View.INVISIBLE);
                     Toast.makeText(context, "Response Error: " + error + " Can't Connect to server.", Toast.LENGTH_LONG).show();
                 }
             }) {
@@ -394,19 +390,16 @@ public class HomeFragment extends Fragment {
     }
 
     class getHomeData extends AsyncTask<String, Void, Boolean> {
-        ProgressDialog pd;
+
 
         public getHomeData(Context context) {
-            pd = new ProgressDialog(context, R.style.ProgressDialog);
-            pd.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+
         }
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            pd.setCancelable(false);
-            if (!pd.isShowing())
-                pd.show();
+            horizontalProgress.setVisibility(View.VISIBLE);
 
         }
 
@@ -425,8 +418,7 @@ public class HomeFragment extends Fragment {
                     new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {
-                            if (pd.isShowing())
-                                pd.dismiss();
+                            horizontalProgress.setVisibility(View.INVISIBLE);
 
                             if (response != null && !response.isEmpty()) {
                                 try {
@@ -435,6 +427,14 @@ public class HomeFragment extends Fragment {
                                     if (jsonObject.has("data")) {
                                         JSONObject uDatas = jsonObject.getJSONObject("data");
 
+                                        if (uDatas.has("website")){
+                                            JSONObject website = uDatas.getJSONObject("website");
+                                            String strId=website.getString("id");
+                                            String account_id=website.getString("account_id");
+                                            editor.putString(ClsCommon.WEBSITE_ID, strId);
+                                            editor.putString(ClsCommon.ACCOUNT_ID, account_id);
+                                            editor.apply();
+                                        }
                                         if (uDatas.has("links")) {
                                             JSONObject linkData = uDatas.getJSONObject("links");
                                             if (linkData.length()!=0){
@@ -505,6 +505,7 @@ public class HomeFragment extends Fragment {
                                                 clQuickLink.setVisibility(View.GONE);
                                             }
                                         }
+
                                     }
 
                                 } catch (JSONException e) {
@@ -519,9 +520,7 @@ public class HomeFragment extends Fragment {
                     }, new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError error) {
-                    if (pd != null && pd.isShowing())
-                        pd.dismiss();
-
+                    horizontalProgress.setVisibility(View.INVISIBLE);
                 }
             }) {
                 @Override

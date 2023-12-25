@@ -44,7 +44,14 @@ public class WSMethods
     public static String NOTIFICATION_READ      = WSURL + "/notification/";
     public static String NOTIFICATION_ARCHIVED  = WSURL + "/notification/archive/";
 
+    public static String GET_EBOOKS  = WSURL + "/api/education/ebooks";
+
     public static String LOGOUT  = WSURL + "/api/logout";
     public static String ADD_NOTIFICATION  = WSURL + "/api/notifications/token";
     public static String DELETE_NOTIFICATION  = WSURL + "/api/notifications/token";
+
+
+    public static String GET_MY_IMAGE_LIST  = WSURL + "/content/list";
+
+
 }

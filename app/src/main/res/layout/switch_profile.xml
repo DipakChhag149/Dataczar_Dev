@@ -67,12 +67,21 @@
 
         </com.google.android.material.appbar.AppBarLayout>
 
-
+        <com.dataczar.main.utils.CustomHorizontalProgressBar
+            android:id="@+id/horizontalProgress"
+            android:layout_width="match_parent"
+            android:layout_height="4dp"
+            app:animationDuration="2000"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_below="@+id/appbarlayout"
+            app:layout_constraintTop_toTopOf="parent" />
         <ListView
             android:id="@+id/lvSwProfile"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@+id/appbarlayout"
+            android:layout_below="@+id/horizontalProgress"
             android:divider="@color/app_bg_ios_gray"
             android:dividerHeight="0.5dp"
             android:paddingStart="10dp"

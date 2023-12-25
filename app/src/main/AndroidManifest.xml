@@ -4,39 +4,51 @@
     package="com.dataczar">
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.USE_BIOMETRIC" />
-
-    <uses-permission android:name="com.android.launcher.permission.READ_SETTINGS"/>
-    <uses-permission android:name="com.android.launcher.permission.WRITE_SETTINGS"/>
-    <uses-permission android:name="com.sec.android.provider.badge.permission.READ"/>
-    <uses-permission android:name="com.sec.android.provider.badge.permission.WRITE"/>
-    <uses-permission android:name="com.htc.launcher.permission.READ_SETTINGS"/>
-    <uses-permission android:name="com.htc.launcher.permission.UPDATE_SHORTCUT"/>
-    <uses-permission android:name="com.sonyericsson.home.permission.BROADCAST_BADGE"/>
-    <uses-permission android:name="com.anddoes.launcher.permission.UPDATE_COUNT"/>
-
+    <uses-permission android:name="com.android.launcher.permission.READ_SETTINGS" />
+    <uses-permission android:name="com.android.launcher.permission.WRITE_SETTINGS" />
+    <uses-permission android:name="com.sec.android.provider.badge.permission.READ" />
+    <uses-permission android:name="com.sec.android.provider.badge.permission.WRITE" />
+    <uses-permission android:name="com.htc.launcher.permission.READ_SETTINGS" />
+    <uses-permission android:name="com.htc.launcher.permission.UPDATE_SHORTCUT" />
+    <uses-permission android:name="com.sonyericsson.home.permission.BROADCAST_BADGE" />
+    <uses-permission android:name="com.anddoes.launcher.permission.UPDATE_COUNT" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.CAMERA" />
 
     <application
         android:name=".main.DataczarApp"
         android:allowBackup="false"
-        tools:replace="android:allowBackup"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:largeHeap="true"
+        android:requestLegacyExternalStorage="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:requestLegacyExternalStorage="true"
         android:theme="@style/Theme.DataCzar"
-        android:usesCleartextTraffic="false">
+        android:usesCleartextTraffic="true"
+        tools:replace="android:allowBackup">
+        <activity
+            android:name=".main.activity.DeleteAccountActivity"
+            android:exported="false" />
+        <activity
+            android:name=".main.activity.MoreOptionActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".main.activity.EBookDetailsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".main.activity.NotificationListActivity"
+            android:exported="false" />
+        <activity android:name=".main.activity.CreatePostActivity" />
+
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_channel"
-            android:value="@string/default_notification_channel_id"/>
+            android:value="@string/default_notification_channel_id" />
+
         <activity
             android:name=".main.activity.SplashScreen"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|uiMode"
@@ -45,15 +57,17 @@
             android:theme="@style/Theme.DataCzar">
             <intent-filter>
                 <action android:name="com.notification" />
+
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <!--<activity android:name=".main.activity.BioMatricAuth"
+        <!--
+<activity android:name=".main.activity.BioMatricAuth"
             android:exported="true"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|uiMode"
             android:theme="@style/Theme.DataCzar"
@@ -62,59 +76,50 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>-->
-
+        </activity>
+        -->
         <activity
             android:name=".main.activity.LoginActivity"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|uiMode"
             android:exported="false"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.DataCzar"></activity>
-
+            android:theme="@style/Theme.DataCzar" />
         <activity
             android:name=".main.activity.Dashboard"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|uiMode"
             android:exported="false"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.DataCzar">
-
-        </activity>
-
+            android:theme="@style/Theme.DataCzar" />
         <activity
             android:name=".main.activity.WebviewLP"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|uiMode"
             android:exported="false"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.DataCzar"></activity>
-
+            android:theme="@style/Theme.DataCzar" />
         <activity
             android:name=".main.activity.WebviewActivity"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|uiMode"
             android:exported="false"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.DataCzar"></activity>
-
+            android:theme="@style/Theme.DataCzar" />
         <activity
             android:name=".main.activity.SwitchProfileList"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|uiMode"
             android:exported="false"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.DataCzar"></activity>
-
+            android:theme="@style/Theme.DataCzar" />
         <activity
             android:name=".main.activity.Setting"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|uiMode"
             android:exported="false"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.DataCzar"></activity>
-
+            android:theme="@style/Theme.DataCzar" />
         <activity
             android:name=".main.activity.NotificationPreview"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|uiMode"
             android:exported="false"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.DataCzar"></activity>
-
+            android:theme="@style/Theme.DataCzar" />
 
         <service
             android:name=".main.utils.MyFirebaseMessagingService"
@@ -123,10 +128,9 @@
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
-
         <service
             android:name=".main.utils.BadgeIntentService"
-            android:exported="false"></service>
+            android:exported="false" />
     </application>
 
 </manifest>

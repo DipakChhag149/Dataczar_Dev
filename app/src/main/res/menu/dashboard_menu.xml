@@ -16,9 +16,16 @@
         android:icon="@drawable/ic_add" />
 
     <item
+        android:id="@+id/ic_education"
+        android:title="Education"
+        android:iconTintMode="src_over"
+        android:iconTint="@color/app_icon_color_gray"
+        android:icon="@drawable/ic_education" />
+    <item
         android:id="@+id/ic_notification"
         android:title="@string/Notification"
         android:iconTintMode="src_over"
+        android:visible="false"
         android:iconTint="@color/app_icon_color_gray"
         android:icon="@drawable/ic_bell" />
 

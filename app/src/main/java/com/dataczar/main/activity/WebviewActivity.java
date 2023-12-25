@@ -32,6 +32,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import com.dataczar.R;
+import com.dataczar.main.utils.CustomHorizontalProgressBar;
 import com.dataczar.main.viewmodel.ClsCommon;
 
 import java.util.HashMap;
@@ -45,19 +46,18 @@ public class WebviewActivity extends AppCompatActivity
     String url = "";
     ClsCommon clsCommon;
     Toolbar toolbar;
-    ProgressDialog pd;
     TextView tvTitle;
     private static final int INPUT_FILE_REQUEST_CODE = 1;
     private ValueCallback<Uri[]> mFilePathCallback;
     private String mCameraPhotoPath;
-
+    CustomHorizontalProgressBar horizontalProgress;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.webview);
         context = WebviewActivity.this;
-
+        horizontalProgress = findViewById(R.id.horizontalProgress);
         toolbar = findViewById(R.id.toolbar);
         ImageView imgBack = findViewById(R.id.imgBack);
         tvTitle = findViewById(R.id.tvTitle);
@@ -96,8 +96,6 @@ public class WebviewActivity extends AppCompatActivity
             }
         });
 
-        pd = new ProgressDialog(context, R.style.ProgressDialog);
-        pd.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
 
         myWebView.setWebViewClient(new WebViewClient()
         {
@@ -105,10 +103,9 @@ public class WebviewActivity extends AppCompatActivity
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
                 super.onPageStarted(view, url, favicon);
 
-                if(pd!= null && !pd.isShowing() && !WebviewActivity.this.isFinishing())
+                if(!WebviewActivity.this.isFinishing())
                 {
-                    pd.setCancelable(true);
-                    pd.show();
+                    horizontalProgress.setVisibility(View.VISIBLE);
                 }else
                 {
 
@@ -119,8 +116,8 @@ public class WebviewActivity extends AppCompatActivity
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
 
-                if(pd!= null && pd.isShowing() && !WebviewActivity.this.isFinishing())
-                    pd.dismiss();
+                if(!WebviewActivity.this.isFinishing())
+                    horizontalProgress.setVisibility(View.GONE);
             }
 
         });
@@ -138,7 +135,7 @@ public class WebviewActivity extends AppCompatActivity
         webSettings.setAllowFileAccess(true);
         webSettings.setDatabaseEnabled(true);
         webSettings.setAllowUniversalAccessFromFileURLs(true);
-        webSettings.setAppCacheEnabled(true);
+        webSettings.setCacheMode(WebSettings.LOAD_NO_CACHE);
         webSettings.setDomStorageEnabled(true);
         webSettings.setUserAgentString("Chrome/56.0.0.0 Mobile");
 

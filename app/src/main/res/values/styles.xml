@@ -59,4 +59,20 @@
       <item name="android:colorForeground">#42221f1f
       </item>
    </style>
+
+   <style name="BottomSheet" parent="@style/Widget.Design.BottomSheet.Modal">
+      <item name="android:background">@android:color/transparent</item>
+   </style>
+
+   <style name="BaseBottomSheetDialog" parent="@style/Theme.Design.Light.BottomSheetDialog">
+      <item name="android:windowIsFloating">false</item>
+      <item name="bottomSheetStyle">@style/BottomSheet</item>
+   </style>
+
+   <style name="BottomSheetDialogTheme" parent="BaseBottomSheetDialog" />
+
+   <style name="roundedImageView" parent="">
+      <item name="cornerFamily">rounded</item>
+      <item name="cornerSize">8dp</item>
+   </style>
 </resources>

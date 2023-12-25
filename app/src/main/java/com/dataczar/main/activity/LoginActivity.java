@@ -19,6 +19,7 @@ import android.os.Message;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -165,11 +166,11 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     private void setDefaultUser(LoginVM lvm)
     {
-        //lvm.setUserEmail("test@dataczar.com");
-       // lvm.setUserPassword("test.123");
-
-        //eduser.setText("test@dataczar.com");
-        //edpass.setText("test.123");
+     /*   lvm.setUserEmail("test@dataczar.com");
+        lvm.setUserPassword("test.123");
+*/
+       /* eduser.setText("test@dataczar.com");
+        edpass.setText("test.123");*/
     }
 
     private void checkUserLoginStatus()
@@ -394,6 +395,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         @Override
                         public void onResponse(String response)
                         {
+                            Log.e("Response",""+response);
                             if(pd.isShowing())
                                 pd.dismiss();
 
@@ -834,4 +836,5 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             requestQueue.add(stringRequest);
         }
     }
+
 }

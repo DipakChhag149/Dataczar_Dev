@@ -9,12 +9,20 @@
     android:layout_height="match_parent"
     android:background="#ecf0f1"
     android:orientation="vertical">
+    <com.dataczar.main.utils.CustomHorizontalProgressBar
+        android:id="@+id/horizontalProgress"
+        android:layout_width="match_parent"
+        android:layout_height="4dp"
+        app:animationDuration="2000"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
     <androidx.core.widget.NestedScrollView
         android:id="@+id/scrollview"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent">
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/horizontalProgress">
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"

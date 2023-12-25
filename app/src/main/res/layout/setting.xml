@@ -58,9 +58,10 @@
                         android:layout_weight="7.5"
                         android:layout_height="?attr/actionBarSize"
                         android:padding="8dp"
-                        android:textSize="20dp"
+                        android:textSize="18sp"
                         android:gravity="center"
-                        android:textStyle="bold"
+                       android:fontFamily="@font/metropolis_semibold"
+                        android:textColor="@color/black"
                         android:text="Settings"/>
 
                     <ImageView
@@ -83,7 +84,16 @@
             </androidx.appcompat.widget.Toolbar>
 
         </com.google.android.material.appbar.AppBarLayout>
-
+        <com.dataczar.main.utils.CustomHorizontalProgressBar
+            android:id="@+id/horizontalProgress"
+            android:layout_width="match_parent"
+            android:layout_height="4dp"
+            app:animationDuration="2000"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_below="@+id/appbarlayout"
+            app:layout_constraintTop_toTopOf="parent" />
         <LinearLayout
             android:id="@+id/llFargment"
             android:layout_width="match_parent"
@@ -120,8 +130,8 @@
                             android:gravity="center_vertical"
                             android:text="User Profile"
                             android:textColor="@color/black"
-                            android:textSize="16dp"
-                            android:textStyle="bold" />
+                            android:textSize="14dp"
+                           android:fontFamily="@font/metropolis_semibold" />
 
                         <ImageView
                             android:layout_width="0dp"
@@ -156,8 +166,8 @@
                             android:gravity="center_vertical"
                             android:text="Notification Settings"
                             android:textColor="@color/black"
-                            android:textSize="16dp"
-                            android:textStyle="bold" />
+                            android:textSize="14dp"
+                            android:fontFamily="@font/metropolis_semibold" />
 
                         <ImageView
                             android:layout_width="0dp"
@@ -192,8 +202,8 @@
                             android:gravity="center_vertical"
                             android:text="Change password"
                             android:textColor="@color/black"
-                            android:textSize="16dp"
-                            android:textStyle="bold" />
+                            android:textSize="14dp"
+                            android:fontFamily="@font/metropolis_semibold" />
 
                         <ImageView
                             android:layout_width="0dp"
@@ -213,7 +223,6 @@
                 </LinearLayout>
 
             </androidx.cardview.widget.CardView>
-
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -243,8 +252,8 @@
                             android:gravity="center_vertical"
                             android:text="Manage Accounts"
                             android:textColor="@color/black"
-                            android:textSize="16dp"
-                            android:textStyle="bold" />
+                            android:textSize="14dp"
+                            android:fontFamily="@font/metropolis_semibold" />
 
                         <ImageView
                             android:layout_width="0dp"
@@ -279,8 +288,8 @@
                             android:gravity="center_vertical"
                             android:text="Billing"
                             android:textColor="@color/black"
-                            android:textSize="16dp"
-                            android:textStyle="bold" />
+                            android:textSize="14dp"
+                            android:fontFamily="@font/metropolis_semibold" />
 
                         <ImageView
                             android:id="@+id/img_bedge_billing"
@@ -306,7 +315,7 @@
                         android:background="@color/app_color_gray" />
 
                     <LinearLayout
-                        android:id="@+id/llLegal"
+                        android:id="@+id/llMore"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="12dp"
@@ -316,15 +325,15 @@
                         android:weightSum="10">
 
                         <TextView
-                            android:id="@+id/tvLegal"
+                            android:id="@+id/tvMore"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="9"
                             android:gravity="center_vertical"
-                            android:text="Legal"
+                            android:text="More Options"
                             android:textColor="@color/black"
-                            android:textSize="16dp"
-                            android:textStyle="bold" />
+                            android:textSize="14dp"
+                            android:fontFamily="@font/metropolis_semibold" />
 
                         <ImageView
                             android:layout_width="0dp"
@@ -336,10 +345,19 @@
 
                     </LinearLayout>
 
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:background="@color/app_color_gray" />
+                </LinearLayout>
+
+            </androidx.cardview.widget.CardView>
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:weightSum="6">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -359,14 +377,15 @@
                             android:gravity="center_vertical"
                             android:text="Notification"
                             android:textColor="@color/black"
-                            android:textSize="16dp"
-                            android:textStyle="bold" />
+                            android:textSize="14dp"
+                           android:fontFamily="@font/metropolis_semibold"/>
 
                     </LinearLayout>
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
                         android:background="@color/app_color_gray" />
+
 
                     <LinearLayout
                         android:id="@+id/llLogout"
@@ -386,8 +405,8 @@
                             android:gravity="center_vertical"
                             android:text="Logout"
                             android:textColor="@android:color/holo_red_light"
-                            android:textSize="16dp"
-                            android:textStyle="bold" />
+                            android:textSize="14dp"
+                            android:fontFamily="@font/metropolis_semibold" />
 
                         <ImageView
                             android:layout_width="0dp"

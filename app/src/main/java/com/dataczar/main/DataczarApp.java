@@ -1,16 +1,21 @@
 package com.dataczar.main;
 
+import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.Application;
 import android.content.ComponentName;
 import android.content.Context;
 import android.os.Build;
 import android.os.Environment;
+import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleObserver;
 import androidx.lifecycle.OnLifecycleEvent;
 import androidx.lifecycle.ProcessLifecycleOwner;
+
+import com.google.firebase.FirebaseApp;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -24,6 +29,7 @@ public class DataczarApp extends Application implements LifecycleObserver {
     @Override
     public void onCreate() {
         super.onCreate();
+        FirebaseApp.initializeApp(this);
         ProcessLifecycleOwner.get().getLifecycle().addObserver(this);
     }
 
@@ -64,25 +70,4 @@ public class DataczarApp extends Application implements LifecycleObserver {
         return isInBackground;
     }
 
-    public static void saveNotificationData(String sBody) {
-        try {
-            String path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS).getAbsolutePath() + "/BanasDairyData/";    // it will return root directory of internal storage
-            File root = new File(path);
-            if (!root.exists()) {
-                root.mkdirs();       // create folder if not exist
-            }
-            File file = new File(path + "Notificationlog.txt");
-            if (!file.exists()) {
-                file.createNewFile();   // create file if not exist
-            }
-            String writeDate = "\n\n<------------- Start--------------->\n" + sBody + "\n<--------------------- End----------------------->";
-            BufferedWriter buf = new BufferedWriter(new FileWriter(file, true));
-            buf.append(writeDate);
-            buf.newLine();
-            buf.close();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 }

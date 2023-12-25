@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -25,6 +26,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -34,6 +38,10 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.dataczar.R;
+import com.dataczar.main.adapter.QuickLinksAdapter;
+import com.dataczar.main.fragment.HomeFragment;
+import com.dataczar.main.model.QuickLinkData;
+import com.dataczar.main.utils.CustomHorizontalProgressBar;
 import com.dataczar.main.viewmodel.ClsCommon;
 
 import org.json.JSONArray;
@@ -42,6 +50,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 public class SwitchProfileList extends AppCompatActivity
@@ -52,14 +61,23 @@ public class SwitchProfileList extends AppCompatActivity
     ArrayList<HashMap<String, String>> teammap = new ArrayList<>();
     Context context;
     RequestQueue requestQueue;
-
+    SharedPreferences.Editor editor;
+    SharedPreferences sharedPref;
+    CustomHorizontalProgressBar horizontalProgress;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.switch_profile);
+
+        horizontalProgress=findViewById(R.id.horizontalProgress);
         context = SwitchProfileList.this;
+
+
         requestQueue = Volley.newRequestQueue(context);
+
+        sharedPref = getSharedPreferences(ClsCommon.PREFDATA, Context.MODE_PRIVATE);
+        editor = sharedPref.edit();
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -161,7 +179,6 @@ public class SwitchProfileList extends AppCompatActivity
 
     class SwitchUserProfile extends AsyncTask<String, Void, Boolean>
     {
-        ProgressDialog pd;
         String ProfileId;
         String ProfileName;
         HashMap<String, String> Profile;
@@ -171,16 +188,12 @@ public class SwitchProfileList extends AppCompatActivity
             this.Profile = Profile;
             this.ProfileId = Profile.get("account_id").toString();
             this.ProfileName = Profile.get("account_name");
-            pd = new ProgressDialog(context, R.style.ProgressDialog);
-            pd.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
         }
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            pd.setCancelable(false);
-            if(!pd.isShowing())
-                pd.show();
+           horizontalProgress.setVisibility(View.VISIBLE);
 
         }
 
@@ -201,9 +214,7 @@ public class SwitchProfileList extends AppCompatActivity
                         @Override
                         public void onResponse(String response)
                         {
-                            if(pd.isShowing())
-                                pd.dismiss();
-
+                            horizontalProgress.setVisibility(View.GONE);
                             if(response!= null && !response.isEmpty())
                             {
                                 try
@@ -218,11 +229,8 @@ public class SwitchProfileList extends AppCompatActivity
 
                                         if(issuccess.equals("true"))
                                         {
-                                            Intent iv = new Intent(SwitchProfileList.this, Dashboard.class);
-                                            iv.putExtra("NeedNavigate", ClsCommon.PROFILE);
-                                            startActivity(iv);
-                                            finishAffinity();
-                                            SwitchProfileList.this.finish();
+                                            new getUserProfile(context).execute();
+
 
                                             //Toast.makeText(context, "Profile Switch successfully to : " + ProfileName, Toast.LENGTH_LONG).show();
                                         }else{
@@ -243,9 +251,7 @@ public class SwitchProfileList extends AppCompatActivity
                 @Override
                 public void onErrorResponse(VolleyError error)
                 {
-                    if(pd != null && pd.isShowing())
-                        pd.dismiss();
-
+                    horizontalProgress.setVisibility(View.GONE);
                     Toast.makeText(context,"Response Error: "+ error + " Can't Connect to server.", Toast.LENGTH_LONG).show();
                 }
             })
@@ -270,5 +276,88 @@ public class SwitchProfileList extends AppCompatActivity
         SharedPreferences prefs = getSharedPreferences(ClsCommon.PREFDATA, Context.MODE_PRIVATE);
         String Cookie = prefs.getString(ClsCommon.COOKIE, "");
         return  Cookie;
+    }
+
+
+    class getUserProfile extends AsyncTask<String, Void, Boolean> {
+
+
+        public getUserProfile(Context context) {
+
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            horizontalProgress.setVisibility(View.VISIBLE);
+
+        }
+
+        @Override
+        protected Boolean doInBackground(String... strings) {
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean aBoolean) {
+            super.onPostExecute(aBoolean);
+
+            Log.d("Method Call", "getHomeData");
+
+            StringRequest stringRequest = new StringRequest(Request.Method.GET, WSMethods.GETUSERPROFILE,
+                    new Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String response) {
+                            horizontalProgress.setVisibility(View.GONE);
+
+                            if (response != null && !response.isEmpty()) {
+                                try {
+                                    JSONObject jsonObject = new JSONObject(response);
+
+                                    if (jsonObject.has("data")) {
+                                        JSONObject uDatas = jsonObject.getJSONObject("data");
+
+                                        if (uDatas.has("website")){
+                                            JSONObject website = uDatas.getJSONObject("website");
+                                            String strId=website.getString("id");
+                                            String account_id=website.getString("account_id");
+                                            editor.putString(ClsCommon.WEBSITE_ID, strId);
+                                            editor.putString(ClsCommon.ACCOUNT_ID, account_id);
+                                            editor.apply();
+
+                                            Intent iv = new Intent(SwitchProfileList.this, Dashboard.class);
+                                            iv.putExtra("NeedNavigate", ClsCommon.PROFILE);
+                                            startActivity(iv);
+                                            finishAffinity();
+                                            SwitchProfileList.this.finish();
+                                        }
+
+                                    }
+
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                            } else {
+                                Toast.makeText(context, " Can't Connect to server.", Toast.LENGTH_LONG).show();
+                            }
+
+                        }
+                    }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    horizontalProgress.setVisibility(View.GONE);
+
+                }
+            }) {
+                @Override
+                public Map<String, String> getHeaders() throws AuthFailureError {
+                    Map<String, String> params = new HashMap<String, String>();
+                    params.put(ClsCommon.COOKIE, getCookie());
+                    return params;
+                }
+
+            };
+            requestQueue.add(stringRequest);
+        }
     }
 }

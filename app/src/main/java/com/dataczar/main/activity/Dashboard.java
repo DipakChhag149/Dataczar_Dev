@@ -4,11 +4,7 @@
 
 package com.dataczar.main.activity;
 
-import static com.dataczar.main.activity.MyApplication.userprofile;
-
 import android.Manifest;
-import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -16,12 +12,10 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
@@ -44,30 +38,28 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.dataczar.R;
-import com.dataczar.main.fragment.AddPostFragment;
+import com.dataczar.main.fragment.AddPostNewFragment;
+import com.dataczar.main.fragment.EducationFragment;
 import com.dataczar.main.fragment.HomeFragment;
 import com.dataczar.main.fragment.NotificationFragment;
 import com.dataczar.main.fragment.ProfileFragment;
+import com.dataczar.main.utils.CustomHorizontalProgressBar;
 import com.dataczar.main.viewmodel.ClsCommon;
-import com.dataczar.main.viewmodel.network.NetworkUtil;
 import com.google.android.material.badge.BadgeDrawable;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.android.material.navigation.NavigationView;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
+
+import ru.nikartm.support.ImageBadgeView;
 
 public class Dashboard extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, Toolbar.OnMenuItemClickListener {
     DrawerLayout mDrawerlayout;
@@ -85,17 +77,23 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
     RequestQueue requestQueue;
     FragmentTransaction fragmentTransaction = null;
     TextView tvActionbartitle;
-    ImageView imgActionbarlogo, imgSettingMenu;
+    ImageView imgActionbarlogo ;
+    ImageBadgeView imgSettingMenu;
     ClsCommon clsCommon;
     ConstraintLayout llLinks;
     ImageView ivExpand;
     SharedPreferences.Editor editor;
     SharedPreferences sharedPref;
+    CustomHorizontalProgressBar horizontalProgress;
+    private FragmentRefreshListener fragmentRefreshListener;
+
+    private int unReadCount = 0;
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.dashboard);
+        horizontalProgress = findViewById(R.id.horizontalProgress);
 
         toolbar = findViewById(R.id.toolbar);
         tvActionbartitle = findViewById(R.id.tvActionbartitle);
@@ -142,8 +140,8 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
         {
             String action= getIntent().getAction();
             if (action!=null && action.equalsIgnoreCase("com.notification")){
-                fragmentTransaction.add(R.id.llFargment, new NotificationFragment(context, bottomNavigationView, imgSettingMenu));
-                bottomNavigationView.setSelectedItemId(R.id.ic_notification);
+                fragmentTransaction.add(R.id.llFargment, new NotificationFragment(context));
+                bottomNavigationView.setSelectedItemId(R.id.ic_profile);
                 bottomNavigationView.setSelected(true);
                 fragmentTransaction.commit();
             }else {
@@ -159,8 +157,8 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
                     tvActionbartitle.setText("Profile");
                     fragmentTransaction.commit();
                 }else if(moveto!=null && moveto.equals(ClsCommon.NOTIFICATION)){
-                    fragmentTransaction.add(R.id.llFargment, new NotificationFragment(context, bottomNavigationView, imgSettingMenu));
-                    bottomNavigationView.setSelectedItemId(R.id.ic_notification);
+                    fragmentTransaction.add(R.id.llFargment, new NotificationFragment(context));
+                    bottomNavigationView.setSelectedItemId(R.id.ic_profile);
                     bottomNavigationView.setSelected(true);
                     fragmentTransaction.commit();
                 }
@@ -219,7 +217,18 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
                             imgActionbarlogo.setVisibility(View.GONE);
                             llLinks.setVisibility(View.GONE);
                             tvActionbartitle.setText("Add Post");
-                            fragmentTransaction.replace(R.id.llFargment, new AddPostFragment(context, bottomNavigationView, imgSettingMenu));
+                            //fragmentTransaction.replace(R.id.llFargment, new AddPostFragment(context, bottomNavigationView, imgSettingMenu));
+                            fragmentTransaction.replace(R.id.llFargment, new AddPostNewFragment(context));
+                            fragmentTransaction.commit();
+                            return true;
+
+                        case R.id.ic_education:
+                            imgSettingMenu.setVisibility(View.INVISIBLE);
+                            tvActionbartitle.setVisibility(View.VISIBLE);
+                            imgActionbarlogo.setVisibility(View.GONE);
+                            llLinks.setVisibility(View.GONE);
+                            tvActionbartitle.setText("Education");
+                            fragmentTransaction.replace(R.id.llFargment, new EducationFragment());
                             fragmentTransaction.commit();
                             return true;
 
@@ -229,7 +238,7 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
                             imgActionbarlogo.setVisibility(View.GONE);
                             llLinks.setVisibility(View.GONE);
                             tvActionbartitle.setText("Notifications");
-                            fragmentTransaction.replace(R.id.llFargment, new NotificationFragment(context, bottomNavigationView, imgSettingMenu));
+                            fragmentTransaction.replace(R.id.llFargment, new NotificationFragment(context));
                             fragmentTransaction.commit();
                             return true;
 
@@ -256,7 +265,7 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
         imgSettingMenu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(context, Setting.class));
+                startActivity(new Intent(context, NotificationListActivity.class));
             }
         });
 
@@ -264,6 +273,26 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
         ActivityCompat.requestPermissions(Dashboard.this,
                 new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
                 1);
+
+        LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver,
+                new IntentFilter("create_post_update"));
+    }
+
+    private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if(getFragmentRefreshListener()!=null){
+                getFragmentRefreshListener().onRefresh();
+            }
+        }
+    };
+
+    public FragmentRefreshListener getFragmentRefreshListener() {
+        return fragmentRefreshListener;
+    }
+
+    public void setFragmentRefreshListener(FragmentRefreshListener fragmentRefreshListener) {
+        this.fragmentRefreshListener = fragmentRefreshListener;
     }
 
     @Override
@@ -429,8 +458,9 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
             bottomNavigationView.setSelectedItemId(R.id.ic_home);
         }*/
 
-        new getHomeData(context).execute();
 
+
+        new getNotificatioCount(context).execute();
     }
 
     @Override
@@ -452,19 +482,14 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
 
     class getHomeData extends AsyncTask<String, Void, Boolean>
     {
-        ProgressDialog pd;
         public getHomeData(Context context)
         {
-            pd = new ProgressDialog(context, R.style.ProgressDialog);
-            pd.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
         }
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            pd.setCancelable(false);
-            if(!pd.isShowing())
-                pd.show();
+            horizontalProgress.setVisibility(View.VISIBLE);
 
         }
 
@@ -487,8 +512,8 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
                         @Override
                         public void onResponse(String response)
                         {
-                            if(pd.isShowing())
-                                pd.dismiss();
+                            Log.e("Response",""+response);
+                            horizontalProgress.setVisibility(View.GONE);
 
 
                             runOnUiThread(new Runnable() {
@@ -516,14 +541,19 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
 
                                             if(!status.equals("active"))
                                             {
-                                                BadgeDrawable ProfileBadge = bottomNavigationView.getOrCreateBadge(R.id.ic_profile);
-                                                ProfileBadge.setNumber(0);
-                                                ProfileBadge.setBadgeTextColor(Color.parseColor("#f1592a"));
-                                                ProfileBadge.setBackgroundColor(Color.parseColor("#f1592a"));
+                                                if (unReadCount<=0){
+                                                    BadgeDrawable ProfileBadge = bottomNavigationView.getOrCreateBadge(R.id.ic_profile);
+                                                    ProfileBadge.setVisible(true);
+                                                    ProfileBadge.setNumber(0);
+                                                    ProfileBadge.setBadgeTextColor(Color.parseColor("#f1592a"));
+                                                    ProfileBadge.setBackgroundColor(Color.parseColor("#f1592a"));
 
-                                                imgSettingMenu.setImageDrawable(getResources().getDrawable(R.drawable.ic_setting_bedge));
+                                                }
+
+                                               // imgSettingMenu.setImageDrawable(getResources().getDrawable(R.drawable.ic_setting_bedge));
                                             }
                                         }
+
                                     }
 
                                 } catch (JSONException e) {
@@ -534,14 +564,13 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
                                 Toast.makeText(context," Can't Connect to server.", Toast.LENGTH_LONG).show();
                             }
 
-                            new getNotificatioCount(context).execute();
+                           // new getNotificatioCount(context).execute();
                         }
                     }, new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError error)
                 {
-                    if(pd != null && pd.isShowing())
-                        pd.dismiss();
+                    horizontalProgress.setVisibility(View.GONE);
 
                     //Toast.makeText(context,"Response Error: "+ error + " Can't Connect to server.", Toast.LENGTH_LONG).show();
                 }
@@ -562,19 +591,15 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
 
     class getNotificatioCount extends AsyncTask<String, Void, Boolean>
     {
-        ProgressDialog pd;
         public getNotificatioCount(Context context)
         {
-            pd = new ProgressDialog(context, R.style.ProgressDialog);
-            pd.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+
         }
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            pd.setCancelable(false);
-            if(!pd.isShowing())
-                pd.show();
+            horizontalProgress.setVisibility(View.VISIBLE);
 
         }
 
@@ -595,8 +620,7 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
                         @Override
                         public void onResponse(String response)
                         {
-                            if(pd.isShowing())
-                                pd.dismiss();
+                            horizontalProgress.setVisibility(View.GONE);
 
                             runOnUiThread(new Runnable() {
                                 @Override
@@ -616,16 +640,24 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
                                     {
                                         String count =  jsonObject.getString("count");
                                         String unreadcount =  jsonObject.getString("unread_count");
-
+                                        unReadCount = Integer.parseInt(unreadcount);
                                         editor.putString(ClsCommon.NOTIFICATION_COUNT, unreadcount);
                                         editor.apply();
                                         if(unreadcount != null && unreadcount.trim().length()>0 && !unreadcount.equals("0"))
                                         {
-                                            BadgeDrawable NotifiationBadge = bottomNavigationView.getOrCreateBadge(R.id.ic_notification);
+                                            BadgeDrawable ProfileBadge = bottomNavigationView.getOrCreateBadge(R.id.ic_profile);
+                                            ProfileBadge.setVisible(true);
+                                            ProfileBadge.setNumber(unReadCount);
+                                            ProfileBadge.setBadgeTextColor(Color.parseColor("#fefefe"));
+                                            ProfileBadge.setBackgroundColor(Color.parseColor("#f1592a"));
+
+                                            imgSettingMenu.setBadgeValue(unReadCount);
+                                            /*BadgeDrawable NotifiationBadge = bottomNavigationView.getOrCreateBadge(R.id.ic_profile);
                                             NotifiationBadge.setNumber(Integer.parseInt(unreadcount));
-                                            NotifiationBadge.setBackgroundColor(Color.parseColor("#f1592a"));
+                                            NotifiationBadge.setBackgroundColor(Color.parseColor("#f1592a"));*/
                                         }else
                                         {
+                                            imgSettingMenu.setBadgeValue(0);
                                             /*BadgeDrawable NotifiationBadge = bottomNavigationView.getOrCreateBadge(R.id.ic_notification);
                                             NotifiationBadge.setNumber(Integer.parseInt(unreadcount));
                                             NotifiationBadge.setBackgroundColor(getResources().getColor(android.R.color.transparent));*/
@@ -638,14 +670,13 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
                             {
                                 Toast.makeText(context," Can't Connect to server.", Toast.LENGTH_LONG).show();
                             }
-
+                            new getHomeData(context).execute();
                         }
                     }, new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError error)
                 {
-                    if(pd != null && pd.isShowing())
-                        pd.dismiss();
+                    horizontalProgress.setVisibility(View.GONE);
 
                     //Toast.makeText(context,"Response Error: "+ error + " Can't Connect to server.", Toast.LENGTH_LONG).show();
                 }
@@ -691,5 +722,9 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
 
         //send broadcast
         context.sendBroadcast(intent);
+    }
+
+    public interface FragmentRefreshListener{
+        void onRefresh();
     }
 }

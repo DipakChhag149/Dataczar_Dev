@@ -60,7 +60,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 Gson gsonObj = new Gson();
                 String jsonStr = gsonObj.toJson(remoteMessage.getData());
                 Log.e("PAYLOAD", "" + jsonStr);
-                DataczarApp.saveNotificationData(jsonStr);
 
                 JSONObject jsonObject = new JSONObject(jsonStr);
                 badgeCount = jsonObject.getInt("badge");
@@ -83,7 +82,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 Gson gsonObj = new Gson();
                 String jsonStr = gsonObj.toJson(remoteMessage.getNotification());
                 Log.e("PAYLOAD", "" + jsonStr);
-                DataczarApp.saveNotificationData(jsonStr);
 
                 JSONObject jsonObject = new JSONObject(jsonStr);
 

@@ -8,6 +8,15 @@
         android:background="#ecf0f1"
         android:orientation="vertical">
 
+        <com.dataczar.main.utils.CustomHorizontalProgressBar
+            android:id="@+id/horizontalProgress"
+            android:layout_width="match_parent"
+            android:layout_height="4dp"
+            app:animationDuration="2000"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
         <WebView
             android:id="@+id/webview"
             android:layout_width="match_parent"

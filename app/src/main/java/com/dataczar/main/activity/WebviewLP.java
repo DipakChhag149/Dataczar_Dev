@@ -36,6 +36,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import com.dataczar.R;
+import com.dataczar.main.utils.CustomHorizontalProgressBar;
 import com.dataczar.main.viewmodel.ClsCommon;
 
 import org.w3c.dom.Text;
@@ -54,7 +55,7 @@ public class WebviewLP extends AppCompatActivity
     String title = "";
     ClsCommon clsCommon;
     Toolbar toolbar;
-    ProgressDialog pd;
+    CustomHorizontalProgressBar horizontalProgress;
     TextView tvTitle;
     private static final int INPUT_FILE_REQUEST_CODE = 1;
     private ValueCallback<Uri[]> mFilePathCallback;
@@ -70,7 +71,7 @@ public class WebviewLP extends AppCompatActivity
         toolbar = findViewById(R.id.toolbar);
         ImageView imgBack = findViewById(R.id.imgBack);
         tvTitle = findViewById(R.id.tvTitle);
-
+        horizontalProgress = findViewById(R.id.horizontalProgress);
         setSupportActionBar(toolbar);
 
         getSupportActionBar().setHomeButtonEnabled(true);
@@ -129,8 +130,6 @@ public class WebviewLP extends AppCompatActivity
             }
         });
 
-        pd = new ProgressDialog(context, R.style.ProgressDialog);
-        pd.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
 
         myWebView.setWebViewClient(new WebViewClient()
         {
@@ -138,10 +137,9 @@ public class WebviewLP extends AppCompatActivity
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
                 super.onPageStarted(view, url, favicon);
 
-                if(pd!= null && !pd.isShowing() && !WebviewLP.this.isFinishing())
+                if(!WebviewLP.this.isFinishing())
                 {
-                    pd.setCancelable(true);
-                    pd.show();
+                  horizontalProgress.setVisibility(View.VISIBLE);
                 }else
                 {
 
@@ -152,8 +150,8 @@ public class WebviewLP extends AppCompatActivity
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
 
-                if(pd!= null && pd.isShowing() && !WebviewLP.this.isFinishing())
-                    pd.dismiss();
+                if(!WebviewLP.this.isFinishing())
+                    horizontalProgress.setVisibility(View.GONE);
             }
 
         });
@@ -171,7 +169,7 @@ public class WebviewLP extends AppCompatActivity
         webSettings.setAllowFileAccess(true);
         webSettings.setDatabaseEnabled(true);
         webSettings.setAllowUniversalAccessFromFileURLs(true);
-        webSettings.setAppCacheEnabled(true);
+        webSettings.setCacheMode(WebSettings.LOAD_NO_CACHE);
         webSettings.setDomStorageEnabled(true);
         webSettings.setUserAgentString("Chrome/56.0.0.0 Mobile");
 

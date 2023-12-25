@@ -101,7 +101,6 @@
                         android:layout_weight="0.8" />
 
                     <ImageView
-                        android:id="@+id/imgSettingMenu"
                         android:layout_width="0dp"
                         android:layout_height="?attr/actionBarSize"
                         android:layout_gravity="right|center_vertical"
@@ -109,9 +108,22 @@
                         android:foregroundGravity="right|center_vertical"
                         android:padding="4dp"
                         android:scaleType="centerInside"
-                        android:src="@drawable/ic_setting"
+                        android:src="@drawable/ic_bell"
                         android:visibility="gone" />
 
+                    <ru.nikartm.support.ImageBadgeView
+                        android:id="@+id/imgSettingMenu"
+                        android:layout_width="15dp"
+                        android:layout_height="?attr/actionBarSize"
+                        android:layout_weight="1"
+                        android:padding="10dp"
+                        app:ibv_badgeTextSize="9sp"
+                        app:ibv_fixedBadgeRadius="10dp"
+                        app:ibv_badgeTextStyle="bold"
+                        app:ibv_badgeTextColor="#ffffff"
+                        app:ibv_badgeColor="#f1592a"
+                        app:ibv_badgeLimitValue="false"
+                        android:src="@drawable/ic_bell" />
 
                 </LinearLayout>
 
@@ -119,13 +131,24 @@
 
         </com.google.android.material.appbar.AppBarLayout>
 
+        <com.dataczar.main.utils.CustomHorizontalProgressBar
+            android:id="@+id/horizontalProgress"
+            android:layout_width="match_parent"
+            android:layout_height="4dp"
+            app:animationDuration="2000"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_below="@+id/appbarlayout"
+            app:layout_constraintTop_toTopOf="parent" />
+
 
         <LinearLayout
             android:id="@+id/llFargment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_above="@+id/bottom_navigation"
-            android:layout_below="@+id/appbarlayout"
+            android:layout_below="@+id/horizontalProgress"
             android:orientation="vertical"></LinearLayout>
 
         <com.google.android.material.bottomnavigation.BottomNavigationView

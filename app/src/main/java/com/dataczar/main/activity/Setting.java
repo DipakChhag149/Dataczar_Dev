@@ -36,6 +36,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.dataczar.R;
+import com.dataczar.main.utils.CustomHorizontalProgressBar;
 import com.dataczar.main.viewmodel.ClsCommon;
 
 import org.json.JSONException;
@@ -53,13 +54,13 @@ public class Setting extends AppCompatActivity implements View.OnClickListener {
     ArrayList<HashMap<String, String>> teammap = new ArrayList<>();
     Context context;
     RequestQueue requestQueue;
-    LinearLayout llUserName, llLegal, llBilling, llLogout, llManageAccount, llChangePass, llNotification;
+    LinearLayout llUserName, llMore, llBilling, llLogout, llManageAccount, llChangePass, llNotification;
     ImageView img_bedge_billing;
     Switch notificationSwitch;
 
     SharedPreferences.Editor editor;
     SharedPreferences sharedPref;
-
+    CustomHorizontalProgressBar horizontalProgress;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -75,9 +76,10 @@ public class Setting extends AppCompatActivity implements View.OnClickListener {
 
         ImageView imgBack = findViewById(R.id.imgBack);
         ImageView imgHelp = findViewById(R.id.imgHelp);
+        horizontalProgress = findViewById(R.id.horizontalProgress);
 
         llUserName = findViewById(R.id.llUserName);
-        llLegal = findViewById(R.id.llLegal);
+        llMore = findViewById(R.id.llMore);
         llNotification = findViewById(R.id.llNotification);
         llBilling = findViewById(R.id.llBilling);
         llManageAccount = findViewById(R.id.llManageAccount);
@@ -109,7 +111,7 @@ public class Setting extends AppCompatActivity implements View.OnClickListener {
 
         imgHelp.setOnClickListener(this);
         llUserName.setOnClickListener(this);
-        llLegal.setOnClickListener(this);
+        llMore.setOnClickListener(this);
         llNotification.setOnClickListener(this);
         llBilling.setOnClickListener(this);
         llManageAccount.setOnClickListener(this);
@@ -191,28 +193,36 @@ public class Setting extends AppCompatActivity implements View.OnClickListener {
         switch (id) {
             case R.id.imgHelp:
                 iv.putExtra(ClsCommon.WEBSITE, ClsCommon.HELP);
+                startActivity(iv);
                 break;
             case R.id.llUserName:
                 iv.putExtra(ClsCommon.WEBSITE, ClsCommon.USERSETTINGS);
+                startActivity(iv);
                 break;
             case R.id.llNotification:
                 iv.putExtra(ClsCommon.WEBSITE, ClsCommon.NOTIFICATION);
+                startActivity(iv);
                 break;
             case R.id.llChangePass:
                 iv.putExtra(ClsCommon.WEBSITE, ClsCommon.CHANGEPASS);
+                startActivity(iv);
                 break;
             case R.id.llManageAccount:
                 iv.putExtra(ClsCommon.WEBSITE, ClsCommon.MANAGEACCOUNT);
+                startActivity(iv);
                 break;
             case R.id.llBilling:
                 iv.putExtra(ClsCommon.WEBSITE, ClsCommon.BILLINGS);
+                startActivity(iv);
                 break;
-            case R.id.llLegal:
-                iv.putExtra(ClsCommon.WEBSITE, ClsCommon.LEGAL);
+            case R.id.llMore:
+                Intent i = new Intent(Setting.this,MoreOptionActivity.class);
+                startActivity(i);
+               // iv.putExtra(ClsCommon.WEBSITE, ClsCommon.LEGAL);
                 break;
         }
 
-        startActivity(iv);
+
     }
 
     public String getCookie() {
@@ -222,19 +232,16 @@ public class Setting extends AppCompatActivity implements View.OnClickListener {
     }
 
     class getHomeData extends AsyncTask<String, Void, Boolean> {
-        ProgressDialog pd;
+
 
         public getHomeData(Context context) {
-            pd = new ProgressDialog(context, R.style.ProgressDialog);
-            pd.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+
         }
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            pd.setCancelable(false);
-            if (!pd.isShowing())
-                pd.show();
+            horizontalProgress.setVisibility(View.VISIBLE);
 
         }
 
@@ -251,8 +258,7 @@ public class Setting extends AppCompatActivity implements View.OnClickListener {
                     new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {
-                            if (pd.isShowing())
-                                pd.dismiss();
+                            horizontalProgress.setVisibility(View.GONE);
 
                             if (response != null && !response.isEmpty()) {
                                 try {
@@ -284,8 +290,7 @@ public class Setting extends AppCompatActivity implements View.OnClickListener {
                     }, new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError error) {
-                    if (pd != null && pd.isShowing())
-                        pd.dismiss();
+                    horizontalProgress.setVisibility(View.GONE);
 
                     Toast.makeText(context, "Response Error: " + error + " Can't Connect to server.", Toast.LENGTH_LONG).show();
                 }
@@ -303,19 +308,16 @@ public class Setting extends AppCompatActivity implements View.OnClickListener {
     }
 
     class Logout extends AsyncTask<String, Void, Boolean> {
-        ProgressDialog pd;
+
 
         public Logout(Context context) {
-            pd = new ProgressDialog(context, R.style.ProgressDialog);
-            pd.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+
         }
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            pd.setCancelable(false);
-            if (!pd.isShowing())
-                pd.show();
+            horizontalProgress.setVisibility(View.VISIBLE);
 
         }
 
@@ -332,8 +334,7 @@ public class Setting extends AppCompatActivity implements View.OnClickListener {
                     new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {
-                            if (pd.isShowing() && !Setting.this.isFinishing())
-                                pd.dismiss();
+                            horizontalProgress.setVisibility(View.GONE);
 
                             if (response != null && !response.isEmpty()) {
                                 try {
@@ -372,8 +373,7 @@ public class Setting extends AppCompatActivity implements View.OnClickListener {
                     }, new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError error) {
-                    if (pd != null && pd.isShowing())
-                        pd.dismiss();
+                    horizontalProgress.setVisibility(View.GONE);
 
                     Toast.makeText(context, "Response Error: " + error + " Can't Connect to server.", Toast.LENGTH_LONG).show();
                 }
@@ -391,21 +391,18 @@ public class Setting extends AppCompatActivity implements View.OnClickListener {
     }
 
     class DeleteNotification extends AsyncTask<String, Void, Boolean> {
-        ProgressDialog pd;
+
         String token;
 
         public DeleteNotification(Context context, String token) {
-            pd = new ProgressDialog(context, R.style.ProgressDialog);
-            pd.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+
             this.token = token;
         }
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            pd.setCancelable(false);
-            if (!pd.isShowing())
-                pd.show();
+            horizontalProgress.setVisibility(View.VISIBLE);
         }
 
         @Override
@@ -421,9 +418,7 @@ public class Setting extends AppCompatActivity implements View.OnClickListener {
                     new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {
-                            if (pd.isShowing())
-                                pd.dismiss();
-
+                            horizontalProgress.setVisibility(View.GONE);
                             if (response != null && !response.isEmpty()) {
                                 try {
                                     JSONObject jsonResponse = new JSONObject(response);
@@ -443,8 +438,7 @@ public class Setting extends AppCompatActivity implements View.OnClickListener {
                     }, new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError error) {
-                    if (pd != null && pd.isShowing())
-                        pd.dismiss();
+                    horizontalProgress.setVisibility(View.GONE);
 
                     //Toast.makeText(context,"Response Error: "+ error + " Can't Connect to server.", Toast.LENGTH_LONG).show();
                 }
@@ -496,21 +490,18 @@ public class Setting extends AppCompatActivity implements View.OnClickListener {
 
 
     class AddNotificationToken extends AsyncTask<String, Void, Boolean> {
-        ProgressDialog pd;
+
         String token;
 
         public AddNotificationToken(Context context, String token) {
-            pd = new ProgressDialog(context, R.style.ProgressDialog);
-            pd.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+
             this.token = token;
         }
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            pd.setCancelable(false);
-            if (!pd.isShowing())
-                pd.show();
+            horizontalProgress.setVisibility(View.VISIBLE);
         }
 
         @Override
@@ -526,8 +517,7 @@ public class Setting extends AppCompatActivity implements View.OnClickListener {
                     new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {
-                            if (pd.isShowing())
-                                pd.dismiss();
+                            horizontalProgress.setVisibility(View.GONE);
 
                             if (response != null && !response.isEmpty()) {
                                 try {
@@ -548,8 +538,7 @@ public class Setting extends AppCompatActivity implements View.OnClickListener {
                     }, new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError error) {
-                    if (pd != null && pd.isShowing())
-                        pd.dismiss();
+                    horizontalProgress.setVisibility(View.GONE);
 
                     //Toast.makeText(context,"Response Error: "+ error + " Can't Connect to server.", Toast.LENGTH_LONG).show();
                 }

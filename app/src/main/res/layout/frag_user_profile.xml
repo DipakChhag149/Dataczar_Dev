@@ -5,8 +5,16 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_gravity="center"
+    android:orientation="vertical"
     android:gravity="center"
     android:background="@color/app_bg_ios_gray">
+
+    <com.dataczar.main.utils.CustomHorizontalProgressBar
+        android:id="@+id/horizontalProgress"
+        android:layout_width="match_parent"
+        android:layout_height="4dp"
+        app:animationDuration="2000"
+        />
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -87,9 +95,8 @@
 
                     <TextView
                         android:layout_width="match_parent"
-                        android:layout_height="0dp"
+                        android:layout_height="wrap_content"
                         android:layout_marginStart="16dp"
-                        android:layout_weight="1.5"
                         android:gravity="center_vertical"
                         android:text="User Profile"
                         android:textColor="@color/text_header_title"
@@ -99,14 +106,15 @@
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="2dp"
+                        android:layout_marginTop="10dp"
                         android:background="@color/app_bg_ios_gray" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="0dp"
+                        android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
                         android:layout_marginStart="16dp"
-                        android:layout_weight="1.5"
+                        android:layout_marginTop="5dp"
                         android:gravity="center_vertical"
                         android:orientation="horizontal"
                         android:padding="8dp"
@@ -115,7 +123,7 @@
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_weight="3"
+                            android:layout_weight="2"
                             android:gravity="center_vertical"
                             android:text="Name"
                             android:textColor="@color/black"
@@ -126,8 +134,10 @@
                             android:id="@+id/tvName"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_weight="7"
+                            android:layout_weight="8"
                             android:gravity="center_vertical"
+                            android:singleLine="true"
+                            android:ellipsize="end"
                             android:text=""
                             android:textColor="@color/text_title"
                             android:textSize="14dp" />
@@ -136,10 +146,9 @@
 
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="0dp"
+                        android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
                         android:layout_marginStart="16dp"
-                        android:layout_weight="1.5"
                         android:gravity="center_vertical"
                         android:orientation="horizontal"
                         android:padding="8dp"
@@ -148,7 +157,7 @@
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_weight="3"
+                            android:layout_weight="2"
                             android:gravity="center_vertical"
                             android:text="Email"
                             android:textColor="@color/black"
@@ -159,9 +168,11 @@
                             android:id="@+id/tvEmail"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_weight="6"
+                            android:layout_weight="7"
                             android:gravity="center_vertical"
                             android:text=""
+                            android:singleLine="true"
+                            android:ellipsize="end"
                             android:textColor="@color/text_title"
                             android:textSize="14dp" />
 
@@ -176,10 +187,9 @@
 
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="0dp"
+                        android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
                         android:layout_marginStart="16dp"
-                        android:layout_weight="1.5"
                         android:gravity="center_vertical"
                         android:orientation="horizontal"
                         android:padding="8dp"
@@ -188,7 +198,7 @@
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_weight="3"
+                            android:layout_weight="2"
                             android:gravity="center_vertical"
                             android:text="Phone"
                             android:textColor="@color/black"
@@ -199,9 +209,11 @@
                             android:id="@+id/tvPhone"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_weight="6"
+                            android:layout_weight="7"
                             android:gravity="center_vertical"
                             android:text=""
+                            android:singleLine="true"
+                            android:ellipsize="end"
                             android:textColor="@color/text_title"
                             android:textSize="14dp" />
 
@@ -281,6 +293,49 @@
 
                 </LinearLayout>
 
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                app:cardBackgroundColor="@color/white"
+               >
+
+                <LinearLayout
+                    android:id="@+id/llSetting"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:layout_weight="2"
+                    android:orientation="horizontal"
+                    android:padding="10dp"
+                    android:weightSum="10">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="8"
+                        android:gravity="center_vertical"
+                        android:text="Setting"
+                        android:textColor="@color/black"
+                        android:textSize="16dp"
+                        android:textStyle="bold" />
+                    <ImageView
+                        android:id="@+id/ivSettingBadge"
+                        android:layout_width="0dp"
+                        android:layout_height="20dp"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight="1"
+                        android:src="@drawable/ic_circle" />
+                    <ImageView
+                        android:layout_width="0dp"
+                        android:layout_height="20dp"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight="1"
+                        android:src="@drawable/ic_forword" />
+
+                </LinearLayout>
             </androidx.cardview.widget.CardView>
 
 

@@ -1,6 +1,5 @@
 package com.dataczar.main.fragment;
 
-import android.app.Notification;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -9,7 +8,6 @@ import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Parcelable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -37,9 +35,9 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.dataczar.R;
 import com.dataczar.main.activity.NotificationPreview;
-import com.dataczar.main.activity.SwitchProfileList;
 import com.dataczar.main.activity.WSMethods;
 import com.dataczar.main.model.NotificationModel;
+import com.dataczar.main.utils.CustomHorizontalProgressBar;
 import com.dataczar.main.viewmodel.ClsCommon;
 import com.google.android.material.badge.BadgeDrawable;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -63,16 +61,15 @@ public class NotificationFragment extends Fragment
     RequestQueue requestQueue;
     SwipeRefreshLayout swipeLayout;
     Boolean isLoaded;
-    BottomNavigationView bottomNavigationView;
+   // BottomNavigationView bottomNavigationView;
 
     SharedPreferences.Editor editor;
     SharedPreferences sharedPref;
+    CustomHorizontalProgressBar horizontalProgress;
 
-    public NotificationFragment(Context context, BottomNavigationView bottomNavigationView, ImageView imgSettingMenu)
+    public NotificationFragment(Context context)
     {
         this.context= context;
-        this.bottomNavigationView = bottomNavigationView;
-        imgSettingMenu.setVisibility(View.INVISIBLE);
     }
 
     @Override
@@ -84,6 +81,7 @@ public class NotificationFragment extends Fragment
 
         listview = view.findViewById(R.id.list);
         swipeLayout = view.findViewById(R.id.swiperefresh);
+        horizontalProgress = view.findViewById(R.id.horizontalProgress);
 
         swipeLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -103,14 +101,6 @@ public class NotificationFragment extends Fragment
         sharedPref =getContext().getSharedPreferences(ClsCommon.PREFDATA, Context.MODE_PRIVATE);
         editor = sharedPref.edit();
 
-       /* if (savedInstanceState != null) {
-            isLoaded = savedInstanceState.getBoolean("ISLOADED", false);
-        }
-
-        if(isLoaded!= null && !isLoaded)
-        {
-
-        }*/
 
         new getNotificatioCount(context).execute();
 
@@ -124,17 +114,17 @@ public class NotificationFragment extends Fragment
         ProgressDialog pd;
         public getNotificatioCount(Context context)
         {
-            pd = new ProgressDialog(context, R.style.ProgressDialog);
-            pd.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+//            pd = new ProgressDialog(context, R.style.ProgressDialog);
+//            pd.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
         }
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            pd.setCancelable(false);
-            if(!pd.isShowing())
-                pd.show();
-
+//            pd.setCancelable(false);
+//            if(!pd.isShowing())
+//                pd.show();
+            horizontalProgress.setVisibility(View.VISIBLE);
         }
 
         @Override
@@ -154,8 +144,9 @@ public class NotificationFragment extends Fragment
                         @Override
                         public void onResponse(String response)
                         {
-                            if(pd.isShowing())
-                                pd.dismiss();
+//                            if(pd.isShowing())
+//                                pd.dismiss();
+                            horizontalProgress.setVisibility(View.INVISIBLE);
 
                             if(response!= null && !response.isEmpty())
                             {
@@ -170,7 +161,7 @@ public class NotificationFragment extends Fragment
 
                                         editor.putString(ClsCommon.NOTIFICATION_COUNT, unreadcount);
                                         editor.apply();
-                                        
+                                       /*
                                         if(unreadcount != null && unreadcount.trim().length()>0 && !unreadcount.equals("0"))
                                         {
                                             BadgeDrawable NotifiationBadge = bottomNavigationView.getOrCreateBadge(R.id.ic_notification);
@@ -181,7 +172,7 @@ public class NotificationFragment extends Fragment
                                             BadgeDrawable NotifiationBadge = bottomNavigationView.getOrCreateBadge(R.id.ic_notification);
                                             NotifiationBadge.setNumber(Integer.parseInt(unreadcount));
                                             NotifiationBadge.setBackgroundColor(Color.parseColor("#00000000"));
-                                        }
+                                        }*/
                                     }
                                 } catch (JSONException e) {
                                     e.printStackTrace();
@@ -198,8 +189,9 @@ public class NotificationFragment extends Fragment
                 @Override
                 public void onErrorResponse(VolleyError error)
                 {
-                    if(pd != null && pd.isShowing())
-                        pd.dismiss();
+//                    if(pd != null && pd.isShowing())
+//                        pd.dismiss();
+                    horizontalProgress.setVisibility(View.INVISIBLE);
 
                     Toast.makeText(context,"Response Error: "+ error + " Can't Connect to server.", Toast.LENGTH_LONG).show();
                 }
@@ -228,10 +220,10 @@ public class NotificationFragment extends Fragment
     @Override
     public void onStart() {
         super.onStart();
-        //new getAllNotification(context).execute();
+       // new getAllNotification(context).execute();
 
-        MenuItem item = bottomNavigationView.getMenu().findItem(R.id.ic_notification);
-        item.setChecked(true);
+       // MenuItem item = bottomNavigationView.getMenu().findItem(R.id.ic_notification);
+       // item.setChecked(true);
 
         new getNotificatioCount(context).execute();
 
@@ -269,17 +261,18 @@ public class NotificationFragment extends Fragment
         ProgressDialog pd;
         public getAllNotification(Context context)
         {
-            pd = new ProgressDialog(context, R.style.ProgressDialog);
-            pd.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+//            pd = new ProgressDialog(context, R.style.ProgressDialog);
+//            pd.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
         }
 
         @Override
         protected void onPreExecute() {
             Log.d("Method Call", "getAllNotification");
             super.onPreExecute();
-            pd.setCancelable(false);
-            if(!pd.isShowing())
-                pd.show();
+//            pd.setCancelable(false);
+//            if(!pd.isShowing())
+//                pd.show();
+            horizontalProgress.setVisibility(View.VISIBLE);
 
         }
 
@@ -303,15 +296,16 @@ public class NotificationFragment extends Fragment
                         {
                             isLoaded = true;
 
-                            if(pd.isShowing())
-                                pd.dismiss();
+//                            if(pd.isShowing())
+//                                pd.dismiss();
+                            horizontalProgress.setVisibility(View.INVISIBLE);
 
-                            getActivity().runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    Log.e("Tag", "getAllNotification");
-                                }
-                            });
+//                            getActivity().runOnUiThread(new Runnable() {
+//                                @Override
+//                                public void run() {
+//                                    Log.e("Tag", "getAllNotification");
+//                                }
+//                            });
 
 
                           List<NotificationModel> notificationModelRead = new ArrayList<>();
@@ -416,8 +410,9 @@ public class NotificationFragment extends Fragment
                 @Override
                 public void onErrorResponse(VolleyError error)
                 {
-                    if(pd != null && pd.isShowing())
-                        pd.dismiss();
+//                    if(pd != null && pd.isShowing())
+//                        pd.dismiss();
+                    horizontalProgress.setVisibility(View.INVISIBLE);
 
                     Toast.makeText(context,"Response Error: "+ error + " Can't Connect to server.", Toast.LENGTH_LONG).show();
                 }
@@ -443,8 +438,8 @@ public class NotificationFragment extends Fragment
         String NotificationId;
         public setArchivedNotification(Context context, String NotificationId)
         {
-            pd = new ProgressDialog(context, R.style.ProgressDialog);
-            pd.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+//            pd = new ProgressDialog(context, R.style.ProgressDialog);
+//            pd.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
             this.NotificationId = NotificationId;
         }
 
@@ -452,9 +447,10 @@ public class NotificationFragment extends Fragment
         protected void onPreExecute()
         {
             super.onPreExecute();
-            pd.setCancelable(false);
-            if(!pd.isShowing())
-                pd.show();
+//            pd.setCancelable(false);
+//            if(!pd.isShowing())
+//                pd.show();
+            horizontalProgress.setVisibility(View.VISIBLE);
 
         }
 
@@ -476,8 +472,9 @@ public class NotificationFragment extends Fragment
                         @Override
                         public void onResponse(String response)
                         {
-                            if(pd.isShowing())
-                                pd.dismiss();
+//                            if(pd.isShowing())
+//                                pd.dismiss();
+                            horizontalProgress.setVisibility(View.INVISIBLE);
 
                             new getAllNotification(context).execute();
                             new getNotificatioCount(context).execute();
@@ -487,8 +484,9 @@ public class NotificationFragment extends Fragment
                 @Override
                 public void onErrorResponse(VolleyError error)
                 {
-                    if(pd != null && pd.isShowing())
-                        pd.dismiss();
+//                    if(pd != null && pd.isShowing())
+//                        pd.dismiss();
+                    horizontalProgress.setVisibility(View.INVISIBLE);
 
                     Toast.makeText(context,"Response Error: "+ error + " Can't Connect to server.", Toast.LENGTH_LONG).show();
                 }
