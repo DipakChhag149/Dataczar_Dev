@@ -1,14 +1,10 @@
 package com.dataczar.main;
 
-import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.Application;
 import android.content.ComponentName;
 import android.content.Context;
 import android.os.Build;
-import android.os.Environment;
-import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleObserver;
@@ -17,14 +13,14 @@ import androidx.lifecycle.ProcessLifecycleOwner;
 
 import com.google.firebase.FirebaseApp;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
 import java.util.List;
 
 public class DataczarApp extends Application implements LifecycleObserver {
 
-    public static boolean isAppInForground= true;
+
+    public static boolean isAppInForground = true;
+
+    private static boolean isNoInternetVisible = false;
 
     @Override
     public void onCreate() {
@@ -32,6 +28,7 @@ public class DataczarApp extends Application implements LifecycleObserver {
         FirebaseApp.initializeApp(this);
         ProcessLifecycleOwner.get().getLifecycle().addObserver(this);
     }
+
 
     @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
     void onAppBackgrounded() {
@@ -69,5 +66,4 @@ public class DataczarApp extends Application implements LifecycleObserver {
 
         return isInBackground;
     }
-
 }

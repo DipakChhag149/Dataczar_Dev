@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <LinearLayout android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_gravity="bottom"
+        android:foregroundGravity="bottom"
+        android:gravity="bottom">
+
+        <TextView
+            android:id="@+id/fingerprint_subtitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="24dp"
+            android:ellipsize="marquee"
+            android:gravity="center"
+            android:marqueeRepeatLimit="marquee_forever"
+            android:singleLine="true"
+            android:text="Login to Dataczar"
+            android:textColor="@android:color/darker_gray"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/fingerprint_description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="0dp"
+            android:layout_marginEnd="24dp"
+            android:layout_marginStart="24dp"
+            android:textColor="@android:color/darker_gray"
+            android:textSize="16sp"
+            android:text="Verify Identity\nTouch your finger on sensor to login"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:maxLines="4"/>
+
+        <ImageView
+            android:id="@+id/fingerprint_icon"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="32dp"
+            android:scaleType="fitXY"
+            android:src="@drawable/ic_fingerprint"/>
+
+        <TextView
+            android:id="@+id/fingerprint_error"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="24dp"
+            android:layout_marginStart="24dp"
+            android:paddingTop="16dp"
+            android:paddingBottom="24dp"
+            android:textSize="14sp"
+            android:gravity="center_horizontal"
+            android:accessibilityLiveRegion="polite"
+            android:text="Touch the fingerprint sensor to unlock"
+            android:textColor="@android:color/black" />
+
+    </LinearLayout>
+
+</ScrollView>

@@ -71,10 +71,8 @@ public class Setting extends AppCompatActivity implements View.OnClickListener {
         sharedPref = getSharedPreferences(ClsCommon.PREFDATA, Context.MODE_PRIVATE);
         editor = sharedPref.edit();
 
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
 
-        ImageView imgBack = findViewById(R.id.imgBack);
+        ImageView imgBack = findViewById(R.id.ivBack);
         ImageView imgHelp = findViewById(R.id.imgHelp);
         horizontalProgress = findViewById(R.id.horizontalProgress);
 
@@ -95,10 +93,6 @@ public class Setting extends AppCompatActivity implements View.OnClickListener {
         }else {
             notificationSwitch.setChecked(false);
         }
-
-        getSupportActionBar().setHomeButtonEnabled(true);
-        getSupportActionBar().setDisplayShowTitleEnabled(true);
-        getSupportActionBar().setDisplayUseLogoEnabled(true);
 
         imgBack.setOnClickListener(new View.OnClickListener() {
             @Override

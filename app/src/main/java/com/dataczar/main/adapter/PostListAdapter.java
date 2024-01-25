@@ -104,7 +104,7 @@ public class PostListAdapter extends RecyclerView.Adapter<PostListAdapter.DataVi
         notifyItemInserted(list.size() - 1);
     }
     public void delete(GetPostListResponse.PostData data,int position) {
-        list.add(data);
+        list.remove(data);
         notifyItemRemoved(position);
     }
 

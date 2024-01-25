@@ -66,7 +66,7 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:visibility="visible"
+                android:visibility="gone"
                 android:layout_marginTop="10dp"
                 android:background="@color/line" />
 
@@ -78,7 +78,7 @@
                 android:fontFamily="@font/metropolis_medium"
                 android:gravity="center"
                 android:padding="10dp"
-                android:visibility="visible"
+                android:visibility="gone"
                 android:text="Photo Library"
                 android:textColor="@color/text_blue"
                 android:textSize="14sp" />
@@ -86,7 +86,7 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:visibility="visible"
+                android:visibility="gone"
                 android:layout_marginTop="10dp"
                 android:background="@color/line" />
 
@@ -98,7 +98,7 @@
                 android:fontFamily="@font/metropolis_medium"
                 android:gravity="center"
                 android:padding="10dp"
-                android:visibility="visible"
+                android:visibility="gone"
                 android:text="Take Photo"
                 android:textColor="@color/text_blue"
                 android:textSize="14sp" />

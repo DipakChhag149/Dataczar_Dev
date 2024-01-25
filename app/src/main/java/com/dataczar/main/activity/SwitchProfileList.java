@@ -79,14 +79,9 @@ public class SwitchProfileList extends AppCompatActivity
         sharedPref = getSharedPreferences(ClsCommon.PREFDATA, Context.MODE_PRIVATE);
         editor = sharedPref.edit();
 
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
 
-        ImageView imgBack = findViewById(R.id.imgBack);
+        ImageView imgBack = findViewById(R.id.ivBack);
 
-        getSupportActionBar().setHomeButtonEnabled(true);
-        getSupportActionBar().setDisplayShowTitleEnabled(true);
-        getSupportActionBar().setDisplayUseLogoEnabled(true);
 
 
         Intent intent = getIntent();

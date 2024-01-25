@@ -47,7 +47,6 @@ public class NotificationPreview extends AppCompatActivity
     WebView myWebView;
     String title = "";
     ClsCommon clsCommon;
-    Toolbar toolbar;
     NotificationModel mynotification;
     RequestQueue requestQueue;
     String NotificationId, NotificationStstus;
@@ -59,18 +58,11 @@ public class NotificationPreview extends AppCompatActivity
         setContentView(R.layout.notification_read_detail);
         context = NotificationPreview.this;
 
-        toolbar = findViewById(R.id.toolbar);
-        ImageView imgBack = findViewById(R.id.imgBack);
+        ImageView imgBack = findViewById(R.id.ivBack);
 
         TextView tvNotiHeader = findViewById(R.id.tvNotiHeader);
         TextView tvDesc = findViewById(R.id.tvDesc);
         TextView tvTime = findViewById(R.id.tvTime);
-
-        setSupportActionBar(toolbar);
-
-        getSupportActionBar().setHomeButtonEnabled(true);
-        getSupportActionBar().setDisplayShowTitleEnabled(true);
-        getSupportActionBar().setDisplayUseLogoEnabled(true);
 
         requestQueue = Volley.newRequestQueue(context);
 

@@ -17,6 +17,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 
 import com.android.volley.AuthFailureError;
@@ -59,6 +60,7 @@ public class ProfileFragment extends Fragment
     ArrayList<HashMap<String, String>> teammap = new ArrayList<>();
     BottomNavigationView bottomNavigationView;
     ImageBadgeView imgSettingMenu;
+    ConstraintLayout llNotificationIcon;
 
     LinearLayout llswitfprof,llSetting;
     CustomHorizontalProgressBar horizontalProgress;
@@ -70,12 +72,13 @@ public class ProfileFragment extends Fragment
         userprofile = new ArrayList<>();
     }
 
-    public ProfileFragment(Context context, BottomNavigationView bottomNavigationView, ImageBadgeView imgSettingMenu) {
+    public ProfileFragment(Context context, BottomNavigationView bottomNavigationView, ImageBadgeView imgSettingMenu,ConstraintLayout llNotificationIcon) {
         this.context = context;
         requestQueue = Volley.newRequestQueue(context);
         userprofile = new ArrayList<>();
         this.bottomNavigationView = bottomNavigationView;
         this.imgSettingMenu = imgSettingMenu;
+        this.llNotificationIcon = llNotificationIcon;
     }
 
     @Override
@@ -86,6 +89,7 @@ public class ProfileFragment extends Fragment
         item.setChecked(true);
 
         imgSettingMenu.setVisibility(View.VISIBLE);
+        llNotificationIcon.setVisibility(View.VISIBLE);
     }
 
     @Override

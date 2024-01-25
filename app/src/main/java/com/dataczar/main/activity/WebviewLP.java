@@ -54,7 +54,6 @@ public class WebviewLP extends AppCompatActivity
     WebView myWebView;
     String title = "";
     ClsCommon clsCommon;
-    Toolbar toolbar;
     CustomHorizontalProgressBar horizontalProgress;
     TextView tvTitle;
     private static final int INPUT_FILE_REQUEST_CODE = 1;
@@ -68,15 +67,9 @@ public class WebviewLP extends AppCompatActivity
         setContentView(R.layout.webview);
         context = WebviewLP.this;
 
-        toolbar = findViewById(R.id.toolbar);
-        ImageView imgBack = findViewById(R.id.imgBack);
+        ImageView imgBack = findViewById(R.id.ivBack);
         tvTitle = findViewById(R.id.tvTitle);
         horizontalProgress = findViewById(R.id.horizontalProgress);
-        setSupportActionBar(toolbar);
-
-        getSupportActionBar().setHomeButtonEnabled(true);
-        getSupportActionBar().setDisplayShowTitleEnabled(true);
-        getSupportActionBar().setDisplayUseLogoEnabled(true);
 
         if(getIntent()!= null)
         {

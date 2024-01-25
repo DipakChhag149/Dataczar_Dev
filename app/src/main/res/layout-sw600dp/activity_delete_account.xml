@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/app_bg_ios_gray"
+        tools:context=".main.activity.DeleteAccountActivity">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/llToolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/white"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/ivBack"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:padding="2dp"
+                android:layout_marginStart="10dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_arrow_back" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                style="@style/titleText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Delete account"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/ivBack"
+                app:layout_constraintTop_toTopOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/llToolbar">
+            <LinearLayout
+                android:id="@+id/llFargment"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                <com.dataczar.main.utils.CustomHorizontalProgressBar
+                    android:id="@+id/horizontalProgress"
+                    android:layout_width="match_parent"
+                    android:layout_height="4dp"
+                    app:animationDuration="2000"
+                    android:visibility="gone"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+                <androidx.cardview.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginStart="40dp"
+                    android:layout_marginEnd="40dp"
+                    android:layout_marginBottom="20dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:paddingTop="40dp"
+                        android:paddingStart="40dp"
+                        android:paddingEnd="40dp"
+                        android:paddingBottom="20dp">
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/metropolis_semibold"
+                            android:gravity="center"
+                            android:lineSpacingExtra="5dp"
+                            android:text="Are you sure you want to delete your account?"
+                            android:textColor="@color/app_sidebar_bg_gray"
+                            android:textSize="26sp" />
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="20dp"
+                            android:fontFamily="@font/metropolis_medium"
+                            android:gravity="center"
+                            android:lineSpacingExtra="5dp"
+                            android:text="This will log you out and you will no longer have access to your account including any domain names or websites you have built.\n\nIf you are not sure or have questions please call"
+                            android:textColor="@color/app_sidebar_bg_gray"
+                            android:textSize="24sp" />
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="20dp"
+                            android:fontFamily="@font/metropolis_semibold"
+                            android:gravity="center"
+                            android:text="+1 (442) 216-0291"
+                            android:textColor="@color/app_color_primary"
+                            android:textSize="26sp" />
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="20dp"
+                            android:fontFamily="@font/metropolis_medium"
+                            android:gravity="center"
+                            android:lineSpacingExtra="5dp"
+                            android:text="If you are sure you would like to delete your account enter “Delete“ into the confirmation field and click the delete but... "
+                            android:textColor="@color/app_sidebar_bg_gray"
+                            android:textSize="24sp" />
+
+                        <androidx.appcompat.widget.AppCompatEditText
+                            android:id="@+id/edtDelete"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="30dp"
+                            android:background="@drawable/delete_bg"
+                            android:elevation="5dp"
+                            android:textSize="24sp"
+                            android:fontFamily="@font/metropolis_medium"
+                            android:layout_marginStart="30dp"
+                            android:layout_marginEnd="30dp"
+                            android:hint="DELETE Confirmation"
+                            android:padding="10dp"
+                            android:paddingStart="16dp"
+                            android:paddingEnd="8dp" />
+
+                        <TextView
+                            android:id="@+id/btnDelete"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_marginTop="30dp"
+                            android:layout_marginStart="100dp"
+                            android:layout_marginEnd="100dp"
+                            android:background="@drawable/orange_roundcorner"
+                            android:backgroundTint="@color/app_color_primary"
+                            android:fontFamily="@font/metropolis_semibold"
+                            android:gravity="center"
+                            android:minWidth="200dp"
+                            android:padding="10dp"
+                            android:text="Log out and delete account"
+                            android:textColor="@color/app_color_white"
+                            android:textSize="24sp" />
+
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+            </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

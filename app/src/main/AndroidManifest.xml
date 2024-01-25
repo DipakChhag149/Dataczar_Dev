@@ -16,6 +16,7 @@
     <uses-permission android:name="com.anddoes.launcher.permission.UPDATE_COUNT" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
     <uses-permission android:name="android.permission.CAMERA" />
 
     <application
@@ -31,19 +32,28 @@
         android:usesCleartextTraffic="true"
         tools:replace="android:allowBackup">
         <activity
-            android:name=".main.activity.DeleteAccountActivity"
+            android:name=".main.activity.NoInternetActivity"
             android:exported="false" />
+        <activity
+            android:name=".main.activity.DeleteAccountActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".main.activity.MoreOptionActivity"
-            android:exported="false" />
-
+            android:exported="false"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".main.activity.EBookDetailsActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".main.activity.NotificationListActivity"
-            android:exported="false" />
-        <activity android:name=".main.activity.CreatePostActivity" />
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".main.activity.CreatePostActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
 
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_channel"
@@ -66,18 +76,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <!--
-<activity android:name=".main.activity.BioMatricAuth"
-            android:exported="true"
-            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|uiMode"
-            android:theme="@style/Theme.DataCzar"
-            android:screenOrientation="portrait">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-        -->
         <activity
             android:name=".main.activity.LoginActivity"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|uiMode"

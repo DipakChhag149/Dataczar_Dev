@@ -44,7 +44,7 @@ public class DeleteAccountActivity extends AppCompatActivity {
         mBinding= DataBindingUtil.setContentView(this,R.layout.activity_delete_account);
         horizontalProgress = mBinding.getRoot().findViewById(R.id.horizontalProgress);
         requestQueue = Volley.newRequestQueue(this);
-        mBinding.imgBack.setOnClickListener(new View.OnClickListener() {
+        mBinding.ivBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 finish();

@@ -48,6 +48,7 @@ import java.util.Map;
 
 public class AddPostNewFragment extends Fragment {
     RequestQueue requestQueue;
+    ClsCommon clsCommon;
     private FragmentAddPostNewBinding mBinding;
     private String url = "";
     private int pageNumber = 1;
@@ -70,6 +71,7 @@ public class AddPostNewFragment extends Fragment {
 
 
     private void init() {
+        clsCommon = new ClsCommon(requireContext());
         SharedPreferences prefs = getActivity().getSharedPreferences(ClsCommon.PREFDATA, Context.MODE_PRIVATE);
         String websiteId = prefs.getString(ClsCommon.WEBSITE_ID, "");
 
@@ -80,10 +82,16 @@ public class AddPostNewFragment extends Fragment {
         postListAdapter = new PostListAdapter(new PostItemListener() {
             @Override
             public void deletePost(GetPostListResponse.PostData data,int position) {
-                SharedPreferences prefs = getActivity().getSharedPreferences(ClsCommon.PREFDATA, Context.MODE_PRIVATE);
-                String websiteId = prefs.getString(ClsCommon.WEBSITE_ID, "");
-                String url = "https://connect.dataczar.com/api/websites/"+websiteId+"/posts/"+data.getId()+"/delete";
-                new deletePost(url,position,data).execute();
+                if(!clsCommon.checkConnection())
+                {
+                    clsCommon.showSnackBar(false, mBinding.getRoot());
+                }else {
+                    SharedPreferences prefs = getActivity().getSharedPreferences(ClsCommon.PREFDATA, Context.MODE_PRIVATE);
+                    String websiteId = prefs.getString(ClsCommon.WEBSITE_ID, "");
+                    String url = "https://connect.dataczar.com/api/websites/"+websiteId+"/posts/"+data.getId()+"/delete";
+                    new deletePost(url,position,data).execute();
+                }
+
             }
         });
         mBinding.rvPost.setLayoutManager(layoutManager);

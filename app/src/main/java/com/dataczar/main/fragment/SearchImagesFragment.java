@@ -17,7 +17,6 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -29,9 +28,6 @@ import com.android.volley.toolbox.Volley;
 import com.dataczar.BuildConfig;
 import com.dataczar.R;
 import com.dataczar.databinding.FragmentSearchImageBinding;
-import com.dataczar.main.activity.WSMethods;
-import com.dataczar.main.adapter.MyImageListAdapter;
-import com.dataczar.main.adapter.PostListAdapter;
 import com.dataczar.main.adapter.SearchImageListAdapter;
 import com.dataczar.main.listener.MyImageSelectionListener;
 import com.dataczar.main.model.GetFreeImageListResponse;
@@ -43,11 +39,9 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -86,7 +80,11 @@ public class SearchImagesFragment extends BottomSheetDialogFragment {
         super.onViewCreated(view, savedInstanceState);
         requestQueue = Volley.newRequestQueue(getContext());
         mBinding.ivClose.setOnClickListener(v -> dismiss());
-        layoutManager = new GridLayoutManager(getContext(),3);
+        if (getContext().getResources().getBoolean(R.bool.is_tablet)) {
+            layoutManager = new GridLayoutManager(getContext(),4);
+        }else {
+            layoutManager = new GridLayoutManager(getContext(),3);
+        }
         myImageListAdapter = new SearchImageListAdapter(new MyImageSelectionListener() {
             @Override
             public void selectedImage(GetMyImagesListResponse imageData) {

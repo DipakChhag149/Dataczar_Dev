@@ -19,7 +19,7 @@ public class MoreOptionActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         mBinding= DataBindingUtil.setContentView(this,R.layout.activity_more_option);
 
-        mBinding.imgBack.setOnClickListener(new View.OnClickListener() {
+        mBinding.ivBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 finish();

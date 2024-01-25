@@ -29,6 +29,8 @@ import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatImageView;
+import androidx.appcompat.widget.AppCompatTextView;
 import androidx.appcompat.widget.Toolbar;
 
 import com.dataczar.R;
@@ -45,8 +47,7 @@ public class WebviewActivity extends AppCompatActivity
     String title = "";
     String url = "";
     ClsCommon clsCommon;
-    Toolbar toolbar;
-    TextView tvTitle;
+    AppCompatTextView tvTitle;
     private static final int INPUT_FILE_REQUEST_CODE = 1;
     private ValueCallback<Uri[]> mFilePathCallback;
     private String mCameraPhotoPath;
@@ -58,15 +59,9 @@ public class WebviewActivity extends AppCompatActivity
         setContentView(R.layout.webview);
         context = WebviewActivity.this;
         horizontalProgress = findViewById(R.id.horizontalProgress);
-        toolbar = findViewById(R.id.toolbar);
-        ImageView imgBack = findViewById(R.id.imgBack);
+        AppCompatImageView imgBack = findViewById(R.id.ivBack);
         tvTitle = findViewById(R.id.tvTitle);
 
-        setSupportActionBar(toolbar);
-
-        getSupportActionBar().setHomeButtonEnabled(true);
-        getSupportActionBar().setDisplayShowTitleEnabled(true);
-        getSupportActionBar().setDisplayUseLogoEnabled(true);
 
         if(getIntent()!= null)
         {

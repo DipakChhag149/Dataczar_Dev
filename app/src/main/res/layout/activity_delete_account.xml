@@ -9,84 +9,37 @@
         android:background="@color/app_bg_ios_gray"
         tools:context=".main.activity.DeleteAccountActivity">
 
-        <com.google.android.material.appbar.AppBarLayout
-            android:id="@+id/appbarlayout"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/llToolbar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/white"
             app:layout_constraintTop_toTopOf="parent">
 
-            <androidx.appcompat.widget.Toolbar
-                android:id="@+id/toolbar"
-                android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                android:layout_gravity="center"
-                android:gravity="center">
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/ivBack"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_arrow_back" />
 
-                <LinearLayout
-                    android:id="@+id/llContainer"
-                    android:layout_width="match_parent"
-                    android:layout_height="?attr/actionBarSize"
-                    android:layout_gravity="center"
-                    android:gravity="center"
-                    android:orientation="horizontal"
-                    android:weightSum="10">
-
-                    <!--<ImageView
-                        android:id="@+id/imgBack"
-                        android:layout_width="0dp"
-                        android:layout_height="?attr/actionBarSize"
-                        android:layout_gravity="left"
-                        android:layout_weight="1"
-                        android:padding="6dp"
-                        android:src="@drawable/ic_back"/>-->
-
-                    <ImageView
-                        android:id="@+id/imgBack"
-                        android:layout_width="10dp"
-                        android:layout_height="?attr/actionBarSize"
-                        android:layout_gravity="center_vertical|left"
-                        android:layout_weight="0.5"
-                        android:padding="0dp"
-                        android:src="@drawable/ic_back" />
-
-
-                    <TextView
-                        android:id="@+id/tvTitle"
-                        android:layout_width="wrap_content"
-                        android:layout_height="?attr/actionBarSize"
-                        android:layout_weight="7.5"
-                        android:fontFamily="@font/metropolis_semibold"
-                        android:gravity="center"
-                        android:padding="8dp"
-                        android:text="Delete account"
-                        android:textColor="@color/black"
-                        android:textSize="18sp" />
-
-                    <ImageView
-                        android:id="@+id/imgHelp"
-                        android:layout_width="0dp"
-                        android:layout_height="?attr/actionBarSize"
-                        android:layout_gravity="left"
-                        android:layout_weight="1.5"
-                        android:padding="6dp"
-                        android:src="@drawable/ic_help_green"
-                        android:visibility="invisible" />
-
-                    <View
-                        android:layout_width="0dp"
-                        android:layout_height="?attr/actionBarSize"
-                        android:layout_weight="0.5" />
-
-                </LinearLayout>
-
-
-            </androidx.appcompat.widget.Toolbar>
-
-        </com.google.android.material.appbar.AppBarLayout>
+            <androidx.appcompat.widget.AppCompatTextView
+                style="@style/titleText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Delete account"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/ivBack"
+                app:layout_constraintTop_toTopOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
         <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/appbarlayout">
+            app:layout_constraintTop_toBottomOf="@id/llToolbar">
             <LinearLayout
                 android:id="@+id/llFargment"
                 android:layout_width="match_parent"

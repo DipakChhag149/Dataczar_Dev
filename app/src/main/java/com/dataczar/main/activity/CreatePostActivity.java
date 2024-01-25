@@ -8,11 +8,15 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.webkit.MimeTypeMap;
+import android.widget.Scroller;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -78,6 +82,8 @@ import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 
 public class CreatePostActivity extends AppCompatActivity {
     RequestQueue requestQueue;
+
+    ClsCommon clsCommon;
     private ActivityCreatePostBinding mBinding;
     private File selectedImageFile;
     private String selectedImageURL = "";
@@ -101,6 +107,26 @@ public class CreatePostActivity extends AppCompatActivity {
     }
 
     private void init() {
+        clsCommon = new ClsCommon(getApplicationContext());
+        mBinding.edtContent.setScroller(new Scroller(this));
+        mBinding.edtContent.setMaxLines(5);
+        mBinding.edtContent.setVerticalScrollBarEnabled(true);
+        mBinding.edtContent.setMovementMethod(new ScrollingMovementMethod());
+
+        mBinding.edtContent.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (v.getId() == R.id.edtContent) {
+                    v.getParent().requestDisallowInterceptTouchEvent(true);
+                    switch (event.getAction() & MotionEvent.ACTION_MASK) {
+                        case MotionEvent.ACTION_UP:
+                            v.getParent().requestDisallowInterceptTouchEvent(false);
+                            break;
+                    }
+                }
+                return false;
+            }
+        });
         horizontalProgress = mBinding.getRoot().findViewById(R.id.horizontalProgress);
 
         mBinding.ivBack.setOnClickListener(new View.OnClickListener() {
@@ -121,7 +147,13 @@ public class CreatePostActivity extends AppCompatActivity {
         mBinding.btnCreate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                submitCreatePost();
+                if(!clsCommon.checkConnection())
+                {
+                    clsCommon.showSnackBar(false, mBinding.getRoot());
+                }else {
+                    submitCreatePost();
+                }
+
             }
         });
         mBinding.btnChoose.setOnClickListener(v -> {
@@ -203,9 +235,16 @@ public class CreatePostActivity extends AppCompatActivity {
      * Ask for gallery and camera permission in version 6 or above
      */
     private void askForPermission(int code) {
-        ActivityCompat.requestPermissions(this,
-                new String[]{Manifest.permission.CAMERA, WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE},
-                code);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU){
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.CAMERA, Manifest.permission.READ_MEDIA_IMAGES, WRITE_EXTERNAL_STORAGE},
+                    code);
+        }else{
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.CAMERA, WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE},
+                    code);
+        }
+
     }
 
     @Override
@@ -450,12 +489,21 @@ public class CreatePostActivity extends AppCompatActivity {
                 String responseCode = "";
                 String responseMessage = "";
                 JSONObject jsonObject = new JSONObject();
-                horizontalProgress.setVisibility(View.GONE);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        horizontalProgress.setVisibility(View.GONE);
+                    }
+                });
+
                 try {
                     String responseJson = response.body().string();
                     Log.e("RES_CODE", "" + response.code());
                     Log.e("RESPONSE", responseJson);
                     jsonObject = new JSONObject(responseJson);
+                    // Pending due API not working, facing issue in response
+                    //<?xml version="1.0" encoding="UTF-8"?>
+                    //<Error><Code>AccessDenied</Code><Message>Invalid according to Policy: Policy Condition failed: ["starts-with", "$key", "connect/"]</Message><RequestId>EEF5MH608PDCEKWJ</RequestId><HostId>kcA7Lhbmpv6gVoP1S0bAyTdFCejRpSk1RYt4ObojJhboaQojAsi5WqTebXRDehym9blHu9Jcd46SlWjpDrXZtw==</HostId></Error>
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }

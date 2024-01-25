@@ -92,7 +92,7 @@ public class HomeFragment extends Fragment {
     public HomeFragment() {
     }
 
-    public HomeFragment(Context context, String Title, BottomNavigationView bottomNavigationView, ImageBadgeView imgSettingMenu, ConstraintLayout llLinks, ImageView ivExpand, boolean isQuickLinks) {
+    public HomeFragment(Context context, String Title, BottomNavigationView bottomNavigationView, ImageBadgeView imgSettingMenu, ConstraintLayout llNotificationIcon,ConstraintLayout llLinks, ImageView ivExpand, boolean isQuickLinks) {
         this.context = context;
         this.Title = Title;
         clsCommon = new ClsCommon(context);
@@ -100,7 +100,8 @@ public class HomeFragment extends Fragment {
         this.ivExpand = ivExpand;
         this.llLinks=llLinks;
         this.isQuickLinks=isQuickLinks;
-        imgSettingMenu.setVisibility(View.INVISIBLE);
+        imgSettingMenu.setVisibility(View.GONE);
+        llNotificationIcon.setVisibility(View.GONE);
     }
 
     @Override
