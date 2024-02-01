@@ -211,8 +211,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         }else  if(view.getId() == R.id.tvtSignup)
         {
-            Intent intent = new Intent(context, WebviewLP.class);
-            intent.putExtra(ClsCommon.WEBSITE, ClsCommon.SIGNUP);
+            Intent intent = new Intent(context, RegistrationActivity.class);
+            //intent.putExtra(ClsCommon.WEBSITE, ClsCommon.SIGNUP);
             startActivity(intent);
         }
         else if(view.getId() == R.id.GoogleSignIn)

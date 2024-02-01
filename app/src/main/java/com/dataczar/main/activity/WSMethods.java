@@ -14,6 +14,7 @@ public class WSMethods
 
     public static String GETLOGINSTATUS         = WSURL + "/api/login_status";
     public static String CHECKLOGINAUTH         = WSURL + "/api/login";
+    public static String USER_REGISTER         = WSURL + "/api/register";
     public static String GETUSERPROFILE         = WSURL + "/api/home_data";
 
     public static String CHECKLOGINAUTH_GOOGLE  = WSURL + "/api/login/google/callback";

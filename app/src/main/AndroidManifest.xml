@@ -32,6 +32,9 @@
         android:usesCleartextTraffic="true"
         tools:replace="android:allowBackup">
         <activity
+            android:name=".main.activity.RegistrationActivity"
+            android:exported="false" />
+        <activity
             android:name=".main.activity.NoInternetActivity"
             android:exported="false" />
         <activity

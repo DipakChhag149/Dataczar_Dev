@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/app_color_gray"
+        android:orientation="vertical"
+
+        tools:context=".main.activity.RegistrationActivity">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="15dp">
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/ivBack"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="5dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_arrow_back" />
+
+            <androidx.core.widget.NestedScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:orientation="vertical"
+                    android:layout_height="wrap_content">
+
+                    <androidx.appcompat.widget.AppCompatImageView
+                        android:id="@+id/textView"
+                        android:layout_width="match_parent"
+                        android:layout_height="28dp"
+                        android:layout_marginTop="30dp"
+                        android:contentDescription="@string/login_img_title_desc"
+                        android:scaleType="centerInside"
+                        android:src="@drawable/ic_applogo" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginTop="30dp"
+                        android:layout_marginEnd="10dp"
+                        android:fontFamily="@font/metropolis_semibold"
+                        android:gravity="center"
+                        android:lineSpacingExtra="5dp"
+                        android:text="Sign up with Dataczar Connect for free"
+                        android:textColor="@color/app_sidebar_bg_gray"
+                        android:textSize="18sp" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginTop="32dp"
+                        android:layout_marginEnd="16dp"
+                        android:text="Name"
+                        android:fontFamily="@font/metropolis_medium"
+                        android:textColor="@color/black"
+                        android:textSize="16sp"
+                        />
+
+                    <androidx.appcompat.widget.AppCompatEditText
+                        android:id="@+id/edtName"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="16dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginRight="16dp"
+                        android:autofillHints=""
+                        android:textSize="14sp"
+                        android:textColor="@color/black"
+                        android:fontFamily="@font/metropolis_medium"
+                        android:background="@drawable/edittext_roundcorner"
+                        android:singleLine="true"
+                        android:minHeight="48dp"
+                        android:padding="8dp"
+                        android:paddingStart="16dp"
+                        android:paddingEnd="8dp" />
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginTop="15dp"
+                        android:layout_marginEnd="16dp"
+                        android:text="Email"
+                        android:fontFamily="@font/metropolis_medium"
+                        android:textColor="@color/black"
+                        android:textSize="16sp"
+                        />
+
+                    <androidx.appcompat.widget.AppCompatEditText
+                        android:id="@+id/edtEmail"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="16dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginRight="16dp"
+                        android:autofillHints=""
+                        android:textSize="14sp"
+                        android:textColor="@color/black"
+                        android:fontFamily="@font/metropolis_medium"
+                        android:background="@drawable/edittext_roundcorner"
+                        android:singleLine="true"
+                        android:inputType="textEmailAddress"
+                        android:minHeight="48dp"
+                        android:padding="8dp"
+                        android:paddingStart="16dp"
+                        android:paddingEnd="8dp" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginTop="15dp"
+                        android:layout_marginEnd="16dp"
+                        android:text="Password"
+                        android:fontFamily="@font/metropolis_medium"
+                        android:textColor="@color/black"
+                        android:textSize="16sp"
+                        />
+
+                    <androidx.appcompat.widget.AppCompatEditText
+                        android:id="@+id/edtPassword"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="16dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginRight="16dp"
+                        android:autofillHints=""
+                        android:textSize="14sp"
+                        android:textColor="@color/black"
+                        android:fontFamily="@font/metropolis_medium"
+                        android:background="@drawable/edittext_roundcorner"
+                        android:singleLine="true"
+                        android:inputType="textPassword"
+                        android:minHeight="48dp"
+                        android:padding="8dp"
+                        android:paddingStart="16dp"
+                        android:paddingEnd="8dp" />
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginTop="15dp"
+                        android:layout_marginEnd="16dp"
+                        android:text="Confirm Password"
+                        android:fontFamily="@font/metropolis_medium"
+                        android:textColor="@color/black"
+                        android:textSize="16sp"
+                        />
+
+                    <androidx.appcompat.widget.AppCompatEditText
+                        android:id="@+id/edtConfirmPassword"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="16dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginRight="16dp"
+                        android:autofillHints=""
+                        android:textSize="14sp"
+                        android:textColor="@color/black"
+                        android:fontFamily="@font/metropolis_medium"
+                        android:background="@drawable/edittext_roundcorner"
+                        android:singleLine="true"
+                        android:inputType="textPassword"
+                        android:minHeight="48dp"
+                        android:padding="8dp"
+                        android:paddingStart="16dp"
+                        android:paddingEnd="8dp" />
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/btnLogin"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/orange_roundcorner"
+                        android:text="Register"
+                        android:textColor="@color/app_color_white"
+                        android:minWidth="200dp"
+                        android:padding="8dp"
+                        android:layout_marginTop="20dp"
+                        android:textAllCaps="false"
+                        android:backgroundTint="@color/app_color_primary"
+                        android:gravity="center"
+                        android:layout_gravity="center"
+                        android:textSize="18sp"
+                        android:fontFamily="@font/metropolis_semibold" />
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center"
+                        android:layout_marginTop="30dp"
+                        android:foregroundGravity="center">
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            android:id="@+id/tvtitlesignup"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Already have an account?"
+                            android:textSize="16sp"
+                            android:fontFamily="@font/metropolis_semibold"
+                            android:textColor="@color/app_icon_bgcolor_gray"/>
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            android:id="@+id/tvtSignup"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:paddingStart="4dp"
+                            android:paddingEnd="8dp"
+                            android:textSize="18sp"
+                            android:textColor="@color/app_color_primary"
+                            android:text="Sign In"
+                            android:fontFamily="@font/metropolis_semibold"/>
+
+                    </LinearLayout>
+                </LinearLayout>
+            </androidx.core.widget.NestedScrollView>
+        </LinearLayout>
+
+
+
+
+    </LinearLayout>
+</layout>

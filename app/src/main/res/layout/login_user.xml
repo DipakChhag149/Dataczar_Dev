@@ -22,8 +22,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/login_button_text"
-        android:textSize="30dp"
-        android:textStyle="bold"
+        android:textSize="24sp"
+        android:fontFamily="@font/metropolis_semibold"
         android:layout_marginTop="25dp"
         android:gravity="center_horizontal"
         android:layout_gravity="center_horizontal"
@@ -37,7 +37,7 @@
         android:layout_marginTop="32dp"
         android:layout_marginStart="20dp"
         android:layout_marginEnd="16dp"
-        android:textStyle="bold"
+        android:fontFamily="@font/metropolis_semibold"
         android:text="@string/login_email_text"/>
 
     <androidx.appcompat.widget.AppCompatEditText
@@ -63,7 +63,7 @@
         android:layout_marginStart="20dp"
         android:layout_marginEnd="16dp"
         android:layout_marginTop="16dp"
-        android:textStyle="bold"
+        android:fontFamily="@font/metropolis_semibold"
         android:text="@string/login_password_text"/>
 
     <androidx.appcompat.widget.AppCompatEditText
@@ -90,7 +90,7 @@
         android:layout_marginTop="20dp"
         android:layout_marginEnd="16dp"
         android:textSize="16dp"
-        android:textStyle="bold"
+        android:fontFamily="@font/metropolis_semibold"
         android:text="@string/login_forgotpassword"/>
 
 
@@ -108,7 +108,7 @@
         android:gravity="center"
         android:layout_gravity="center"
         android:textSize="20dp"
-        android:textStyle="bold" />
+       android:fontFamily="@font/metropolis_semibold" />
 
 
     <LinearLayout
@@ -124,7 +124,7 @@
             android:layout_height="wrap_content"
             android:text="@string/login_no_account"
             android:textSize="16dp"
-            android:textStyle="bold"/>
+            android:fontFamily="@font/metropolis_semibold"/>
 
         <TextView
             android:id="@+id/tvtSignup"
@@ -135,7 +135,7 @@
             android:textSize="18dp"
             android:textColor="@color/app_color_primary"
             android:text="@string/login_signup"
-            android:textStyle="bold"/>
+            android:fontFamily="@font/metropolis_semibold"/>
 
     </LinearLayout>
 
