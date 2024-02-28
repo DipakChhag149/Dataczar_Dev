@@ -1,5 +1,7 @@
 package com.dataczar.main.fragment;
 
+import static com.dataczar.main.utils.AppUtils.getCookie;
+
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -135,10 +137,10 @@ public class AddPostFragment extends Fragment {
         cookieManager.setAcceptThirdPartyCookies(mBinding.webview, true);
         cookieManager.acceptCookie();
 
-        String[] cookies = getCookie().split(";");
+        String[] cookies = getCookie(requireContext()).split(";");
 
         HashMap<String, String> map = new HashMap<String, String>();
-        map.put(WSMethods.WSURL, getCookie());
+        map.put(WSMethods.WSURL, getCookie(requireContext()));
 
         for (String cookiekist : cookies) {
             cookieManager.setCookie(WSMethods.WSURL, cookiekist);
@@ -195,12 +197,6 @@ public class AddPostFragment extends Fragment {
             }
         });
 
-    }
-
-    public String getCookie() {
-        SharedPreferences prefs = getActivity().getSharedPreferences(ClsCommon.PREFDATA, Context.MODE_PRIVATE);
-        String Cookie = prefs.getString(ClsCommon.COOKIE, "");
-        return Cookie;
     }
 
     @Override
@@ -269,7 +265,7 @@ public class AddPostFragment extends Fragment {
 //                            if (pd != null && pd.isShowing() && !getActivity().isFinishing())
 //                                pd.dismiss();
 
-                            if (response != null && !response.isEmpty()) {
+                            if (response != null && !response.isEmpty() && !response.contains("<!DOCTYPE html>")) {
                                 try {
                                     JSONObject jsonObject = new JSONObject(response);
 
@@ -305,7 +301,7 @@ public class AddPostFragment extends Fragment {
                 @Override
                 public Map<String, String> getHeaders() throws AuthFailureError {
                     Map<String, String> params = new HashMap<String, String>();
-                    params.put(ClsCommon.COOKIE, getCookie());
+                    params.put(ClsCommon.COOKIE, getCookie(requireContext()));
                     return params;
                 }
 

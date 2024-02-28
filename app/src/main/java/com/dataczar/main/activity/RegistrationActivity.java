@@ -3,7 +3,6 @@ package com.dataczar.main.activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -40,8 +39,6 @@ import okhttp3.Response;
 public class RegistrationActivity extends AppCompatActivity {
 
     private ActivityRegistrationBinding mBinding;
-    SharedPreferences.Editor editor;
-    SharedPreferences sharedPref;
     ClsCommon clsCommon;
 
     @Override
@@ -53,8 +50,6 @@ public class RegistrationActivity extends AppCompatActivity {
 
     private void init() {
         mBinding.ivBack.setOnClickListener(view -> finish());
-        sharedPref = getSharedPreferences(ClsCommon.PREFDATA, Context.MODE_PRIVATE);
-        editor = sharedPref.edit();
         mBinding.btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -187,11 +182,6 @@ public class RegistrationActivity extends AppCompatActivity {
     }
 
 
-    public String getCookie() {
-        SharedPreferences prefs = getSharedPreferences(ClsCommon.PREFDATA, Context.MODE_PRIVATE);
-        String Cookie = prefs.getString(clsCommon.COOKIE, "");
-        return Cookie;
-    }
 
     private void showSuccessDialog() {
         final Dialog dialog = new Dialog(RegistrationActivity.this);

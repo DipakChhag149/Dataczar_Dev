@@ -11,6 +11,7 @@ import androidx.lifecycle.LifecycleObserver;
 import androidx.lifecycle.OnLifecycleEvent;
 import androidx.lifecycle.ProcessLifecycleOwner;
 
+import com.google.firebase.BuildConfig;
 import com.google.firebase.FirebaseApp;
 
 import java.util.List;
@@ -26,6 +27,9 @@ public class DataczarApp extends Application implements LifecycleObserver {
     public void onCreate() {
         super.onCreate();
         FirebaseApp.initializeApp(this);
+       /* if (!BuildConfig.DEBUG){
+            FirebaseApp.initializeApp(this);
+        }*/
         ProcessLifecycleOwner.get().getLifecycle().addObserver(this);
     }
 

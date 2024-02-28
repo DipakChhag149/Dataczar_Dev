@@ -5,7 +5,6 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -29,6 +28,7 @@ import androidx.databinding.DataBindingUtil;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -39,15 +39,18 @@ import com.bumptech.glide.Glide;
 import com.dataczar.BuildConfig;
 import com.dataczar.R;
 import com.dataczar.databinding.ActivityCreatePostBinding;
+import com.dataczar.main.fragment.AddPostNewFragment;
 import com.dataczar.main.fragment.ChooseOptionFragment;
 import com.dataczar.main.fragment.MyImagesFragment;
 import com.dataczar.main.fragment.SearchImagesFragment;
 import com.dataczar.main.listener.ChooseOptionListener;
 import com.dataczar.main.listener.MyImageSelectionListener;
 import com.dataczar.main.model.GetFreeImageListResponse;
+import com.dataczar.main.model.GetInfoResponse;
 import com.dataczar.main.model.GetMyImagesListResponse;
 import com.dataczar.main.model.GetPostListResponse;
 import com.dataczar.main.model.GetSignImageResponse;
+import com.dataczar.main.utils.AppUtils;
 import com.dataczar.main.utils.CustomHorizontalProgressBar;
 import com.dataczar.main.utils.StringUtils;
 import com.dataczar.main.viewmodel.ClsCommon;
@@ -79,6 +82,7 @@ import pl.aprilapps.easyphotopicker.EasyImage;
 import pl.aprilapps.easyphotopicker.EasyImageConfig;
 
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
+import static com.dataczar.main.utils.AppUtils.getCookie;
 
 public class CreatePostActivity extends AppCompatActivity {
     RequestQueue requestQueue;
@@ -90,6 +94,7 @@ public class CreatePostActivity extends AppCompatActivity {
     private String isEdit = "0";
     private GetPostListResponse.PostData postData;
     CustomHorizontalProgressBar horizontalProgress;
+
     public static String getMimeType(String url) {
         String type = null;
         String extension = MimeTypeMap.getFileExtensionFromUrl(url);
@@ -212,6 +217,25 @@ public class CreatePostActivity extends AppCompatActivity {
             });
             chooseOptionBottomSheetFragment.show(getSupportFragmentManager(), "Choose");
 
+        });
+
+        mBinding.ivInfo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (NetworkUtil.isNetworkConnected(CreatePostActivity.this)) {
+                    runOnUiThread(() -> {
+                        if (mBinding.edtTitle.getText().toString().equalsIgnoreCase("")){
+                            new getTitle(CreatePostActivity.this).execute();
+                        }else {
+                            new getContent(CreatePostActivity.this).execute();
+                        }
+
+
+                    });
+                } else {
+                    Toast.makeText(CreatePostActivity.this, "Please check network connection", Toast.LENGTH_SHORT).show();
+                }
+            }
         });
 
 
@@ -355,13 +379,42 @@ public class CreatePostActivity extends AppCompatActivity {
             Toast.makeText(CreatePostActivity.this, "Please enter content", Toast.LENGTH_SHORT).show();
             return;
         }
-        if (selectedImageURL.equalsIgnoreCase("")) {
+       /* if (selectedImageURL.equalsIgnoreCase("")) {
             Toast.makeText(CreatePostActivity.this, "Please choose Image", Toast.LENGTH_SHORT).show();
             return;
+        }*/
+        if (selectedImageURL==null || selectedImageURL.equalsIgnoreCase("")){
+            String accountId = AppUtils.getStringValue(CreatePostActivity.this,ClsCommon.WEBSITE_ID);
+            String title = mBinding.edtTitle.getText().toString();
+            Date c = Calendar.getInstance().getTime();
+            SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy", Locale.US);
+            String publish_time = new SimpleDateFormat("h:mm a", Locale.getDefault()).format(new Date());
+            String publish_date = df.format(c);
+            String category = "Option1";
+            String content = mBinding.edtContent.getText().toString();
+            String strURL = "";
+            if (isEdit.equalsIgnoreCase("1")) {
+                String strPostId = String.valueOf(postData.getId());
+                strURL = "https://connect.dataczar.com/api/websites/" + accountId + "/posts/" + strPostId + "/update?title=" + title + "&publish_date=" + publish_date + "&publish_time=" + publish_time + "&category=" + category + "&status=live&content=" + content + "&editor=&image=" + selectedImageURL;
+            } else {
+                strURL = "https://connect.dataczar.com/api/websites/" + accountId + "/posts/create?title=" + title + "&publish_date=" + publish_date + "&publish_time=" + publish_time + "&category=" + category + "&status=live&content=" + content + "&editor=&image=" + selectedImageURL;
+            }
+
+            if (NetworkUtil.isNetworkConnected(CreatePostActivity.this)) {
+                String finalStrURL = strURL;
+                runOnUiThread(() -> {
+                    if (isEdit.equalsIgnoreCase("1")) {
+                        new updatePost(CreatePostActivity.this, finalStrURL).execute();
+                    } else {
+                        new createPost(CreatePostActivity.this, finalStrURL).execute();
+                    }
+                });
+            } else {
+                Toast.makeText(CreatePostActivity.this, "Please check network connection", Toast.LENGTH_SHORT).show();
+            }
         }
-        if (selectedImageURL.contains("https")) {
-            SharedPreferences prefs = getSharedPreferences(ClsCommon.PREFDATA, Context.MODE_PRIVATE);
-            String accountId = prefs.getString(ClsCommon.WEBSITE_ID, "");
+        else if (selectedImageURL.contains("https")) {
+            String accountId = AppUtils.getStringValue(CreatePostActivity.this,ClsCommon.WEBSITE_ID);
             String title = mBinding.edtTitle.getText().toString();
             Date c = Calendar.getInstance().getTime();
             SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy", Locale.US);
@@ -397,8 +450,7 @@ public class CreatePostActivity extends AppCompatActivity {
 
 
     private void uploadImage() {
-        SharedPreferences prefs = getSharedPreferences(ClsCommon.PREFDATA, Context.MODE_PRIVATE);
-        String accountId = prefs.getString(ClsCommon.ACCOUNT_ID, "");
+        String accountId = AppUtils.getStringValue(CreatePostActivity.this,ClsCommon.ACCOUNT_ID);
         String strOne = getAlphaNumericString(4);
         String strTwo = getAlphaNumericString(4);
         String fileName = "IMG_" + strOne + "_" + strTwo;
@@ -481,7 +533,7 @@ public class CreatePostActivity extends AppCompatActivity {
             public void onFailure(Call call, IOException e) {
                 e.printStackTrace();
                 Log.e("Response Fail: ", "" + e.getMessage());
-                horizontalProgress.setVisibility(View.GONE);
+                horizontalProgress.setVisibility(View.INVISIBLE);
             }
 
             @Override
@@ -492,7 +544,7 @@ public class CreatePostActivity extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        horizontalProgress.setVisibility(View.GONE);
+                        horizontalProgress.setVisibility(View.INVISIBLE);
                     }
                 });
 
@@ -546,6 +598,9 @@ public class CreatePostActivity extends AppCompatActivity {
         tvOk.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                mBinding.edtTitle.setText("");
+                mBinding.edtContent.setText("");
+
                 Intent intent = new Intent("create_post_update");
                 intent.putExtra("message", "Create Post");
                 LocalBroadcastManager.getInstance(CreatePostActivity.this).sendBroadcast(intent);
@@ -585,7 +640,7 @@ public class CreatePostActivity extends AppCompatActivity {
                                 Log.e("Response", "" + response);
                             }
 
-                            horizontalProgress.setVisibility(View.GONE);
+                            horizontalProgress.setVisibility(View.INVISIBLE);
                             if (response != null && !response.isEmpty()) {
                                 MyImagesFragment myImagesFragment = new MyImagesFragment(CreatePostActivity.this, response, new MyImageSelectionListener() {
                                     @Override
@@ -614,7 +669,7 @@ public class CreatePostActivity extends AppCompatActivity {
                     }, new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError error) {
-                    horizontalProgress.setVisibility(View.GONE);
+                    horizontalProgress.setVisibility(View.INVISIBLE);
 
                     Toast.makeText(CreatePostActivity.this, "Response Error: " + error + " Can't Connect to server.", Toast.LENGTH_LONG).show();
                 }
@@ -622,18 +677,12 @@ public class CreatePostActivity extends AppCompatActivity {
                 @Override
                 public Map<String, String> getHeaders() throws AuthFailureError {
                     Map<String, String> params = new HashMap<String, String>();
-                    params.put(ClsCommon.COOKIE, getCookie());
+                    params.put(ClsCommon.COOKIE, getCookie(CreatePostActivity.this));
                     return params;
                 }
 
             };
             requestQueue.add(stringRequest);
-        }
-
-        public String getCookie() {
-            SharedPreferences prefs = CreatePostActivity.this.getSharedPreferences(ClsCommon.PREFDATA, Context.MODE_PRIVATE);
-            String Cookie = prefs.getString(ClsCommon.COOKIE, "");
-            return Cookie;
         }
     }
 
@@ -668,7 +717,7 @@ public class CreatePostActivity extends AppCompatActivity {
                                 Log.e("Response", "" + response);
                             }
 
-                            horizontalProgress.setVisibility(View.GONE);
+                            horizontalProgress.setVisibility(View.INVISIBLE);
                             if (response != null && !response.isEmpty()) {
                                 GetSignImageResponse signImageResponse = new Gson().fromJson(response, GetSignImageResponse.class);
                                 if (signImageResponse != null) {
@@ -690,7 +739,7 @@ public class CreatePostActivity extends AppCompatActivity {
                     }, new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError error) {
-                    horizontalProgress.setVisibility(View.GONE);
+                    horizontalProgress.setVisibility(View.INVISIBLE);
 
                     Toast.makeText(CreatePostActivity.this, "Response Error: " + error + " Can't Connect to server.", Toast.LENGTH_LONG).show();
                 }
@@ -698,18 +747,12 @@ public class CreatePostActivity extends AppCompatActivity {
                 @Override
                 public Map<String, String> getHeaders() throws AuthFailureError {
                     Map<String, String> params = new HashMap<String, String>();
-                    params.put(ClsCommon.COOKIE, getCookie());
+                    params.put(ClsCommon.COOKIE, getCookie(CreatePostActivity.this));
                     return params;
                 }
 
             };
             requestQueue.add(stringRequest);
-        }
-
-        public String getCookie() {
-            SharedPreferences prefs = getSharedPreferences(ClsCommon.PREFDATA, Context.MODE_PRIVATE);
-            String Cookie = prefs.getString(ClsCommon.COOKIE, "");
-            return Cookie;
         }
     }
 
@@ -746,7 +789,7 @@ public class CreatePostActivity extends AppCompatActivity {
                                 Log.e("Response", "" + response);
                             }
 
-                            horizontalProgress.setVisibility(View.GONE);
+                            horizontalProgress.setVisibility(View.INVISIBLE);
                             if (response != null && !response.isEmpty()) {
                                 try {
                                     JSONObject jsonObject = new JSONObject(response);
@@ -763,7 +806,7 @@ public class CreatePostActivity extends AppCompatActivity {
                     }, new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError error) {
-                    horizontalProgress.setVisibility(View.GONE);
+                    horizontalProgress.setVisibility(View.INVISIBLE);
 
                     Toast.makeText(CreatePostActivity.this, "Response Error: " + error + " Can't Connect to server.", Toast.LENGTH_LONG).show();
                 }
@@ -771,17 +814,11 @@ public class CreatePostActivity extends AppCompatActivity {
                 @Override
                 public Map<String, String> getHeaders() throws AuthFailureError {
                     Map<String, String> params = new HashMap<String, String>();
-                    params.put(ClsCommon.COOKIE, getCookie());
+                    params.put(ClsCommon.COOKIE, getCookie(CreatePostActivity.this));
                     return params;
                 }
             };
             requestQueue.add(stringRequest);
-        }
-
-        public String getCookie() {
-            SharedPreferences prefs = getSharedPreferences(ClsCommon.PREFDATA, Context.MODE_PRIVATE);
-            String Cookie = prefs.getString(ClsCommon.COOKIE, "");
-            return Cookie;
         }
     }
 
@@ -817,7 +854,7 @@ public class CreatePostActivity extends AppCompatActivity {
                                 Log.e("Response", "" + response);
                             }
 
-                            horizontalProgress.setVisibility(View.GONE);
+                            horizontalProgress.setVisibility(View.INVISIBLE);
                             if (response != null && !response.isEmpty()) {
                                 try {
                                     JSONObject jsonObject = new JSONObject(response);
@@ -834,24 +871,212 @@ public class CreatePostActivity extends AppCompatActivity {
                     }, new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError error) {
-                    horizontalProgress.setVisibility(View.GONE);
+                    horizontalProgress.setVisibility(View.INVISIBLE);
                     Toast.makeText(CreatePostActivity.this, "Response Error: " + error + " Can't Connect to server.", Toast.LENGTH_LONG).show();
                 }
             }) {
                 @Override
                 public Map<String, String> getHeaders() throws AuthFailureError {
                     Map<String, String> params = new HashMap<String, String>();
-                    params.put(ClsCommon.COOKIE, getCookie());
+                    params.put(ClsCommon.COOKIE, getCookie(CreatePostActivity.this));
                     return params;
                 }
             };
             requestQueue.add(stringRequest);
         }
 
-        public String getCookie() {
-            SharedPreferences prefs = getSharedPreferences(ClsCommon.PREFDATA, Context.MODE_PRIVATE);
-            String Cookie = prefs.getString(ClsCommon.COOKIE, "");
-            return Cookie;
+    }
+
+
+    class getTitle extends AsyncTask<String, Void, Boolean> {
+
+        public getTitle(Context context) {
+            horizontalProgress.setVisibility(View.VISIBLE);
         }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            horizontalProgress.setVisibility(View.VISIBLE);
+
+        }
+
+        @Override
+        protected Boolean doInBackground(String... strings) {
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean aBoolean) {
+            super.onPostExecute(aBoolean);
+            StringRequest stringRequest = new StringRequest(Request.Method.GET, "https://connect.dataczar.com/api/suggestion?prompt=One blog topic for website named "+AppUtils.getStringValue(CreatePostActivity.this,ClsCommon.WEBSITE_NAME),
+                    new Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String response) {
+                            if (BuildConfig.DEBUG) {
+                                Log.e("Response", "" + response);
+                            }
+                            horizontalProgress.setVisibility(View.INVISIBLE);
+
+
+                            if (response != null && !response.isEmpty() && !response.contains("<!DOCTYPE html>")) {
+                                try {
+                                    GetInfoResponse infoResponse = new Gson().fromJson(response, GetInfoResponse.class);
+                                    if (infoResponse!=null){
+                                        if (mBinding.edtTitle.getText().toString().isEmpty()){
+                                            mBinding.edtTitle.setText(infoResponse.getData());
+                                        }else {
+                                            mBinding.edtContent.setText(infoResponse.getData());
+                                        }
+                                    }
+                                }catch (Exception e){
+                                    e.printStackTrace();
+                                }
+                            } else {
+                                Toast.makeText(CreatePostActivity.this, " Can't Connect to server.", Toast.LENGTH_LONG).show();
+                            }
+
+                        }
+                    }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    horizontalProgress.setVisibility(View.INVISIBLE);
+
+                    Toast.makeText(CreatePostActivity.this, "Response Error: " + error + " Can't Connect to server.", Toast.LENGTH_LONG).show();
+                }
+            }) {
+                @Override
+                public Map<String, String> getHeaders() throws AuthFailureError {
+                    Map<String, String> params = new HashMap<String, String>();
+                    params.put(ClsCommon.COOKIE, getCookie(CreatePostActivity.this));
+                    return params;
+                }
+
+            };
+            requestQueue.add(stringRequest);
+        }
+    }
+
+
+    class getContent extends AsyncTask<String, Void, Boolean> {
+
+        public getContent(Context context) {
+            horizontalProgress.setVisibility(View.VISIBLE);
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            horizontalProgress.setVisibility(View.VISIBLE);
+
+        }
+
+        @Override
+        protected Boolean doInBackground(String... strings) {
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean aBoolean) {
+            super.onPostExecute(aBoolean);
+            StringRequest stringRequest = new StringRequest(Request.Method.GET, "https://connect.dataczar.com/api/suggestion?prompt="+mBinding.edtTitle.getText().toString(),
+                    new Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String response) {
+                            if (BuildConfig.DEBUG) {
+                                Log.e("Response", "" + response);
+                            }
+                            horizontalProgress.setVisibility(View.INVISIBLE);
+
+
+                            if (response != null && !response.isEmpty() && !response.contains("<!DOCTYPE html>")) {
+                                try {
+                                    GetInfoResponse infoResponse = new Gson().fromJson(response, GetInfoResponse.class);
+                                    if (infoResponse!=null){
+                                        if (mBinding.edtTitle.getText().toString().isEmpty()){
+                                            mBinding.edtTitle.setText(infoResponse.getData());
+                                        }else {
+                                            mBinding.edtContent.setText(infoResponse.getData());
+                                        }
+                                    }
+                                }catch (Exception e){
+                                    e.printStackTrace();
+                                }
+                            } else {
+                                Toast.makeText(CreatePostActivity.this, " Can't Connect to server.", Toast.LENGTH_LONG).show();
+                            }
+
+                        }
+                    }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    horizontalProgress.setVisibility(View.INVISIBLE);
+
+                    Toast.makeText(CreatePostActivity.this, "Response Error: " + error + " Can't Connect to server.", Toast.LENGTH_LONG).show();
+                }
+            }) {
+                @Override
+                public Map<String, String> getHeaders() throws AuthFailureError {
+                    Map<String, String> params = new HashMap<String, String>();
+                    params.put(ClsCommon.COOKIE, getCookie(CreatePostActivity.this));
+                    return params;
+                }
+
+
+            };
+            stringRequest.setRetryPolicy(new DefaultRetryPolicy(
+                    300000,
+                    DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                    DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+            requestQueue.add(stringRequest);
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+      if (isEdit.equalsIgnoreCase("0")){
+          if (!mBinding.edtTitle.getText().toString().equalsIgnoreCase("") && !mBinding.edtContent.getText().toString().equalsIgnoreCase("")){
+            showChangesDialog();
+          }else {
+              super.onBackPressed();
+          }
+      }else {
+          super.onBackPressed();
+      }
+    }
+
+    private void showChangesDialog() {
+        final Dialog dialog = new Dialog(this);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setCancelable(false);
+        dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        dialog.setContentView(R.layout.delete_dialog);
+
+        AppCompatTextView tvMessage = dialog.findViewById(R.id.tvMessage);
+        tvMessage.setText("Do you want to save changes?");
+
+        AppCompatTextView tvMessageTwo = dialog.findViewById(R.id.tvMessageTwo);
+        tvMessageTwo.setVisibility(View.GONE);
+        AppCompatTextView tvNo = dialog.findViewById(R.id.tvNo);
+        AppCompatTextView tvYes = dialog.findViewById(R.id.tvYes);
+        tvNo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mBinding.edtTitle.setText("");
+                mBinding.edtContent.setText("");
+                dialog.dismiss();
+                onBackPressed();
+            }
+        });
+
+        tvYes.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+                mBinding.btnCreate.performClick();
+            }
+        });
+
+        dialog.show();
     }
 }

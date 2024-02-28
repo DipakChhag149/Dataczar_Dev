@@ -55,6 +55,8 @@ public class PostListAdapter extends RecyclerView.Adapter<PostListAdapter.DataVi
         Glide.with(holder.mBinding.getRoot().getContext())
                 .load(postData.getImage())
                 .override(600,600)
+                .placeholder(R.drawable.ic_no_image)
+                .error(R.drawable.ic_no_image)
                 .centerInside()
                 .into(holder.mBinding.ivPost);
         String date=postData.getCreatedAt();

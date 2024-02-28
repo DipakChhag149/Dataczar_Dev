@@ -4,12 +4,13 @@
 
 package com.dataczar.main.activity;
 
+import static com.dataczar.main.utils.AppUtils.getCookie;
+
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
@@ -170,10 +171,10 @@ public class WebviewLP extends AppCompatActivity
         cookieManager.setAcceptThirdPartyCookies(myWebView, true);
         cookieManager.acceptCookie();
 
-        String[] cookies = getCookie().split(";");
+        String[] cookies = getCookie(WebviewLP.this).split(";");
 
         HashMap<String, String> map = new HashMap<String, String>();
-        map.put(WSMethods.WSURL, getCookie());
+        map.put(WSMethods.WSURL, getCookie(WebviewLP.this));
 
         for (String cookiekist : cookies) {
             cookieManager.setCookie(WSMethods.WSURL, cookiekist);
@@ -320,11 +321,6 @@ public class WebviewLP extends AppCompatActivity
         }
     }
 
-    public String getCookie() {
-        SharedPreferences prefs = getSharedPreferences(ClsCommon.PREFDATA, Context.MODE_PRIVATE);
-        String Cookie = prefs.getString(ClsCommon.COOKIE, "");
-        return Cookie;
-    }
 
 
 }

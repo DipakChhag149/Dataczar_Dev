@@ -4,10 +4,12 @@
 
 package com.dataczar.main.activity;
 
+import static com.dataczar.main.utils.AppUtils.getCookie;
+
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
+
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.MenuItem;
@@ -160,7 +162,7 @@ public class NotificationPreview extends AppCompatActivity
                 public Map<String, String> getHeaders() throws AuthFailureError
                 {
                     Map<String, String>  params = new HashMap<String, String>();
-                    params.put(ClsCommon.COOKIE, getCookie());
+                    params.put(ClsCommon.COOKIE, getCookie(NotificationPreview.this));
                     return params;
                 }
 
@@ -178,13 +180,6 @@ public class NotificationPreview extends AppCompatActivity
             default:
                 return super.onOptionsItemSelected(item);
         }
-    }
-
-    public String getCookie()
-    {
-        SharedPreferences prefs = getSharedPreferences(ClsCommon.PREFDATA, Context.MODE_PRIVATE);
-        String Cookie = prefs.getString(ClsCommon.COOKIE, "");
-        return  Cookie;
     }
 
 }

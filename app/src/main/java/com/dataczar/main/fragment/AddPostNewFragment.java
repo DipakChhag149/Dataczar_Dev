@@ -1,21 +1,25 @@
 package com.dataczar.main.fragment;
 
-import android.app.ProgressDialog;
+import static com.dataczar.main.utils.AppUtils.getCookie;
+
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.AppCompatTextView;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.android.volley.AuthFailureError;
@@ -33,6 +37,7 @@ import com.dataczar.main.activity.Dashboard;
 import com.dataczar.main.adapter.PostListAdapter;
 import com.dataczar.main.listener.PostItemListener;
 import com.dataczar.main.model.GetPostListResponse;
+import com.dataczar.main.utils.AppUtils;
 import com.dataczar.main.utils.CustomHorizontalProgressBar;
 import com.dataczar.main.utils.PaginationScrollListener;
 import com.dataczar.main.viewmodel.ClsCommon;
@@ -72,8 +77,8 @@ public class AddPostNewFragment extends Fragment {
 
     private void init() {
         clsCommon = new ClsCommon(requireContext());
-        SharedPreferences prefs = getActivity().getSharedPreferences(ClsCommon.PREFDATA, Context.MODE_PRIVATE);
-        String websiteId = prefs.getString(ClsCommon.WEBSITE_ID, "");
+
+        String websiteId = AppUtils.getStringValue(requireContext(),ClsCommon.WEBSITE_ID);
 
         url = "https://connect.dataczar.com/api/websites/" + websiteId + "/posts-api?page=" + pageNumber;
         horizontalProgress = mBinding.getRoot().findViewById(R.id.horizontalProgress);
@@ -82,15 +87,7 @@ public class AddPostNewFragment extends Fragment {
         postListAdapter = new PostListAdapter(new PostItemListener() {
             @Override
             public void deletePost(GetPostListResponse.PostData data,int position) {
-                if(!clsCommon.checkConnection())
-                {
-                    clsCommon.showSnackBar(false, mBinding.getRoot());
-                }else {
-                    SharedPreferences prefs = getActivity().getSharedPreferences(ClsCommon.PREFDATA, Context.MODE_PRIVATE);
-                    String websiteId = prefs.getString(ClsCommon.WEBSITE_ID, "");
-                    String url = "https://connect.dataczar.com/api/websites/"+websiteId+"/posts/"+data.getId()+"/delete";
-                    new deletePost(url,position,data).execute();
-                }
+               showDeleteDialog(data,position);
 
             }
         });
@@ -134,8 +131,7 @@ public class AddPostNewFragment extends Fragment {
                 if (postListAdapter != null) {
                     postListAdapter.clearData();
                 }
-                SharedPreferences prefs = getActivity().getSharedPreferences(ClsCommon.PREFDATA, Context.MODE_PRIVATE);
-                String websiteId = prefs.getString(ClsCommon.WEBSITE_ID, "");
+                String websiteId = AppUtils.getStringValue(requireContext(),ClsCommon.WEBSITE_ID);
                 url = "https://connect.dataczar.com/api/websites/" + websiteId + "/posts-api?page=" + pageNumber;
                 loadFirstPage();
             }
@@ -166,12 +162,6 @@ public class AddPostNewFragment extends Fragment {
         } else {
             Toast.makeText(getContext(), "Please check network connection", Toast.LENGTH_SHORT).show();
         }
-    }
-
-    public String getCookie() {
-        SharedPreferences prefs = getActivity().getSharedPreferences(ClsCommon.PREFDATA, Context.MODE_PRIVATE);
-        String Cookie = prefs.getString(ClsCommon.COOKIE, "");
-        return Cookie;
     }
 
     class getPostList extends AsyncTask<String, Void, Boolean> {
@@ -213,7 +203,7 @@ public class AddPostNewFragment extends Fragment {
 //                            if (pd.isShowing())
 //                                pd.dismiss();
 
-                            if (response != null && !response.isEmpty()) {
+                            if (response != null && !response.isEmpty() && !response.contains("<!DOCTYPE html>")) {
                                 GetPostListResponse getPostListResponse = new Gson().fromJson(response, GetPostListResponse.class);
                                 if (getPostListResponse != null) {
                                     if (getPostListResponse.getPosts().getData() != null && getPostListResponse.getPosts().getData().size() != 0) {
@@ -250,7 +240,7 @@ public class AddPostNewFragment extends Fragment {
                 @Override
                 public Map<String, String> getHeaders() throws AuthFailureError {
                     Map<String, String> params = new HashMap<String, String>();
-                    params.put(ClsCommon.COOKIE, getCookie());
+                    params.put(ClsCommon.COOKIE, getCookie(requireContext()));
                     return params;
                 }
 
@@ -259,6 +249,40 @@ public class AddPostNewFragment extends Fragment {
         }
     }
 
+    private void showDeleteDialog(GetPostListResponse.PostData data,int position) {
+        final Dialog dialog = new Dialog(requireContext());
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setCancelable(false);
+        dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        dialog.setContentView(R.layout.delete_dialog);
+        //dialog.getWindow().setFlags(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
+
+        AppCompatTextView tvNo = dialog.findViewById(R.id.tvNo);
+        AppCompatTextView tvYes = dialog.findViewById(R.id.tvYes);
+        tvNo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+              dialog.dismiss();
+            }
+        });
+
+        tvYes.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+                if(!clsCommon.checkConnection())
+                {
+                    clsCommon.showSnackBar(false, mBinding.getRoot());
+                }else {
+                    String websiteId = AppUtils.getStringValue(requireContext(),ClsCommon.WEBSITE_ID);
+                    String url = "https://connect.dataczar.com/api/websites/"+websiteId+"/posts/"+data.getId()+"/delete";
+                    new deletePost(url,position,data).execute();
+                }
+            }
+        });
+
+        dialog.show();
+    }
 
     class deletePost extends AsyncTask<String, Void, Boolean> {
         private String url;
@@ -302,16 +326,6 @@ public class AddPostNewFragment extends Fragment {
                                     if (jsonObject.has("status")) {
                                         if (jsonObject.getString("status").equals("success")){
                                             postListAdapter.delete(deleteData,position);
-                                           /* pageNumber = 1;
-                                            isLoading = false;
-                                            isLastPage = false;
-                                            if (postListAdapter != null) {
-                                                postListAdapter.clearData();
-                                            }
-                                            SharedPreferences prefs = getActivity().getSharedPreferences(ClsCommon.PREFDATA, Context.MODE_PRIVATE);
-                                            String websiteId = prefs.getString(ClsCommon.WEBSITE_ID, "");
-                                            url = "https://connect.dataczar.com/api/websites/" + websiteId + "/posts-api?page=" + pageNumber;
-                                            loadFirstPage();*/
                                         }
                                     }
                                 } catch (JSONException e) {
@@ -331,17 +345,11 @@ public class AddPostNewFragment extends Fragment {
                 @Override
                 public Map<String, String> getHeaders() throws AuthFailureError {
                     Map<String, String> params = new HashMap<String, String>();
-                    params.put(ClsCommon.COOKIE, getCookie());
+                    params.put(ClsCommon.COOKIE, getCookie(requireContext()));
                     return params;
                 }
             };
             requestQueue.add(stringRequest);
-        }
-
-        public String getCookie() {
-            SharedPreferences prefs =getActivity().getSharedPreferences(ClsCommon.PREFDATA, Context.MODE_PRIVATE);
-            String Cookie = prefs.getString(ClsCommon.COOKIE, "");
-            return Cookie;
         }
     }
 

@@ -46,7 +46,7 @@
             android:layout_width="match_parent"
             android:layout_height="4dp"
             app:animationDuration="2000"
-            android:visibility="gone"
+            android:visibility="visible"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             android:layout_below="@+id/llToolbar"

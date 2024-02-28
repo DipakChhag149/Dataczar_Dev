@@ -37,8 +37,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     private static final String TAG = "MyFirebaseMsgService";
     RequestQueue requestQueue;
-    SharedPreferences.Editor editor;
-    SharedPreferences sharedPref;
     IconBadgeNumManager setIconBadgeNumManager;
 
     // [START receive_message]
@@ -134,7 +132,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         intent.putExtra("NeedNavigate", ClsCommon.NOTIFICATION);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
-                PendingIntent.FLAG_ONE_SHOT);
+                PendingIntent.FLAG_ONE_SHOT | PendingIntent.FLAG_IMMUTABLE);
         String channelId = getString(R.string.default_notification_channel_id);
         Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 
@@ -187,20 +185,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     private void sendRegistrationToServer(String token) {
         requestQueue = Volley.newRequestQueue(getApplicationContext());
-        sharedPref = getSharedPreferences(ClsCommon.PREFDATA, Context.MODE_PRIVATE);
-        editor = sharedPref.edit();
-
-        editor.putString(ClsCommon.FCM_TOKEN, token);
-        editor.apply();
-
-        editor.putBoolean(ClsCommon.NOTIFICATION_STATUS, true);
-        editor.apply();
+       AppUtils.saveFMCToken(this,token);
+       AppUtils.saveBoolValue(this,ClsCommon.NOTIFICATION_STATUS, true);
     }
 
-
-    public String getCookie() {
-        SharedPreferences prefs = getSharedPreferences(ClsCommon.PREFDATA, Context.MODE_PRIVATE);
-        String Cookie = prefs.getString(ClsCommon.COOKIE, "");
-        return Cookie;
-    }
 }

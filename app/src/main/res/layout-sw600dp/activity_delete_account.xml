@@ -94,6 +94,7 @@
                             android:textSize="24sp" />
 
                         <androidx.appcompat.widget.AppCompatTextView
+                            android:id="@+id/tvPhone"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="20dp"

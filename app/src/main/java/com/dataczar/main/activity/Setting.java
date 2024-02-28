@@ -4,11 +4,13 @@
 
 package com.dataczar.main.activity;
 
+import static com.dataczar.main.utils.AppUtils.getCookie;
+
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
+
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -36,6 +38,8 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.dataczar.R;
+import com.dataczar.main.utils.AppPreferenceManager;
+import com.dataczar.main.utils.AppUtils;
 import com.dataczar.main.utils.CustomHorizontalProgressBar;
 import com.dataczar.main.viewmodel.ClsCommon;
 
@@ -57,9 +61,6 @@ public class Setting extends AppCompatActivity implements View.OnClickListener {
     LinearLayout llUserName, llMore, llBilling, llLogout, llManageAccount, llChangePass, llNotification;
     ImageView img_bedge_billing;
     Switch notificationSwitch;
-
-    SharedPreferences.Editor editor;
-    SharedPreferences sharedPref;
     CustomHorizontalProgressBar horizontalProgress;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -68,9 +69,6 @@ public class Setting extends AppCompatActivity implements View.OnClickListener {
         setContentView(R.layout.setting);
         context = Setting.this;
         requestQueue = Volley.newRequestQueue(context);
-        sharedPref = getSharedPreferences(ClsCommon.PREFDATA, Context.MODE_PRIVATE);
-        editor = sharedPref.edit();
-
 
         ImageView imgBack = findViewById(R.id.ivBack);
         ImageView imgHelp = findViewById(R.id.imgHelp);
@@ -88,7 +86,7 @@ public class Setting extends AppCompatActivity implements View.OnClickListener {
 
         img_bedge_billing = findViewById(R.id.img_bedge_billing);
 
-        if (sharedPref.getBoolean(ClsCommon.NOTIFICATION_STATUS,true)){
+        if (AppUtils.getBoolValue(Setting.this,ClsCommon.NOTIFICATION_STATUS)){
             notificationSwitch.setChecked(true);
         }else {
             notificationSwitch.setChecked(false);
@@ -165,12 +163,12 @@ public class Setting extends AppCompatActivity implements View.OnClickListener {
 
         notificationSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                String token=sharedPref.getString(ClsCommon.FCM_TOKEN,"");
+                String token=AppUtils.getStringValue(Setting.this,ClsCommon.FCM_TOKEN);
                 if (isChecked) {
-                    editor.putBoolean(ClsCommon.NOTIFICATION_STATUS,true).apply();
+                    AppUtils.saveBoolValue(Setting.this,ClsCommon.NOTIFICATION_STATUS,true);
                     new AddNotificationToken(Setting.this,token).execute();
                 } else {
-                    editor.putBoolean(ClsCommon.NOTIFICATION_STATUS,false).apply();
+                    AppUtils.saveBoolValue(Setting.this,ClsCommon.NOTIFICATION_STATUS,false);
                     new DeleteNotification(Setting.this,token).execute();
                 }
             }
@@ -219,11 +217,6 @@ public class Setting extends AppCompatActivity implements View.OnClickListener {
 
     }
 
-    public String getCookie() {
-        SharedPreferences prefs = getSharedPreferences(ClsCommon.PREFDATA, Context.MODE_PRIVATE);
-        String Cookie = prefs.getString(ClsCommon.COOKIE, "");
-        return Cookie;
-    }
 
     class getHomeData extends AsyncTask<String, Void, Boolean> {
 
@@ -292,7 +285,7 @@ public class Setting extends AppCompatActivity implements View.OnClickListener {
                 @Override
                 public Map<String, String> getHeaders() throws AuthFailureError {
                     Map<String, String> params = new HashMap<String, String>();
-                    params.put(ClsCommon.COOKIE, getCookie());
+                    params.put(ClsCommon.COOKIE, getCookie(Setting.this));
                     return params;
                 }
 
@@ -375,7 +368,7 @@ public class Setting extends AppCompatActivity implements View.OnClickListener {
                 @Override
                 public Map<String, String> getHeaders() throws AuthFailureError {
                     Map<String, String> params = new HashMap<String, String>();
-                    params.put(ClsCommon.COOKIE, getCookie());
+                    params.put(ClsCommon.COOKIE, getCookie(Setting.this));
                     return params;
                 }
 
@@ -441,7 +434,7 @@ public class Setting extends AppCompatActivity implements View.OnClickListener {
                 @Override
                 public Map<String, String> getHeaders() {
                     Map<String, String> params = new HashMap<String, String>();
-                    params.put(ClsCommon.COOKIE, getCookie());
+                    params.put(ClsCommon.COOKIE, getCookie(Setting.this));
                     return params;
                 }
 
@@ -468,8 +461,8 @@ public class Setting extends AppCompatActivity implements View.OnClickListener {
                         }
 
                         Cookie = Cookie.substring(0, Cookie.length() - 1);
-                        editor.putString(ClsCommon.COOKIE, Cookie);
-                        editor.apply();
+                        AppUtils.saveCookie(Setting.this,Cookie);
+
 
                     } catch (Exception je) {
                         return Response.error(new ParseError(je));
@@ -541,7 +534,7 @@ public class Setting extends AppCompatActivity implements View.OnClickListener {
                 @Override
                 public Map<String, String> getHeaders() {
                     Map<String, String> params = new HashMap<String, String>();
-                    params.put(ClsCommon.COOKIE, getCookie());
+                    params.put(ClsCommon.COOKIE, getCookie(Setting.this));
                     return params;
                 }
 
@@ -569,8 +562,7 @@ public class Setting extends AppCompatActivity implements View.OnClickListener {
                         }
 
                         Cookie = Cookie.substring(0, Cookie.length() - 1);
-                        editor.putString(ClsCommon.COOKIE, Cookie);
-                        editor.apply();
+                        AppUtils.saveCookie(Setting.this,Cookie);
 
                     } catch (Exception je) {
                         return Response.error(new ParseError(je));

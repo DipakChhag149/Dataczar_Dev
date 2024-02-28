@@ -1,5 +1,7 @@
 package com.dataczar.main.fragment;
 
+import static com.dataczar.main.utils.AppUtils.getCookie;
+
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -243,7 +245,7 @@ public class ProfileFragment extends Fragment
                 public Map<String, String> getHeaders() throws AuthFailureError
                 {
                     Map<String, String>  params = new HashMap<String, String>();
-                    params.put(ClsCommon.COOKIE, getCookie());
+                    params.put(ClsCommon.COOKIE, getCookie(requireContext()));
                     return params;
                 }
 
@@ -414,20 +416,13 @@ public class ProfileFragment extends Fragment
                 public Map<String, String> getHeaders() throws AuthFailureError
                 {
                     Map<String, String>  params = new HashMap<String, String>();
-                    params.put(ClsCommon.COOKIE, getCookie());
+                    params.put(ClsCommon.COOKIE, getCookie(requireContext()));
                     return params;
                 }
 
             };
             requestQueue.add(stringRequest);
         }
-    }
-
-    public String getCookie()
-    {
-        SharedPreferences prefs = getActivity().getSharedPreferences(ClsCommon.PREFDATA, Context.MODE_PRIVATE);
-        String Cookie = prefs.getString(ClsCommon.COOKIE, "");
-        return  Cookie;
     }
 
 

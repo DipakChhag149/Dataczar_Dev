@@ -1,5 +1,7 @@
 package com.dataczar.main.fragment;
 
+import static com.dataczar.main.utils.AppUtils.getCookie;
+
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
@@ -42,14 +44,19 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.dataczar.R;
+import com.dataczar.main.activity.Dashboard;
+import com.dataczar.main.activity.SessionExpiredActivity;
 import com.dataczar.main.activity.WSMethods;
 import com.dataczar.main.activity.WebviewLP;
 import com.dataczar.main.adapter.QuickLinksAdapter;
 import com.dataczar.main.model.QuickLinkData;
+import com.dataczar.main.utils.AppUtils;
 import com.dataczar.main.utils.CustomHorizontalProgressBar;
+import com.dataczar.main.utils.Logger;
 import com.dataczar.main.viewmodel.ClsCommon;
 import com.google.android.material.badge.BadgeDrawable;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.gson.Gson;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -86,8 +93,6 @@ public class HomeFragment extends Fragment {
     private NestedScrollView scrollview;
     private ImageView ivExpand;
     private boolean isQuickLinks=false;
-    SharedPreferences.Editor editor;
-    SharedPreferences sharedPref;
     CustomHorizontalProgressBar horizontalProgress;
     public HomeFragment() {
     }
@@ -113,9 +118,6 @@ public class HomeFragment extends Fragment {
         clQuickLink = view.findViewById(R.id.clQuickLink);
         scrollview = view.findViewById(R.id.scrollview);
         horizontalProgress = view.findViewById(R.id.horizontalProgress);
-        sharedPref = getContext().getSharedPreferences(ClsCommon.PREFDATA, Context.MODE_PRIVATE);
-        editor = sharedPref.edit();
-
         if (context == null)
             this.context = getActivity().getApplicationContext();
 
@@ -167,10 +169,10 @@ public class HomeFragment extends Fragment {
         cookieManager.setAcceptThirdPartyCookies(myWebView, true);
         cookieManager.acceptCookie();
 
-        String[] cookies = getCookie().split(";");
+        String[] cookies = getCookie(context).split(";");
 
         HashMap<String, String> map = new HashMap<String, String>();
-        map.put(WSMethods.WSURL, getCookie());
+        map.put(WSMethods.WSURL, getCookie(context));
 
         for (String cookiekist : cookies) {
             cookieManager.setCookie(WSMethods.WSURL, cookiekist);
@@ -251,10 +253,10 @@ public class HomeFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 if (clQuickLink.getVisibility()==View.VISIBLE){
-                    ivExpand.setImageDrawable(getContext().getResources().getDrawable(R.drawable.ic_expand_black));
+                    ivExpand.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_expand_black));
                     clQuickLink.setVisibility(View.GONE);
                 }else {
-                    ivExpand.setImageDrawable(getContext().getResources().getDrawable(R.drawable.ic_expand_less));
+                    ivExpand.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_expand_less));
                     clQuickLink.setVisibility(View.VISIBLE);
                 }
             }
@@ -302,11 +304,6 @@ public class HomeFragment extends Fragment {
         item.setChecked(true);
     }
 
-    public String getCookie() {
-        SharedPreferences prefs = getActivity().getSharedPreferences(ClsCommon.PREFDATA, Context.MODE_PRIVATE);
-        String Cookie = prefs.getString(ClsCommon.COOKIE, "");
-        return Cookie;
-    }
 
     class getNotificatioCount extends AsyncTask<String, Void, Boolean> {
 
@@ -350,8 +347,6 @@ horizontalProgress.setVisibility(View.VISIBLE);
                                     if (jsonObject.has("count")) {
                                         String count = jsonObject.getString("count");
                                         String unreadcount = jsonObject.getString("unread_count");
-                                        editor.putString(ClsCommon.NOTIFICATION_COUNT, unreadcount);
-                                        editor.apply();
                                         if (unreadcount != null && unreadcount.trim().length() > 0 && !unreadcount.equals("0")) {
                                             BadgeDrawable NotifiationBadge = bottomNavigationView.getOrCreateBadge(R.id.ic_notification);
                                             NotifiationBadge.setNumber(Integer.parseInt(unreadcount));
@@ -381,7 +376,7 @@ horizontalProgress.setVisibility(View.VISIBLE);
                 @Override
                 public Map<String, String> getHeaders() throws AuthFailureError {
                     Map<String, String> params = new HashMap<String, String>();
-                    params.put(ClsCommon.COOKIE, getCookie());
+                    params.put(ClsCommon.COOKIE, getCookie(requireContext()));
                     return params;
                 }
 
@@ -420,100 +415,74 @@ horizontalProgress.setVisibility(View.VISIBLE);
                         @Override
                         public void onResponse(String response) {
                             horizontalProgress.setVisibility(View.INVISIBLE);
-
+                            Logger.Log("Response",""+response);
                             if (response != null && !response.isEmpty()) {
-                                try {
-                                    JSONObject jsonObject = new JSONObject(response);
+                                if (response.contains("<!DOCTYPE html>")){
+                                    Intent intent=new Intent(context, SessionExpiredActivity.class);
+                                    startActivity(intent);
+                                }else {
+                                    try {
+                                        JSONObject jsonObject = new JSONObject(response);
 
-                                    if (jsonObject.has("data")) {
-                                        JSONObject uDatas = jsonObject.getJSONObject("data");
+                                        if (jsonObject.has("data")) {
+                                            JSONObject uDatas = jsonObject.getJSONObject("data");
 
-                                        if (uDatas.has("website")){
-                                            JSONObject website = uDatas.getJSONObject("website");
-                                            String strId=website.getString("id");
-                                            String account_id=website.getString("account_id");
-                                            editor.putString(ClsCommon.WEBSITE_ID, strId);
-                                            editor.putString(ClsCommon.ACCOUNT_ID, account_id);
-                                            editor.apply();
-                                        }
-                                        if (uDatas.has("links")) {
-                                            JSONObject linkData = uDatas.getJSONObject("links");
-                                            if (linkData.length()!=0){
-                                                Iterator iter = linkData.keys();
-                                                while(iter.hasNext()) {
-                                                    String key = (String)iter.next();
-                                                    JSONObject valueData = linkData.getJSONObject(key);
-                                                    QuickLinkData quickLinkData = new QuickLinkData();
-                                                    quickLinkData.setName(valueData.getString("name"));
-                                                    quickLinkData.setText(valueData.getString("text"));
-                                                    quickLinkData.setUrl(valueData.getString("url"));
-                                                    quickLinkData.setFa(valueData.getString("fa"));
-                                                    quickLinkData.setIcon(valueData.getString("icon"));
-                                                    quickLinkData.setIconright(valueData.getString("icon-right"));
-                                                    quickLinkDataList.add(quickLinkData);
+                                            if (uDatas.has("website")){
+                                                JSONObject website = uDatas.getJSONObject("website");
+                                                Logger.Log("WEBSITE",""+ new Gson().toJson(website));
+                                                String strId=website.getString("id");
+                                                String account_id=website.getString("account_id");
+                                                String name=website.getString("name");
+                                                AppUtils.saveStringValue(context,ClsCommon.WEBSITE_ID, strId);
+                                                AppUtils.saveStringValue(context,ClsCommon.WEBSITE_NAME, name);
+                                                AppUtils.saveStringValue(context,ClsCommon.ACCOUNT_ID, account_id);
+                                            }
+                                            if (uDatas.has("links")) {
+                                                JSONObject linkData = uDatas.getJSONObject("links");
+                                                if (linkData.length()!=0){
+                                                    Iterator iter = linkData.keys();
+                                                    while(iter.hasNext()) {
+                                                        String key = (String)iter.next();
+                                                        JSONObject valueData = linkData.getJSONObject(key);
+                                                        QuickLinkData quickLinkData = new QuickLinkData();
+                                                        quickLinkData.setName(valueData.getString("name"));
+                                                        quickLinkData.setText(valueData.getString("text"));
+                                                        quickLinkData.setUrl(valueData.getString("url"));
+                                                        quickLinkData.setFa(valueData.getString("fa"));
+                                                        quickLinkData.setIcon(valueData.getString("icon"));
+                                                        quickLinkData.setIconright(valueData.getString("icon-right"));
+                                                        quickLinkDataList.add(quickLinkData);
+                                                    }
+                                                }
+
+
+
+                                                if (quickLinkDataList.size() != 0 && isQuickLinks) {
+                                                    clQuickLink.setVisibility(View.VISIBLE);
+                                                    quickLinksAdapter = new QuickLinksAdapter(quickLinkDataList);
+
+                                                    LinearLayoutManager layoutManager=new LinearLayoutManager(getContext());
+                                                    layoutManager.setOrientation(RecyclerView.VERTICAL);
+                                                    rvQuickLinks.setLayoutManager(layoutManager);
+                                                    DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(rvQuickLinks.getContext(), layoutManager.getOrientation());
+                                                    rvQuickLinks.addItemDecoration(dividerItemDecoration);
+                                                    rvQuickLinks.setAdapter(quickLinksAdapter);
+                                                }else {
+                                                    clQuickLink.setVisibility(View.GONE);
                                                 }
                                             }
 
-                                            /*if (linkData.has("started")) {
-
-                                                JSONObject startedData = linkData.getJSONObject("started");
-                                                QuickLinkData quickLinkData = new QuickLinkData();
-                                                quickLinkData.setName(startedData.getString("name"));
-                                                quickLinkData.setText(startedData.getString("text"));
-                                                quickLinkData.setUrl(startedData.getString("url"));
-                                                quickLinkData.setFa(startedData.getString("fa"));
-                                                quickLinkData.setIcon(startedData.getString("icon"));
-                                                quickLinkData.setIconright(startedData.getString("icon-right"));
-                                                quickLinkDataList.add(quickLinkData);
-                                            }
-
-
-                                            if (linkData.has("preview")) {
-                                                JSONObject previewData = linkData.getJSONObject("preview");
-                                                QuickLinkData quickLinkData = new QuickLinkData();
-                                                quickLinkData.setName(previewData.getString("name"));
-                                                quickLinkData.setText(previewData.getString("text"));
-                                                quickLinkData.setUrl(previewData.getString("url"));
-                                                quickLinkData.setFa(previewData.getString("fa"));
-                                                quickLinkData.setIcon(previewData.getString("icon"));
-                                                quickLinkData.setIconright(previewData.getString("icon-right"));
-                                                quickLinkDataList.add(quickLinkData);
-                                            }
-
-                                            if (linkData.has("edit")) {
-                                                JSONObject editData = linkData.getJSONObject("edit");
-                                                QuickLinkData quickLinkData = new QuickLinkData();
-                                                quickLinkData.setName(editData.getString("name"));
-                                                quickLinkData.setText(editData.getString("text"));
-                                                quickLinkData.setUrl(editData.getString("url"));
-                                                quickLinkData.setFa(editData.getString("fa"));
-                                                quickLinkData.setIcon(editData.getString("icon"));
-                                                quickLinkData.setIconright(editData.getString("icon-right"));
-                                                quickLinkDataList.add(quickLinkData);
-                                            }*/
-
-                                            if (quickLinkDataList.size() != 0 && isQuickLinks) {
-                                                clQuickLink.setVisibility(View.VISIBLE);
-                                                quickLinksAdapter = new QuickLinksAdapter(quickLinkDataList);
-
-                                                LinearLayoutManager layoutManager=new LinearLayoutManager(getContext());
-                                                layoutManager.setOrientation(RecyclerView.VERTICAL);
-                                                rvQuickLinks.setLayoutManager(layoutManager);
-                                                DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(rvQuickLinks.getContext(), layoutManager.getOrientation());
-                                                rvQuickLinks.addItemDecoration(dividerItemDecoration);
-                                                rvQuickLinks.setAdapter(quickLinksAdapter);
-                                            }else {
-                                                clQuickLink.setVisibility(View.GONE);
-                                            }
                                         }
 
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
                                     }
-
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
                                 }
+
                             } else {
-                                Toast.makeText(context, " Can't Connect to server.", Toast.LENGTH_LONG).show();
+                                Intent intent=new Intent(context, SessionExpiredActivity.class);
+                                startActivity(intent);
+                               // Toast.makeText(context, " Can't Connect to server.", Toast.LENGTH_LONG).show();
                             }
 
                             new getNotificatioCount(context).execute();
@@ -527,7 +496,7 @@ horizontalProgress.setVisibility(View.VISIBLE);
                 @Override
                 public Map<String, String> getHeaders() throws AuthFailureError {
                     Map<String, String> params = new HashMap<String, String>();
-                    params.put(ClsCommon.COOKIE, getCookie());
+                    params.put(ClsCommon.COOKIE, getCookie(requireContext()));
                     return params;
                 }
 

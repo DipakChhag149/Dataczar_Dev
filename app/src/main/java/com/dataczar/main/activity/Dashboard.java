@@ -13,7 +13,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
+
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.AsyncTask;
@@ -51,6 +51,8 @@ import com.dataczar.main.fragment.EducationFragment;
 import com.dataczar.main.fragment.HomeFragment;
 import com.dataczar.main.fragment.NotificationFragment;
 import com.dataczar.main.fragment.ProfileFragment;
+import com.dataczar.main.utils.AppPreferenceManager;
+import com.dataczar.main.utils.AppUtils;
 import com.dataczar.main.utils.CustomHorizontalProgressBar;
 import com.dataczar.main.viewmodel.ClsCommon;
 import com.google.android.material.badge.BadgeDrawable;
@@ -90,9 +92,7 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
     ClsCommon clsCommon;
     ConstraintLayout llLinks;
     ImageView ivExpand;
-    SharedPreferences.Editor editor;
-    SharedPreferences sharedPref;
-    CustomHorizontalProgressBar horizontalProgress;
+   //public static  CustomHorizontalProgressBar horizontalProgress;
     private FragmentRefreshListener fragmentRefreshListener;
     private int unReadCount = 0;
     @Override
@@ -100,7 +100,7 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.dashboard);
-        horizontalProgress = findViewById(R.id.horizontalProgress);
+      //  horizontalProgress = findViewById(R.id.horizontalProgress);
 
         toolbar = findViewById(R.id.toolbar);
         tvActionbartitle = findViewById(R.id.tvActionbartitle);
@@ -112,8 +112,6 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
 
         imgSettingMenu.setVisibility(View.GONE);
         llNotificationIcon.setVisibility(View.GONE);
-        sharedPref = getSharedPreferences(ClsCommon.PREFDATA, Context.MODE_PRIVATE);
-        editor = sharedPref.edit();
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         toolbar.setTitle("");
@@ -489,7 +487,7 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            horizontalProgress.setVisibility(View.VISIBLE);
+            //horizontalProgress.setVisibility(View.VISIBLE);
 
         }
 
@@ -513,7 +511,7 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
                         public void onResponse(String response)
                         {
                             Log.e("Response",""+response);
-                            horizontalProgress.setVisibility(View.GONE);
+                          //  horizontalProgress.setVisibility(View.GONE);
 
 
                             runOnUiThread(new Runnable() {
@@ -561,7 +559,9 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
                                 }
                             }else
                             {
-                                Toast.makeText(context," Can't Connect to server.", Toast.LENGTH_LONG).show();
+                                Intent intent=new Intent(context, SessionExpiredActivity.class);
+                                startActivity(intent);
+                                //Toast.makeText(context," Can't Connect to server.", Toast.LENGTH_LONG).show();
                             }
 
                            // new getNotificatioCount(context).execute();
@@ -570,7 +570,7 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
                 @Override
                 public void onErrorResponse(VolleyError error)
                 {
-                    horizontalProgress.setVisibility(View.GONE);
+                   // horizontalProgress.setVisibility(View.GONE);
 
                     //Toast.makeText(context,"Response Error: "+ error + " Can't Connect to server.", Toast.LENGTH_LONG).show();
                 }
@@ -580,7 +580,7 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
                 public Map<String, String> getHeaders() throws AuthFailureError
                 {
                     Map<String, String>  params = new HashMap<String, String>();
-                    params.put(ClsCommon.COOKIE, getCookie());
+                    params.put(ClsCommon.COOKIE, AppUtils.getCookie(Dashboard.this));
                     return params;
                 }
 
@@ -599,7 +599,7 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            horizontalProgress.setVisibility(View.VISIBLE);
+           // horizontalProgress.setVisibility(View.VISIBLE);
 
         }
 
@@ -620,7 +620,7 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
                         @Override
                         public void onResponse(String response)
                         {
-                            horizontalProgress.setVisibility(View.GONE);
+                        //    horizontalProgress.setVisibility(View.GONE);
 
                             runOnUiThread(new Runnable() {
                                 @Override
@@ -641,8 +641,7 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
                                         String count =  jsonObject.getString("count");
                                         String unreadcount =  jsonObject.getString("unread_count");
                                         unReadCount = Integer.parseInt(unreadcount);
-                                        editor.putString(ClsCommon.NOTIFICATION_COUNT, unreadcount);
-                                        editor.apply();
+
                                         if(unreadcount != null && unreadcount.trim().length()>0 && !unreadcount.equals("0"))
                                         {
                                             BadgeDrawable ProfileBadge = bottomNavigationView.getOrCreateBadge(R.id.ic_profile);
@@ -676,7 +675,7 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
                 @Override
                 public void onErrorResponse(VolleyError error)
                 {
-                    horizontalProgress.setVisibility(View.GONE);
+                    //horizontalProgress.setVisibility(View.GONE);
 
                     //Toast.makeText(context,"Response Error: "+ error + " Can't Connect to server.", Toast.LENGTH_LONG).show();
                 }
@@ -686,21 +685,13 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
                 public Map<String, String> getHeaders() throws AuthFailureError
                 {
                     Map<String, String>  params = new HashMap<String, String>();
-                    params.put(ClsCommon.COOKIE, getCookie());
+                    params.put(ClsCommon.COOKIE,AppUtils.getCookie(Dashboard.this));
                     return params;
                 }
 
             };
             requestQueue.add(stringRequest);
         }
-    }
-
-
-    public String getCookie()
-    {
-        SharedPreferences prefs = getSharedPreferences(ClsCommon.PREFDATA, Context.MODE_PRIVATE);
-        String Cookie = prefs.getString(ClsCommon.COOKIE, "");
-        return  Cookie;
     }
 
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {

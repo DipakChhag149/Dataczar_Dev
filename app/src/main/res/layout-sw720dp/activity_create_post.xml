@@ -33,16 +33,25 @@
                 android:layout_height="wrap_content"
                 android:text="Create Post"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/ivInfo"
                 app:layout_constraintStart_toEndOf="@id/ivBack"
                 app:layout_constraintTop_toTopOf="parent" />
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/ivInfo"
+                android:layout_width="30dp"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="10dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_info_view" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <com.dataczar.main.utils.CustomHorizontalProgressBar
             android:id="@+id/horizontalProgress"
             android:layout_width="match_parent"
             android:layout_height="4dp"
-            android:visibility="gone"
+            android:visibility="invisible"
             app:animationDuration="2000"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

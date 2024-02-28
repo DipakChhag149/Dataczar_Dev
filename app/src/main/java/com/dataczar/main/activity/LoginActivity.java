@@ -1,5 +1,7 @@
 package com.dataczar.main.activity;
 
+import static com.dataczar.main.utils.AppUtils.getCookie;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -9,7 +11,6 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.net.Uri;
@@ -36,6 +37,8 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.dataczar.R;
+import com.dataczar.main.utils.AppPreferenceManager;
+import com.dataczar.main.utils.AppUtils;
 import com.dataczar.main.viewmodel.ClsCommon;
 import com.dataczar.main.viewmodel.LoginVM;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -66,8 +69,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     ClsCommon clsCommon;
     RequestQueue requestQueue;
     Context context;
-    SharedPreferences.Editor editor;
-    SharedPreferences sharedPref;
     String UserName, Password;
     EditText eduser, edpass;
     SignInButton btnGoogleSignIn;
@@ -85,6 +86,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         // Setting up the layout
        setContentView(R.layout.login_user);
+
 
         this.context = LoginActivity.this;
         mAuth = FirebaseAuth.getInstance();
@@ -149,8 +151,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     {
         clsCommon = new ClsCommon(getApplicationContext());
 
-        sharedPref = getSharedPreferences(ClsCommon.PREFDATA, Context.MODE_PRIVATE);
-        editor = sharedPref.edit();
 
         btnGoogleSignIn.setSize(SignInButton.SIZE_WIDE);
 
@@ -175,7 +175,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     private void checkUserLoginStatus()
     {
-         if(getCookie().toString() != null && !getCookie().toString().isEmpty())
+         if(getCookie(LoginActivity.this).toString() != null && !getCookie(LoginActivity.this).toString().isEmpty())
              new GetLoginStatus(context).execute();
          else
              new checkLoginAuth(context, eduser.getText().toString(), edpass.getText().toString()).execute();
@@ -347,7 +347,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 public Map<String, String> getHeaders() throws AuthFailureError
                 {
                     Map<String, String>  params = new HashMap<String, String>();
-                    params.put(clsCommon.COOKIE, getCookie());
+                    params.put(clsCommon.COOKIE, getCookie(LoginActivity.this));
                     return params;
                 }
 
@@ -407,7 +407,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                                     if(!data_response.getBoolean("success"))
                                     {
                                         //Toast.makeText(context, "Login failed - Move to Login", Toast.LENGTH_SHORT).show();
-                                        showAlertDialog("OOPS", "These credentials dose not match in our records");
+                                        AppUtils.showDialog(LoginActivity.this,"OOPS", "These credentials dose not match in our records","Ok");
                                     }else
                                     {
                                         //Toast.makeText(context, "Login success - Dashboard", Toast.LENGTH_SHORT).show();
@@ -433,7 +433,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         pd.dismiss();
 
                     //Toast.makeText(context,"Response Error: "+ error + " Can't Connect to server.", Toast.LENGTH_LONG).show();
-                    showAlertDialog("OOPS", "These credentials do not match our records");
+                    AppUtils.showDialog(LoginActivity.this,"OOPS", "These credentials do not match our records","Ok");
                 }
             }
             )
@@ -442,7 +442,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 public Map<String, String> getHeaders()
                 {
                     Map<String, String>  params = new HashMap<String, String>();
-                    params.put(clsCommon.COOKIE, getCookie());
+                    params.put(clsCommon.COOKIE, getCookie(LoginActivity.this));
                     return params;
                 }
 
@@ -477,8 +477,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         }
 
                         Cookie = Cookie.substring(0, Cookie.length()-1);
-                        editor.putString(clsCommon.COOKIE,  Cookie);
-                        editor.apply();
+                        AppUtils.saveCookie(LoginActivity.this,Cookie);
 
                     } catch (Exception je) {
                         return Response.error(new ParseError(je));
@@ -493,12 +492,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         }
     }
 
-    public String getCookie()
-    {
-        SharedPreferences prefs = getSharedPreferences(ClsCommon.PREFDATA, Context.MODE_PRIVATE);
-        String Cookie = prefs.getString(clsCommon.COOKIE, "");
-        return  Cookie;
-    }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -616,7 +609,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                                     if(!data_response.getBoolean("success"))
                                     {
                                         //Toast.makeText(context, "Login failed - Move to Login", Toast.LENGTH_SHORT).show();
-                                        showAlertDialog("OOPS", "These credentials dose not match in our records");
+                                        AppUtils.showDialog(LoginActivity.this,"OOPS", "These credentials dose not match in our records","Ok");
                                     }else
                                     {
                                         getFirebaseToken();
@@ -644,7 +637,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         pd.dismiss();
 
                     Toast.makeText(context,"Response Error: "+ error + " Can't Connect to server.", Toast.LENGTH_LONG).show();
-                    showAlertDialog("OOPS", "These credentials do not match our records");
+                    AppUtils.showDialog(LoginActivity.this,"OOPS", "These credentials do not match our records","Ok");
                 }
             }
             )
@@ -653,7 +646,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 public Map<String, String> getHeaders()
                 {
                     Map<String, String>  params = new HashMap<String, String>();
-                    params.put(clsCommon.COOKIE, getCookie());
+                    params.put(clsCommon.COOKIE, getCookie(LoginActivity.this));
                     //params.put("Authorization", "gzip, deflate, br");
                     return params;
                 }
@@ -691,8 +684,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         }
 
                         Cookie = Cookie.substring(0, Cookie.length()-1);
-                        editor.putString(clsCommon.COOKIE,  Cookie);
-                        editor.apply();
+                        AppUtils.saveCookie(LoginActivity.this,Cookie);
 
                     } catch (Exception je) {
                         return Response.error(new ParseError(je));
@@ -721,8 +713,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         }
                         // Get new FCM registration token
                         String token = task.getResult();
-                        editor.putString(ClsCommon.FCM_TOKEN, token);
-                        editor.apply();
+                        AppUtils.saveFMCToken(LoginActivity.this,token);
 
                         new AddNotificationToken(LoginActivity.this,token).execute();
                     }
@@ -764,23 +755,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                             if (pd.isShowing())
                                 pd.dismiss();
 
-                            if (response != null && !response.isEmpty()) {
-                                Log.e("TOKEN Response",""+response);
-                                /*try {
-
-                                    *//*JSONObject jsonResponse = new JSONObject(response);
-                                    JSONObject data_response = jsonResponse.getJSONObject("response");
-                                    if (!data_response.getBoolean("success")) {
-
-                                    } else {
-                                        //Toast.makeText(context, "Login success - Dashboard", Toast.LENGTH_SHORT).show();
-
-                                    }*//*
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }*/
-                            }
-
                         }
                     }, new Response.ErrorListener() {
                 @Override
@@ -795,7 +769,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 @Override
                 public Map<String, String> getHeaders() {
                     Map<String, String> params = new HashMap<String, String>();
-                    params.put(ClsCommon.COOKIE, getCookie());
+                    params.put(ClsCommon.COOKIE, getCookie(LoginActivity.this));
                     return params;
                 }
 
@@ -823,9 +797,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         }
 
                         Cookie = Cookie.substring(0, Cookie.length() - 1);
-                        editor.putString(ClsCommon.COOKIE, Cookie);
-                        editor.apply();
-
+                        AppUtils.saveCookie(LoginActivity.this,Cookie);
                     } catch (Exception je) {
                         return Response.error(new ParseError(je));
                     }

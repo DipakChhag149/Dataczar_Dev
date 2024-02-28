@@ -50,6 +50,7 @@ public class ClsCommon
     public static final String NOTIFICATION_OPEN             = "notification_open";
     public static final String NOTIFICATION_COUNT             = "notification_count";
     public static final String WEBSITE_ID             = "website_id";
+    public static final String WEBSITE_NAME             = "website_name";
     public static final String ACCOUNT_ID             = "account_id";
 
     public static final String PROFILE = "Profile";

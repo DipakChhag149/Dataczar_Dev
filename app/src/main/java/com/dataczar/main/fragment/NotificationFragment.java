@@ -1,16 +1,16 @@
 package com.dataczar.main.fragment;
 
+import static com.dataczar.main.utils.AppUtils.getCookie;
+
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,8 +39,6 @@ import com.dataczar.main.activity.WSMethods;
 import com.dataczar.main.model.NotificationModel;
 import com.dataczar.main.utils.CustomHorizontalProgressBar;
 import com.dataczar.main.viewmodel.ClsCommon;
-import com.google.android.material.badge.BadgeDrawable;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -53,28 +51,22 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
 
-public class NotificationFragment extends Fragment
-{
+public class NotificationFragment extends Fragment {
 
     Context context;
     ListView listview;
     RequestQueue requestQueue;
     SwipeRefreshLayout swipeLayout;
     Boolean isLoaded;
-   // BottomNavigationView bottomNavigationView;
-
-    SharedPreferences.Editor editor;
-    SharedPreferences sharedPref;
+    // BottomNavigationView bottomNavigationView;
     CustomHorizontalProgressBar horizontalProgress;
 
-    public NotificationFragment(Context context)
-    {
-        this.context= context;
+    public NotificationFragment(Context context) {
+        this.context = context;
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
-    {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.frag_notification, container, false);
 
         requestQueue = Volley.newRequestQueue(context);
@@ -90,16 +82,14 @@ public class NotificationFragment extends Fragment
                 Toast.makeText(context, "Please Wait...", Toast.LENGTH_SHORT).show();
                 // To keep animation for 4 seconds
                 new Handler().postDelayed(new Runnable() {
-                    @Override public void run() {
+                    @Override
+                    public void run() {
                         // Stop animation (This will be after 3 seconds)
                         swipeLayout.setRefreshing(false);
                     }
                 }, 1000); // Delay in millis
             }
         });
-
-        sharedPref =getContext().getSharedPreferences(ClsCommon.PREFDATA, Context.MODE_PRIVATE);
-        editor = sharedPref.edit();
 
 
         new getNotificatioCount(context).execute();
@@ -109,11 +99,10 @@ public class NotificationFragment extends Fragment
         return view;
     }
 
-    class getNotificatioCount extends AsyncTask<String, Void, Boolean>
-    {
+    class getNotificatioCount extends AsyncTask<String, Void, Boolean> {
         ProgressDialog pd;
-        public getNotificatioCount(Context context)
-        {
+
+        public getNotificatioCount(Context context) {
 //            pd = new ProgressDialog(context, R.style.ProgressDialog);
 //            pd.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
         }
@@ -128,58 +117,36 @@ public class NotificationFragment extends Fragment
         }
 
         @Override
-        protected Boolean doInBackground(String... strings)
-        {
+        protected Boolean doInBackground(String... strings) {
             return null;
         }
 
         @Override
-        protected void onPostExecute(Boolean aBoolean)
-        {
+        protected void onPostExecute(Boolean aBoolean) {
             super.onPostExecute(aBoolean);
             Log.d("Method Call", "getHomeData");
             StringRequest stringRequest = new StringRequest(Request.Method.GET, WSMethods.NOTIFICATION_COUNT,
-                    new Response.Listener<String>()
-                    {
+                    new Response.Listener<String>() {
                         @Override
-                        public void onResponse(String response)
-                        {
+                        public void onResponse(String response) {
 //                            if(pd.isShowing())
 //                                pd.dismiss();
                             horizontalProgress.setVisibility(View.INVISIBLE);
 
-                            if(response!= null && !response.isEmpty())
-                            {
-                                try
-                                {
+                            if (response != null && !response.isEmpty()) {
+                                try {
                                     JSONObject jsonObject = new JSONObject(response);
 
-                                    if(jsonObject.has("count"))
-                                    {
-                                        String count =  jsonObject.getString("count");
-                                        String unreadcount =  jsonObject.getString("unread_count");
+                                    if (jsonObject.has("count")) {
+                                        String count = jsonObject.getString("count");
+                                        String unreadcount = jsonObject.getString("unread_count");
 
-                                        editor.putString(ClsCommon.NOTIFICATION_COUNT, unreadcount);
-                                        editor.apply();
-                                       /*
-                                        if(unreadcount != null && unreadcount.trim().length()>0 && !unreadcount.equals("0"))
-                                        {
-                                            BadgeDrawable NotifiationBadge = bottomNavigationView.getOrCreateBadge(R.id.ic_notification);
-                                            NotifiationBadge.setNumber(Integer.parseInt(unreadcount));
-                                            NotifiationBadge.setBackgroundColor(Color.parseColor("#f1592a"));
-                                        }else
-                                        {
-                                            BadgeDrawable NotifiationBadge = bottomNavigationView.getOrCreateBadge(R.id.ic_notification);
-                                            NotifiationBadge.setNumber(Integer.parseInt(unreadcount));
-                                            NotifiationBadge.setBackgroundColor(Color.parseColor("#00000000"));
-                                        }*/
                                     }
                                 } catch (JSONException e) {
                                     e.printStackTrace();
                                 }
-                            }else
-                            {
-                                Toast.makeText(context," Can't Connect to server.", Toast.LENGTH_LONG).show();
+                            } else {
+                                Toast.makeText(context, " Can't Connect to server.", Toast.LENGTH_LONG).show();
                             }
 
                             new getAllNotification(context).execute();
@@ -187,21 +154,18 @@ public class NotificationFragment extends Fragment
                         }
                     }, new Response.ErrorListener() {
                 @Override
-                public void onErrorResponse(VolleyError error)
-                {
+                public void onErrorResponse(VolleyError error) {
 //                    if(pd != null && pd.isShowing())
 //                        pd.dismiss();
                     horizontalProgress.setVisibility(View.INVISIBLE);
 
-                    Toast.makeText(context,"Response Error: "+ error + " Can't Connect to server.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(context, "Response Error: " + error + " Can't Connect to server.", Toast.LENGTH_LONG).show();
                 }
-            })
-            {
+            }) {
                 @Override
-                public Map<String, String> getHeaders() throws AuthFailureError
-                {
-                    Map<String, String>  params = new HashMap<String, String>();
-                    params.put(ClsCommon.COOKIE, getCookie());
+                public Map<String, String> getHeaders() throws AuthFailureError {
+                    Map<String, String> params = new HashMap<String, String>();
+                    params.put(ClsCommon.COOKIE, getCookie(requireContext()));
                     return params;
                 }
 
@@ -220,10 +184,10 @@ public class NotificationFragment extends Fragment
     @Override
     public void onStart() {
         super.onStart();
-       // new getAllNotification(context).execute();
+        // new getAllNotification(context).execute();
 
-       // MenuItem item = bottomNavigationView.getMenu().findItem(R.id.ic_notification);
-       // item.setChecked(true);
+        // MenuItem item = bottomNavigationView.getMenu().findItem(R.id.ic_notification);
+        // item.setChecked(true);
 
         new getNotificatioCount(context).execute();
 
@@ -256,11 +220,10 @@ public class NotificationFragment extends Fragment
         outState.putBoolean("ISLOADED", isLoaded);
     }
 
-    public class getAllNotification extends AsyncTask<String, Void, Boolean>
-    {
+    public class getAllNotification extends AsyncTask<String, Void, Boolean> {
         ProgressDialog pd;
-        public getAllNotification(Context context)
-        {
+
+        public getAllNotification(Context context) {
 //            pd = new ProgressDialog(context, R.style.ProgressDialog);
 //            pd.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
         }
@@ -277,23 +240,19 @@ public class NotificationFragment extends Fragment
         }
 
         @Override
-        protected Boolean doInBackground(String... strings)
-        {
+        protected Boolean doInBackground(String... strings) {
             return null;
         }
 
         @Override
-        protected void onPostExecute(Boolean aBoolean)
-        {
+        protected void onPostExecute(Boolean aBoolean) {
             super.onPostExecute(aBoolean);
             Log.d("Method Call", "getAllNotification");
             //ArrLiveVideoTitles.clear();
             StringRequest stringRequest = new StringRequest(Request.Method.GET, WSMethods.NOTIFICATION_ALLLIST,
-                    new Response.Listener<String>()
-                    {
+                    new Response.Listener<String>() {
                         @Override
-                        public void onResponse(String response)
-                        {
+                        public void onResponse(String response) {
                             isLoaded = true;
 
 //                            if(pd.isShowing())
@@ -308,24 +267,20 @@ public class NotificationFragment extends Fragment
 //                            });
 
 
-                          List<NotificationModel> notificationModelRead = new ArrayList<>();
-                          List<NotificationModel> notificationModelUnread = new ArrayList<>();
-                          List<NotificationModel> notificationModelArchived = new ArrayList<>();
-                          List<NotificationModel> notificationModelAll = new ArrayList<>();
+                            List<NotificationModel> notificationModelRead = new ArrayList<>();
+                            List<NotificationModel> notificationModelUnread = new ArrayList<>();
+                            List<NotificationModel> notificationModelArchived = new ArrayList<>();
+                            List<NotificationModel> notificationModelAll = new ArrayList<>();
 
-                            if(response!= null && !response.isEmpty())
-                            {
-                                try
-                                {
+                            if (response != null && !response.isEmpty()) {
+                                try {
                                     JSONObject jsonObject = new JSONObject(response);
                                     MyNotificationAdapter myNotificationAdapter = new MyNotificationAdapter();
 
-                                    if(jsonObject.has("notifications"))
-                                    {
+                                    if (jsonObject.has("notifications")) {
                                         JSONArray notifications = jsonObject.getJSONArray("notifications");
                                         //List<NotificationModel> arrTest = new ArrayList<>();
-                                        for (int i = 0; i < notifications.length(); i++)
-                                        {
+                                        for (int i = 0; i < notifications.length(); i++) {
 
                                             JSONObject jsonobj = notifications.getJSONObject(i);
                                             NotificationModel notificationModelPojo = new NotificationModel();
@@ -334,10 +289,10 @@ public class NotificationFragment extends Fragment
 
                                             String id = jsonobj.getString("id");
                                             String isStatus = jsonobj.getString("isStatus");
-                                            String time     = jsonobj.getString("human");
-                                            String notifiable_id     = jsonobj.getString("notifiable_id");
-                                            String title    = jsondata.getString("title");
-                                            String msg      = jsondata.getString("msg");
+                                            String time = jsonobj.getString("human");
+                                            String notifiable_id = jsonobj.getString("notifiable_id");
+                                            String title = jsondata.getString("title");
+                                            String msg = jsondata.getString("msg");
 
                                             notificationModelPojo.setId(id);
                                             notificationModelPojo.setNotifiable_id(notifiable_id);
@@ -346,12 +301,9 @@ public class NotificationFragment extends Fragment
                                             notificationModelPojo.setTime(time);
                                             notificationModelPojo.setIsStatus(isStatus);
 
-                                            if(isStatus.equals("archived"))
-                                            {
+                                            if (isStatus.equals("archived")) {
                                                 notificationModelArchived.add(notificationModelPojo);
-                                            }
-                                            else if(isStatus.equals("unread") || isStatus.equals("read"))
-                                            {
+                                            } else if (isStatus.equals("unread") || isStatus.equals("read")) {
                                                 notificationModelUnread.add(notificationModelPojo);
                                             }/* else if(isStatus.equals("read"))
                                             {
@@ -361,32 +313,25 @@ public class NotificationFragment extends Fragment
                                         }
                                     }
 
-                                    if(notificationModelUnread.size() > 0)
-                                    {
-                                        for(int i = 0; i < notificationModelUnread.size(); i++)
-                                        {
+                                    if (notificationModelUnread.size() > 0) {
+                                        for (int i = 0; i < notificationModelUnread.size(); i++) {
                                             notificationModelAll.add(notificationModelUnread.get(i));
                                             myNotificationAdapter.addItem(notificationModelUnread.get(i));
                                         }
                                     }
 
-                                    if(notificationModelRead.size() > 0)
-                                    {
-                                        for(int i = 0; i < notificationModelRead.size(); i++)
-                                        {
+                                    if (notificationModelRead.size() > 0) {
+                                        for (int i = 0; i < notificationModelRead.size(); i++) {
                                             notificationModelAll.add(notificationModelRead.get(i));
                                             myNotificationAdapter.addItem(notificationModelRead.get(i));
                                         }
                                     }
 
 
-                                    if(notificationModelArchived.size() > 0)
-                                    {
-                                        for(int i = 0; i < notificationModelArchived.size(); i++)
-                                        {
-                                            if(i==0)
-                                            {
-                                                if(notificationModelUnread.size() > 0 || notificationModelRead.size() > 0)
+                                    if (notificationModelArchived.size() > 0) {
+                                        for (int i = 0; i < notificationModelArchived.size(); i++) {
+                                            if (i == 0) {
+                                                if (notificationModelUnread.size() > 0 || notificationModelRead.size() > 0)
                                                     myNotificationAdapter.addSeparatorItem(notificationModelArchived.get(i));
                                             }
 
@@ -400,29 +345,25 @@ public class NotificationFragment extends Fragment
                                 } catch (JSONException e) {
                                     e.printStackTrace();
                                 }
-                            }else
-                            {
-                                Toast.makeText(context," Can't Connect to server.", Toast.LENGTH_LONG).show();
+                            } else {
+                                Toast.makeText(context, " Can't Connect to server.", Toast.LENGTH_LONG).show();
                             }
 
                         }
                     }, new Response.ErrorListener() {
                 @Override
-                public void onErrorResponse(VolleyError error)
-                {
+                public void onErrorResponse(VolleyError error) {
 //                    if(pd != null && pd.isShowing())
 //                        pd.dismiss();
                     horizontalProgress.setVisibility(View.INVISIBLE);
 
-                    Toast.makeText(context,"Response Error: "+ error + " Can't Connect to server.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(context, "Response Error: " + error + " Can't Connect to server.", Toast.LENGTH_LONG).show();
                 }
-            })
-            {
+            }) {
                 @Override
-                public Map<String, String> getHeaders() throws AuthFailureError
-                {
-                    Map<String, String>  params = new HashMap<String, String>();
-                    params.put(ClsCommon.COOKIE, getCookie());
+                public Map<String, String> getHeaders() throws AuthFailureError {
+                    Map<String, String> params = new HashMap<String, String>();
+                    params.put(ClsCommon.COOKIE, getCookie(requireContext()));
                     return params;
                 }
 
@@ -432,20 +373,18 @@ public class NotificationFragment extends Fragment
     }
 
 
-    public class setArchivedNotification extends AsyncTask<String, Void, Boolean>
-    {
+    public class setArchivedNotification extends AsyncTask<String, Void, Boolean> {
         ProgressDialog pd;
         String NotificationId;
-        public setArchivedNotification(Context context, String NotificationId)
-        {
+
+        public setArchivedNotification(Context context, String NotificationId) {
 //            pd = new ProgressDialog(context, R.style.ProgressDialog);
 //            pd.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
             this.NotificationId = NotificationId;
         }
 
         @Override
-        protected void onPreExecute()
-        {
+        protected void onPreExecute() {
             super.onPreExecute();
 //            pd.setCancelable(false);
 //            if(!pd.isShowing())
@@ -455,23 +394,19 @@ public class NotificationFragment extends Fragment
         }
 
         @Override
-        protected Boolean doInBackground(String... strings)
-        {
+        protected Boolean doInBackground(String... strings) {
             return null;
         }
 
         @Override
-        protected void onPostExecute(Boolean aBoolean)
-        {
+        protected void onPostExecute(Boolean aBoolean) {
             super.onPostExecute(aBoolean);
 
             //ArrLiveVideoTitles.clear();
             StringRequest stringRequest = new StringRequest(Request.Method.GET, WSMethods.NOTIFICATION_ARCHIVED + NotificationId,
-                    new Response.Listener<String>()
-                    {
+                    new Response.Listener<String>() {
                         @Override
-                        public void onResponse(String response)
-                        {
+                        public void onResponse(String response) {
 //                            if(pd.isShowing())
 //                                pd.dismiss();
                             horizontalProgress.setVisibility(View.INVISIBLE);
@@ -482,22 +417,19 @@ public class NotificationFragment extends Fragment
                         }
                     }, new Response.ErrorListener() {
                 @Override
-                public void onErrorResponse(VolleyError error)
-                {
+                public void onErrorResponse(VolleyError error) {
 //                    if(pd != null && pd.isShowing())
 //                        pd.dismiss();
                     horizontalProgress.setVisibility(View.INVISIBLE);
 
-                    Toast.makeText(context,"Response Error: "+ error + " Can't Connect to server.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(context, "Response Error: " + error + " Can't Connect to server.", Toast.LENGTH_LONG).show();
                 }
 
-            })
-            {
+            }) {
                 @Override
-                public Map<String, String> getHeaders() throws AuthFailureError
-                {
-                    Map<String, String>  params = new HashMap<String, String>();
-                    params.put(ClsCommon.COOKIE, getCookie());
+                public Map<String, String> getHeaders() throws AuthFailureError {
+                    Map<String, String> params = new HashMap<String, String>();
+                    params.put(ClsCommon.COOKIE, getCookie(requireContext()));
                     return params;
                 }
 
@@ -506,16 +438,8 @@ public class NotificationFragment extends Fragment
         }
     }
 
-    public String getCookie()
-    {
-        SharedPreferences prefs = getActivity().getSharedPreferences(ClsCommon.PREFDATA, Context.MODE_PRIVATE);
-        String Cookie = prefs.getString(ClsCommon.COOKIE, "");
-        return  Cookie;
-    }
-
     //Adapter Class
-    private class MyNotificationAdapter extends BaseAdapter
-    {
+    private class MyNotificationAdapter extends BaseAdapter {
 
         private static final int TYPE_ITEM = 0;
         private static final int TYPE_SEPARATOR = 1;
@@ -532,14 +456,12 @@ public class NotificationFragment extends Fragment
             mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         }
 
-        public void addItem(final NotificationModel notoficationpojo)
-        {
+        public void addItem(final NotificationModel notoficationpojo) {
             mData.add(notoficationpojo);
             notifyDataSetChanged();
         }
 
-        public void addSeparatorItem(final NotificationModel notoficationpojo)
-        {
+        public void addSeparatorItem(final NotificationModel notoficationpojo) {
             mData.add(notoficationpojo);
             mSeparatorsSet.add(mData.size() - 1);
             notifyDataSetChanged();
@@ -567,119 +489,110 @@ public class NotificationFragment extends Fragment
             return position;
         }
 
-        public View getView(int position, View convertView, ViewGroup parent)
-        {
+        public View getView(int position, View convertView, ViewGroup parent) {
             final ViewHolder holder = new ViewHolder();
             int type = getItemViewType(position);
 
-                switch (type)
-                {
-                    case TYPE_ITEM:
-                        convertView = mInflater.inflate(R.layout.notification_item, null);
+            switch (type) {
+                case TYPE_ITEM:
+                    convertView = mInflater.inflate(R.layout.notification_item, null);
 
-                        holder.tvTitle = (TextView)convertView.findViewById(R.id.tvNotiHeader);
-                        holder.tvDesc = (TextView)convertView.findViewById(R.id.tvNotiDtl);
-                        holder.tvTime = (TextView)convertView.findViewById(R.id.tvNotiTime);
-                        holder.llbackground= (LinearLayout) convertView.findViewById(R.id.llbackground);
-                        holder.imgArchived = (ImageView) convertView.findViewById(R.id.imgArchived);
-                        holder.llblank = (LinearLayout) convertView.findViewById(R.id.llblank);
+                    holder.tvTitle = (TextView) convertView.findViewById(R.id.tvNotiHeader);
+                    holder.tvDesc = (TextView) convertView.findViewById(R.id.tvNotiDtl);
+                    holder.tvTime = (TextView) convertView.findViewById(R.id.tvNotiTime);
+                    holder.llbackground = (LinearLayout) convertView.findViewById(R.id.llbackground);
+                    holder.imgArchived = (ImageView) convertView.findViewById(R.id.imgArchived);
+                    holder.llblank = (LinearLayout) convertView.findViewById(R.id.llblank);
 
-                        NotificationModel notificationDetails = mData.get(position);
+                    NotificationModel notificationDetails = mData.get(position);
 
-                        String isStatus = mData.get(position).isStatus;
+                    String isStatus = mData.get(position).isStatus;
 
-                        holder.tvTitle.setTag(isStatus);
-                        holder.tvDesc.setTag(notificationDetails.id);
-                        holder.imgArchived.setTag(notificationDetails.id);
+                    holder.tvTitle.setTag(isStatus);
+                    holder.tvDesc.setTag(notificationDetails.id);
+                    holder.imgArchived.setTag(notificationDetails.id);
 
-                        String msg = notificationDetails.msg;
+                    String msg = notificationDetails.msg;
 
-                        if(msg.contains("."))
-                        {
-                            try {
-                                msg = msg.split(".")[0];
-                            }catch (Exception ex)
-                            {
-                                ex.printStackTrace();
-                            }
-
+                    if (msg.contains(".")) {
+                        try {
+                            msg = msg.split(".")[0];
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
                         }
 
-                        holder.tvTitle.setText(notificationDetails.title);
-                        holder.tvDesc.setText(notificationDetails.msg);
-                        holder.tvTime.setText(notificationDetails.time);
+                    }
 
-                        holder.tvDesc.setTag(notificationDetails);
+                    holder.tvTitle.setText(notificationDetails.title);
+                    holder.tvDesc.setText(notificationDetails.msg);
+                    holder.tvTime.setText(notificationDetails.time);
 
-                        if(holder.tvTitle.getTag().equals("read"))
-                        {
-                            holder.llbackground.setBackgroundColor(Color.parseColor("#f0e0e0"));
-                            holder.imgArchived.setVisibility(View.VISIBLE);
-                        }else if(holder.tvTitle.getTag().equals("unread"))
-                        {
-                            holder.llbackground.setBackgroundColor(Color.parseColor("#e0f0e0"));
-                            holder.imgArchived.setVisibility(View.VISIBLE);
+                    holder.tvDesc.setTag(notificationDetails);
+
+                    if (holder.tvTitle.getTag().equals("read")) {
+                        holder.llbackground.setBackgroundColor(Color.parseColor("#f0e0e0"));
+                        holder.imgArchived.setVisibility(View.VISIBLE);
+                    } else if (holder.tvTitle.getTag().equals("unread")) {
+                        holder.llbackground.setBackgroundColor(Color.parseColor("#e0f0e0"));
+                        holder.imgArchived.setVisibility(View.VISIBLE);
+                    } else {
+                        holder.llbackground.setBackgroundColor(Color.parseColor("#00000000"));
+                        holder.imgArchived.setVisibility(View.INVISIBLE);
+                    }
+
+                    holder.imgArchived.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            new setArchivedNotification(context, view.getTag().toString()).execute();
                         }
-                        else
-                        {
-                            holder.llbackground.setBackgroundColor(Color.parseColor("#00000000"));
-                            holder.imgArchived.setVisibility(View.INVISIBLE);
+                    });
+
+                    holder.tvDesc.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            Intent iv = new Intent(context, NotificationPreview.class);
+                            iv.putExtra("NotificationData", (Serializable) holder.tvDesc.getTag());
+                            startActivity(iv);
                         }
+                    });
 
-                        holder.imgArchived.setOnClickListener(new View.OnClickListener()
-                        {
-                            @Override
-                            public void onClick(View view) {
-                                new setArchivedNotification(context,view.getTag().toString()).execute();
-                            }
-                        });
+                    holder.tvTime.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            Intent iv = new Intent(context, NotificationPreview.class);
+                            iv.putExtra("NotificationData", (Serializable) holder.tvDesc.getTag());
+                            startActivity(iv);
+                        }
+                    });
 
-                        holder.tvDesc.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                Intent iv = new Intent(context, NotificationPreview.class);
-                                iv.putExtra("NotificationData", (Serializable) holder.tvDesc.getTag());
-                                startActivity(iv);
-                            }
-                        });
+                    holder.tvTitle.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            Intent iv = new Intent(context, NotificationPreview.class);
+                            iv.putExtra("NotificationData", (Serializable) holder.tvDesc.getTag());
+                            startActivity(iv);
+                        }
+                    });
 
-                        holder.tvTime.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                Intent iv = new Intent(context, NotificationPreview.class);
-                                iv.putExtra("NotificationData", (Serializable) holder.tvDesc.getTag());
-                                startActivity(iv);
-                            }
-                        });
+                    holder.llblank.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            Intent iv = new Intent(context, NotificationPreview.class);
+                            iv.putExtra("NotificationData", (Serializable) holder.tvDesc.getTag());
+                            startActivity(iv);
+                        }
+                    });
 
-                        holder.tvTitle.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                Intent iv = new Intent(context, NotificationPreview.class);
-                                iv.putExtra("NotificationData", (Serializable) holder.tvDesc.getTag());
-                                startActivity(iv);
-                            }
-                        });
+                    break;
+                case TYPE_SEPARATOR:
+                    convertView = mInflater.inflate(R.layout.notification_section, null);
+                    holder.tvTitle = (TextView) convertView.findViewById(R.id.text);
+                    holder.tvTitle.setText("Archived Notifications");
 
-                        holder.llblank.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                Intent iv = new Intent(context, NotificationPreview.class);
-                                iv.putExtra("NotificationData", (Serializable) holder.tvDesc.getTag());
-                                startActivity(iv);
-                            }
-                        });
+                    break;
+            }
 
-                        break;
-                    case TYPE_SEPARATOR:
-                        convertView = mInflater.inflate(R.layout.notification_section, null);
-                        holder.tvTitle = (TextView)convertView.findViewById(R.id.text);
-                        holder.tvTitle.setText("Archived Notifications");
-
-                        break;
-                }
-
-                convertView.setTag(holder);
+            convertView.setTag(holder);
 
 
             return convertView;
@@ -687,8 +600,7 @@ public class NotificationFragment extends Fragment
 
     }
 
-    public static class ViewHolder
-    {
+    public static class ViewHolder {
         public TextView tvTitle, tvDesc, tvTime;
         LinearLayout llbackground;
         ImageView imgArchived;

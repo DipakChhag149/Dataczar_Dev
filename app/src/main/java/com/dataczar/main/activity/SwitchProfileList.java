@@ -4,10 +4,11 @@
 
 package com.dataczar.main.activity;
 
+import static com.dataczar.main.utils.AppUtils.getCookie;
+
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -41,6 +42,7 @@ import com.dataczar.R;
 import com.dataczar.main.adapter.QuickLinksAdapter;
 import com.dataczar.main.fragment.HomeFragment;
 import com.dataczar.main.model.QuickLinkData;
+import com.dataczar.main.utils.AppUtils;
 import com.dataczar.main.utils.CustomHorizontalProgressBar;
 import com.dataczar.main.viewmodel.ClsCommon;
 
@@ -61,8 +63,6 @@ public class SwitchProfileList extends AppCompatActivity
     ArrayList<HashMap<String, String>> teammap = new ArrayList<>();
     Context context;
     RequestQueue requestQueue;
-    SharedPreferences.Editor editor;
-    SharedPreferences sharedPref;
     CustomHorizontalProgressBar horizontalProgress;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -75,9 +75,6 @@ public class SwitchProfileList extends AppCompatActivity
 
 
         requestQueue = Volley.newRequestQueue(context);
-
-        sharedPref = getSharedPreferences(ClsCommon.PREFDATA, Context.MODE_PRIVATE);
-        editor = sharedPref.edit();
 
 
         ImageView imgBack = findViewById(R.id.ivBack);
@@ -255,7 +252,7 @@ public class SwitchProfileList extends AppCompatActivity
                 public Map<String, String> getHeaders() throws AuthFailureError
                 {
                     Map<String, String>  params = new HashMap<String, String>();
-                    params.put(ClsCommon.COOKIE, getCookie());
+                    params.put(ClsCommon.COOKIE, getCookie(SwitchProfileList.this));
                     return params;
                 }
 
@@ -266,12 +263,6 @@ public class SwitchProfileList extends AppCompatActivity
 
 
 
-    public String getCookie()
-    {
-        SharedPreferences prefs = getSharedPreferences(ClsCommon.PREFDATA, Context.MODE_PRIVATE);
-        String Cookie = prefs.getString(ClsCommon.COOKIE, "");
-        return  Cookie;
-    }
 
 
     class getUserProfile extends AsyncTask<String, Void, Boolean> {
@@ -316,9 +307,8 @@ public class SwitchProfileList extends AppCompatActivity
                                             JSONObject website = uDatas.getJSONObject("website");
                                             String strId=website.getString("id");
                                             String account_id=website.getString("account_id");
-                                            editor.putString(ClsCommon.WEBSITE_ID, strId);
-                                            editor.putString(ClsCommon.ACCOUNT_ID, account_id);
-                                            editor.apply();
+                                            AppUtils.saveStringValue(SwitchProfileList.this,ClsCommon.WEBSITE_ID,strId);
+                                            AppUtils.saveStringValue(SwitchProfileList.this,ClsCommon.ACCOUNT_ID,account_id);
 
                                             Intent iv = new Intent(SwitchProfileList.this, Dashboard.class);
                                             iv.putExtra("NeedNavigate", ClsCommon.PROFILE);
@@ -347,7 +337,7 @@ public class SwitchProfileList extends AppCompatActivity
                 @Override
                 public Map<String, String> getHeaders() throws AuthFailureError {
                     Map<String, String> params = new HashMap<String, String>();
-                    params.put(ClsCommon.COOKIE, getCookie());
+                    params.put(ClsCommon.COOKIE, getCookie(SwitchProfileList.this));
                     return params;
                 }
 

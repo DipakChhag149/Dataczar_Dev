@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.dataczar">
 
+    <uses-permission android:name="android.permission.CALL_PHONE"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.USE_BIOMETRIC" />
@@ -32,10 +33,10 @@
         android:usesCleartextTraffic="true"
         tools:replace="android:allowBackup">
         <activity
-            android:name=".main.activity.RegistrationActivity"
+            android:name=".main.activity.SessionExpiredActivity"
             android:exported="false" />
         <activity
-            android:name=".main.activity.NoInternetActivity"
+            android:name=".main.activity.RegistrationActivity"
             android:exported="false" />
         <activity
             android:name=".main.activity.DeleteAccountActivity"

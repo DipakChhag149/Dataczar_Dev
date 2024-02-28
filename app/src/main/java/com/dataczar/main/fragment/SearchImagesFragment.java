@@ -1,5 +1,7 @@
 package com.dataczar.main.fragment;
 
+import static com.dataczar.main.utils.AppUtils.getCookie;
+
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -245,18 +247,12 @@ public class SearchImagesFragment extends BottomSheetDialogFragment {
                 @Override
                 public Map<String, String> getHeaders() throws AuthFailureError {
                     Map<String, String> params = new HashMap<String, String>();
-                    params.put(ClsCommon.COOKIE, getCookie());
+                    params.put(ClsCommon.COOKIE, getCookie(requireContext()));
                     return params;
                 }
 
             };
             requestQueue.add(stringRequest);
-        }
-
-        public String getCookie() {
-            SharedPreferences prefs = getContext().getSharedPreferences(ClsCommon.PREFDATA, Context.MODE_PRIVATE);
-            String Cookie = prefs.getString(ClsCommon.COOKIE, "");
-            return Cookie;
         }
     }
 
@@ -329,18 +325,12 @@ public class SearchImagesFragment extends BottomSheetDialogFragment {
                 @Override
                 public Map<String, String> getHeaders() throws AuthFailureError {
                     Map<String, String> params = new HashMap<String, String>();
-                    params.put(ClsCommon.COOKIE, getCookie());
+                    params.put(ClsCommon.COOKIE, getCookie(requireContext()));
                     return params;
                 }
 
             };
             requestQueue.add(stringRequest);
-        }
-
-        public String getCookie() {
-            SharedPreferences prefs = getContext().getSharedPreferences(ClsCommon.PREFDATA, Context.MODE_PRIVATE);
-            String Cookie = prefs.getString(ClsCommon.COOKIE, "");
-            return Cookie;
         }
     }
 
