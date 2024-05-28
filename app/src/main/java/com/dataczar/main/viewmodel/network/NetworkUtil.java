@@ -8,18 +8,21 @@ public class NetworkUtil
 {
     public static boolean isNetworkConnected(Context context)
     {
-        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-
-        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-        if(activeNetwork != null)
+        try
         {
-            activeNetwork.isConnected();
+            ConnectivityManager conMgr = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+            if (conMgr.getActiveNetworkInfo() != null && conMgr.getActiveNetworkInfo().isAvailable() && conMgr.getActiveNetworkInfo().isConnected())
+                return true;
+            else
+                return false;
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
         }
 
-        if(activeNetwork.isConnected())
-            return true;
-        else
-            return false;
+        return false;
     }
 
 }

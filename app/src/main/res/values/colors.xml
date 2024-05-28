@@ -31,5 +31,7 @@
     <color name="green">#9BCC67</color>
     <color name="blue">#31AFC6</color>
     <color name="text_blue">#017BFE</color>
+    <color name="colorWhite">#FEFEFE</color>
+    <color name="colorIconTint">#555555</color>
 
 </resources>

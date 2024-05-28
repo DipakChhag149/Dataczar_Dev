@@ -95,6 +95,7 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
    //public static  CustomHorizontalProgressBar horizontalProgress;
     private FragmentRefreshListener fragmentRefreshListener;
     private int unReadCount = 0;
+    private boolean isHomeSelected =true;
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -209,6 +210,7 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
                     switch(id)
                     {
                         case R.id.ic_home:
+                            isHomeSelected = true;
                             bottomNavigationView.setSelected(true);
                             imgSettingMenu.setVisibility(View.GONE);
                             llNotificationIcon.setVisibility(View.GONE);
@@ -220,6 +222,7 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
                             return true;
 
                         case R.id.ic_addpost:
+                            isHomeSelected = false;
                             imgSettingMenu.setVisibility(View.GONE);
                             llNotificationIcon.setVisibility(View.GONE);
                             tvActionbartitle.setVisibility(View.VISIBLE);
@@ -231,6 +234,7 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
                             return true;
 
                         case R.id.ic_education:
+                            isHomeSelected = false;
                             imgSettingMenu.setVisibility(View.GONE);
                             llNotificationIcon.setVisibility(View.GONE);
                             tvActionbartitle.setVisibility(View.VISIBLE);
@@ -242,6 +246,7 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
                             return true;
 
                         case R.id.ic_notification:
+                            isHomeSelected = false;
                             imgSettingMenu.setVisibility(View.GONE);
                             llNotificationIcon.setVisibility(View.GONE);
                             llNotificationIcon.setVisibility(View.GONE);
@@ -254,6 +259,7 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
                             return true;
 
                         case R.id.ic_profile:
+                            isHomeSelected = false;
                             tvActionbartitle.setVisibility(View.VISIBLE);
                             imgActionbarlogo.setVisibility(View.GONE);
                             llLinks.setVisibility(View.GONE);
@@ -439,7 +445,12 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
     @Override
     protected void onResume() {
         super.onResume();
-        context.registerReceiver(broadcastReceiver, new IntentFilter("notification_update"));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            context.registerReceiver(broadcastReceiver, new IntentFilter("notification_update"),RECEIVER_NOT_EXPORTED);
+        }else {
+            context.registerReceiver(broadcastReceiver, new IntentFilter("notification_update"));
+        }
+
        /* if(getIntent() != null)
         {
             String moveto = getIntent().getStringExtra("NeedNavigate");
@@ -717,5 +728,15 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
 
     public interface FragmentRefreshListener{
         void onRefresh();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (isHomeSelected){
+            super.onBackPressed();
+        }else {
+            bottomNavigationView.setSelectedItemId(R.id.ic_home);
+        }
+
     }
 }

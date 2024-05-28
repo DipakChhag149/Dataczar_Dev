@@ -41,8 +41,12 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 
 import org.jetbrains.annotations.NotNull;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -218,19 +222,42 @@ public class SearchImagesFragment extends BottomSheetDialogFragment {
                             if (pd.isShowing())
                                 pd.dismiss();
                             if (response != null && !response.isEmpty()) {
-                                GetFreeImageListResponse getFreeImageListResponse=new Gson().fromJson(response,GetFreeImageListResponse.class);
+                                try {
+                                    JSONObject jsonResponse = new JSONObject(response);
+                                    if (jsonResponse.has("images")){
+                                        JSONArray array = jsonResponse.getJSONArray("images");
+                                        if (array!=null && array.length()!=0){
+                                            GetFreeImageListResponse getFreeImageListResponse=new Gson().fromJson(response,GetFreeImageListResponse.class);
 
-                                if (getFreeImageListResponse.getImages() != null && getFreeImageListResponse.getImages().size() != 0) {
-                                    myImageListAdapter.addAll(getFreeImageListResponse.getImages());
-                                    isLastPage = false;
-                                    isLoading = false;
+                                            if (getFreeImageListResponse.getImages() != null && getFreeImageListResponse.getImages().size() != 0) {
+                                                myImageListAdapter.addAll(getFreeImageListResponse.getImages());
+                                                isLastPage = false;
+                                                isLoading = false;
 
-                                } else {
-                                    isLastPage = true;
-                                    isLoading = false;
-                                    mBinding.rvImages.setVisibility(View.GONE);
-                                    mBinding.tvNoData.setVisibility(View.VISIBLE);
+                                            } else {
+                                                isLastPage = true;
+                                                isLoading = false;
+                                                mBinding.rvImages.setVisibility(View.GONE);
+                                                mBinding.tvNoData.setVisibility(View.VISIBLE);
+                                            }
+                                        }else {
+                                            isLastPage = true;
+                                            isLoading = false;
+                                            mBinding.rvImages.setVisibility(View.GONE);
+                                            mBinding.tvNoData.setVisibility(View.VISIBLE);
+                                        }
+
+                                    }else {
+                                        isLastPage = true;
+                                        isLoading = false;
+                                        mBinding.rvImages.setVisibility(View.GONE);
+                                        mBinding.tvNoData.setVisibility(View.VISIBLE);
+                                    }
+
+                                } catch (JSONException e) {
+                                    throw new RuntimeException(e);
                                 }
+
                             } else {
                                 Toast.makeText(getContext(), " Can't Connect to server.", Toast.LENGTH_LONG).show();
                             }

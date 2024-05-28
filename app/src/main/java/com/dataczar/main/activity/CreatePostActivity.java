@@ -6,6 +6,8 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -13,6 +15,7 @@ import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.webkit.MimeTypeMap;
 import android.widget.Scroller;
@@ -21,6 +24,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatEditText;
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -55,13 +59,19 @@ import com.dataczar.main.utils.CustomHorizontalProgressBar;
 import com.dataczar.main.utils.StringUtils;
 import com.dataczar.main.viewmodel.ClsCommon;
 import com.dataczar.main.viewmodel.network.NetworkUtil;
+import com.github.dhaval2404.colorpicker.ColorPickerDialog;
+import com.github.dhaval2404.colorpicker.listener.ColorListener;
+import com.github.dhaval2404.colorpicker.model.ColorShape;
 import com.google.gson.Gson;
 
+import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -71,6 +81,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import id.zelory.compressor.Compressor;
+import jp.wasabeef.richeditor.RichEditor;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.MediaType;
@@ -84,6 +95,9 @@ import pl.aprilapps.easyphotopicker.EasyImageConfig;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 import static com.dataczar.main.utils.AppUtils.getCookie;
 
+import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent;
+import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventListener;
+
 public class CreatePostActivity extends AppCompatActivity {
     RequestQueue requestQueue;
 
@@ -94,7 +108,8 @@ public class CreatePostActivity extends AppCompatActivity {
     private String isEdit = "0";
     private GetPostListResponse.PostData postData;
     CustomHorizontalProgressBar horizontalProgress;
-
+    private boolean isEditorSelected = false;
+    private boolean htmlEditor  = false;
     public static String getMimeType(String url) {
         String type = null;
         String extension = MimeTypeMap.getFileExtensionFromUrl(url);
@@ -113,11 +128,16 @@ public class CreatePostActivity extends AppCompatActivity {
 
     private void init() {
         clsCommon = new ClsCommon(getApplicationContext());
+        mBinding.edtContent.setVisibility(View.GONE);
         mBinding.edtContent.setScroller(new Scroller(this));
         mBinding.edtContent.setMaxLines(5);
         mBinding.edtContent.setVerticalScrollBarEnabled(true);
         mBinding.edtContent.setMovementMethod(new ScrollingMovementMethod());
 
+        mBinding.editor.setPadding(10,10,10,10);
+        mBinding.editor.setBackgroundColor(0);
+
+        setEditorButtonClick();
         mBinding.edtContent.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -226,11 +246,13 @@ public class CreatePostActivity extends AppCompatActivity {
                     runOnUiThread(() -> {
                         if (mBinding.edtTitle.getText().toString().equalsIgnoreCase("")){
                             new getTitle(CreatePostActivity.this).execute();
-                        }else {
+                        }else if (mBinding.editor.getHtml()==null ){
                             new getContent(CreatePostActivity.this).execute();
+                        }else if(mBinding.editor.getHtml().toString().isEmpty()){
+                            new getContent(CreatePostActivity.this).execute();
+                        }else {
+                            Log.e("Data","Not need");
                         }
-
-
                     });
                 } else {
                     Toast.makeText(CreatePostActivity.this, "Please check network connection", Toast.LENGTH_SHORT).show();
@@ -244,7 +266,8 @@ public class CreatePostActivity extends AppCompatActivity {
     private void setData() {
         if (postData != null) {
             mBinding.edtTitle.setText(postData.getTitle());
-            mBinding.edtContent.setText(postData.getContent());
+            mBinding.editor.setHtml(postData.getContent());
+          //  mBinding.edtContent.setText(postData.getContent());
 
             selectedImageURL = postData.getImage();
             Glide.with(CreatePostActivity.this)
@@ -291,10 +314,15 @@ public class CreatePostActivity extends AppCompatActivity {
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
-
-                        Glide.with(CreatePostActivity.this)
-                                .load(imageFile.getAbsolutePath())
-                                .into(mBinding.ivPostImage);
+                        if (isEditorSelected){
+                            isEditorSelected=false;
+                            mBinding.editor.insertImage(selectedImageURL,"",120,100);
+                            selectedImageURL ="";
+                        }else {
+                            Glide.with(CreatePostActivity.this)
+                                    .load(imageFile.getAbsolutePath())
+                                    .into(mBinding.ivPostImage);
+                        }
                     }
                 });
                 break;
@@ -316,10 +344,16 @@ public class CreatePostActivity extends AppCompatActivity {
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
+                        if (isEditorSelected){
+                            isEditorSelected=false;
+                            mBinding.editor.insertImage(selectedImageURL,"",120,100);
+                            selectedImageURL = "";
+                        }else {
+                            Glide.with(CreatePostActivity.this)
+                                    .load(imageFile.getAbsolutePath())
+                                    .into(mBinding.ivPostImage);
+                        }
 
-                        Glide.with(CreatePostActivity.this)
-                                .load(imageFile.getAbsolutePath())
-                                .into(mBinding.ivPostImage);
                     }
                 });
                 break;
@@ -375,7 +409,11 @@ public class CreatePostActivity extends AppCompatActivity {
             Toast.makeText(CreatePostActivity.this, "Please enter title", Toast.LENGTH_SHORT).show();
             return;
         }
-        if (mBinding.edtContent.getText().toString().equalsIgnoreCase("")) {
+        if (mBinding.editor.getHtml()==null) {
+            Toast.makeText(CreatePostActivity.this, "Please enter content", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (mBinding.editor.getHtml().toString().isEmpty()){
             Toast.makeText(CreatePostActivity.this, "Please enter content", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -391,7 +429,14 @@ public class CreatePostActivity extends AppCompatActivity {
             String publish_time = new SimpleDateFormat("h:mm a", Locale.getDefault()).format(new Date());
             String publish_date = df.format(c);
             String category = "Option1";
-            String content = mBinding.edtContent.getText().toString();
+            String content = mBinding.editor.getHtml();
+
+            try {
+                content= URLEncoder.encode(content, "UTF-8");
+            } catch (UnsupportedEncodingException e) {
+                throw new RuntimeException(e);
+            }
+            Log.e("Content",mBinding.editor.getHtml());
             String strURL = "";
             if (isEdit.equalsIgnoreCase("1")) {
                 String strPostId = String.valueOf(postData.getId());
@@ -421,7 +466,13 @@ public class CreatePostActivity extends AppCompatActivity {
             String publish_time = new SimpleDateFormat("h:mm a", Locale.getDefault()).format(new Date());
             String publish_date = df.format(c);
             String category = "Option1";
-            String content = mBinding.edtContent.getText().toString();
+            String content = mBinding.editor.getHtml();
+            try {
+                content= URLEncoder.encode(content, "UTF-8");
+            } catch (UnsupportedEncodingException e) {
+                throw new RuntimeException(e);
+            }
+            Log.e("Content",content);
             String strURL = "";
             if (isEdit.equalsIgnoreCase("1")) {
                 String strPostId = String.valueOf(postData.getId());
@@ -599,7 +650,7 @@ public class CreatePostActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 mBinding.edtTitle.setText("");
-                mBinding.edtContent.setText("");
+                mBinding.editor.setHtml("");
 
                 Intent intent = new Intent("create_post_update");
                 intent.putExtra("message", "Create Post");
@@ -646,17 +697,31 @@ public class CreatePostActivity extends AppCompatActivity {
                                     @Override
                                     public void selectedImage(GetMyImagesListResponse imageData) {
                                         selectedImageURL = imageData.getImage();
-                                        Glide.with(CreatePostActivity.this)
-                                                .load(imageData.getImage())
-                                                .into(mBinding.ivPostImage);
+                                        if (isEditorSelected){
+                                            isEditorSelected = false;
+                                            mBinding.editor.insertImage(selectedImageURL,"",120,100);
+                                            selectedImageURL = "";
+                                        }else {
+                                            Glide.with(CreatePostActivity.this)
+                                                    .load(imageData.getImage())
+                                                    .into(mBinding.ivPostImage);
+                                        }
+
                                     }
 
                                     @Override
                                     public void selectedFreeImage(GetFreeImageListResponse.ImageData imageData) {
                                         selectedImageURL = imageData.getImage();
-                                        Glide.with(CreatePostActivity.this)
-                                                .load(imageData.getImage())
-                                                .into(mBinding.ivPostImage);
+                                        if (isEditorSelected){
+                                            isEditorSelected=false;
+                                            mBinding.editor.insertImage(selectedImageURL,"",120,100);
+                                            selectedImageURL = "";
+                                        }else {
+                                            Glide.with(CreatePostActivity.this)
+                                                    .load(imageData.getImage())
+                                                    .into(mBinding.ivPostImage);
+                                        }
+
                                     }
                                 });
                                 myImagesFragment.show(getSupportFragmentManager(), "My Images");
@@ -761,7 +826,7 @@ public class CreatePostActivity extends AppCompatActivity {
         private String url;
 
         public createPost(Context context, String url) {
-
+            Log.e("Content URL",url);
             this.url = url;
         }
 
@@ -926,7 +991,7 @@ public class CreatePostActivity extends AppCompatActivity {
                                         if (mBinding.edtTitle.getText().toString().isEmpty()){
                                             mBinding.edtTitle.setText(infoResponse.getData());
                                         }else {
-                                            mBinding.edtContent.setText(infoResponse.getData());
+                                            mBinding.editor.setHtml(infoResponse.getData());
                                         }
                                     }
                                 }catch (Exception e){
@@ -996,7 +1061,7 @@ public class CreatePostActivity extends AppCompatActivity {
                                         if (mBinding.edtTitle.getText().toString().isEmpty()){
                                             mBinding.edtTitle.setText(infoResponse.getData());
                                         }else {
-                                            mBinding.edtContent.setText(infoResponse.getData());
+                                            mBinding.editor.setHtml(infoResponse.getData());
                                         }
                                     }
                                 }catch (Exception e){
@@ -1035,7 +1100,7 @@ public class CreatePostActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
       if (isEdit.equalsIgnoreCase("0")){
-          if (!mBinding.edtTitle.getText().toString().equalsIgnoreCase("") && !mBinding.edtContent.getText().toString().equalsIgnoreCase("")){
+          if (!mBinding.edtTitle.getText().toString().equalsIgnoreCase("") && !mBinding.editor.getHtml().equalsIgnoreCase("")){
             showChangesDialog();
           }else {
               super.onBackPressed();
@@ -1063,7 +1128,7 @@ public class CreatePostActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 mBinding.edtTitle.setText("");
-                mBinding.edtContent.setText("");
+                mBinding.editor.setHtml("");
                 dialog.dismiss();
                 onBackPressed();
             }
@@ -1077,6 +1142,412 @@ public class CreatePostActivity extends AppCompatActivity {
             }
         });
 
+        dialog.show();
+    }
+
+
+    private void setEditorButtonClick(){
+
+        mBinding.edtTitle.setOnTouchListener(new View.OnTouchListener()
+        {
+            public boolean onTouch(View arg0, MotionEvent arg1)
+            {
+                htmlEditor = false;
+                return false;
+            }
+        });
+
+        mBinding.edtTitle.setOnFocusChangeListener((view, b) -> {
+            if (view.isFocused()) {
+                htmlEditor = false;
+                mBinding.clEditButton.setVisibility(View.GONE);
+                mBinding.clContentOption.setVisibility(View.GONE);
+            }
+        });
+        mBinding.editor.setOnTouchListener(new View.OnTouchListener()
+        {
+            public boolean onTouch(View arg0, MotionEvent arg1)
+            {
+                htmlEditor = true;
+                return false;
+            }
+        });
+
+        mBinding.editor.setOnFocusChangeListener((view, b) -> {
+            if (view.isFocused()) {
+                htmlEditor = true;
+                mBinding.clEditButton.setVisibility(View.VISIBLE);
+            }
+        });
+
+        KeyboardVisibilityEvent.setEventListener(
+               this,
+                isOpen -> {
+                    if (!isOpen){
+                        mBinding.editor.clearFocus();
+                        mBinding.edtTitle.clearFocus();
+                        mBinding.clEditButton.setVisibility(View.GONE);
+                        mBinding.clContentOption.setVisibility(View.GONE);
+                    }
+               });
+
+        findViewById(R.id.ivDot).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+               mBinding.clContentOption.setVisibility(View.VISIBLE);
+            }
+        });
+
+        findViewById(R.id.action_undo).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mBinding.editor.undo();
+            }
+        });
+
+        findViewById(R.id.actionUndo).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mBinding.editor.undo();
+            }
+        });
+
+        findViewById(R.id.action_redo).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mBinding.editor.redo();
+            }
+        });
+
+        findViewById(R.id.actionRedo).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mBinding.editor.redo();
+            }
+        });
+
+        findViewById(R.id.action_bold).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mBinding.editor.setBold();
+            }
+        });
+
+        findViewById(R.id.actionBold).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mBinding.editor.setBold();
+            }
+        });
+
+        findViewById(R.id.action_italic).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mBinding.editor.setItalic();
+            }
+        });
+
+        findViewById(R.id.actionItalic).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mBinding.editor.setItalic();
+            }
+        });
+
+        findViewById(R.id.actionSubscript).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mBinding.editor.setSubscript();
+            }
+        });
+
+        findViewById(R.id.actionSuperscript).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mBinding.editor.setSuperscript();
+            }
+        });
+
+        findViewById(R.id.action_strikethrough).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mBinding.editor.setStrikeThrough();
+            }
+        });
+
+
+        findViewById(R.id.actionStrikethrough).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mBinding.editor.setStrikeThrough();
+            }
+        });
+        findViewById(R.id.action_underline).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mBinding.editor.setUnderline();
+            }
+        });
+
+        findViewById(R.id.actionUnderline).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mBinding.editor.setUnderline();
+            }
+        });
+
+        findViewById(R.id.action_heading1).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mBinding.editor.setHeading(1);
+            }
+        });
+
+        findViewById(R.id.action_heading2).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mBinding.editor.setHeading(2);
+            }
+        });
+
+        findViewById(R.id.action_heading3).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mBinding.editor.setHeading(3);
+            }
+        });
+
+        findViewById(R.id.action_heading4).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mBinding.editor.setHeading(4);
+            }
+        });
+
+        findViewById(R.id.action_heading5).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mBinding.editor.setHeading(5);
+            }
+        });
+
+        findViewById(R.id.action_heading6).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mBinding.editor.setHeading(6);
+            }
+        });
+
+        findViewById(R.id.action_txt_color).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+               openColorPicker(true);
+            }
+        });
+
+        findViewById(R.id.action_bg_color).setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                openColorPicker(false);
+                /*if (isTextBackgroundChanged){
+                    isTextBackgroundChanged = false;
+                    openColorPicker(false);
+                }else {
+                    isTextBackgroundChanged = true;
+                    mBinding.editor.setTextBackgroundColor(R.color.colorWhite);
+                }*/
+            }
+        });
+
+        findViewById(R.id.action_indent).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mBinding.editor.setIndent();
+            }
+        });
+
+        findViewById(R.id.action_outdent).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mBinding.editor.setOutdent();
+            }
+        });
+
+        findViewById(R.id.action_align_left).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mBinding.editor.setAlignLeft();
+            }
+        });
+
+        findViewById(R.id.actionAlignLeft).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mBinding.editor.setAlignLeft();
+            }
+        });
+
+        findViewById(R.id.action_align_center).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mBinding.editor.setAlignCenter();
+            }
+        });
+
+        findViewById(R.id.actionAlignCenter).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mBinding.editor.setAlignCenter();
+            }
+        });
+
+        findViewById(R.id.action_align_right).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mBinding.editor.setAlignRight();
+            }
+        });
+
+        findViewById(R.id.actionAlignRight).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mBinding.editor.setAlignRight();
+            }
+        });
+
+
+        findViewById(R.id.action_insert_bullets).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mBinding.editor.setBullets();
+            }
+        });
+
+        findViewById(R.id.action_insert_numbers).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mBinding.editor.setNumbers();
+            }
+        });
+
+
+        findViewById(R.id.action_insert_checkbox).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mBinding.editor.insertTodo();
+            }
+        });
+        findViewById(R.id.action_insert_link).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+               showLinkDialog();
+            }
+        });
+
+        findViewById(R.id.action_insert_image).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                isEditorSelected =true;
+                ChooseOptionFragment chooseOptionBottomSheetFragment = new ChooseOptionFragment(new ChooseOptionListener() {
+                    @Override
+                    public void selectOption(String type) {
+                        if (type.equalsIgnoreCase("1")) {
+                            //My Images
+                            if (NetworkUtil.isNetworkConnected(CreatePostActivity.this)) {
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        new getMyImageList(CreatePostActivity.this).execute();
+                                    }
+                                });
+                            } else {
+                                Toast.makeText(CreatePostActivity.this, "Please check network connection", Toast.LENGTH_SHORT).show();
+                            }
+
+
+                        }
+
+                        if (type.equalsIgnoreCase("2")) {
+                            //Free Images
+                            SearchImagesFragment searchImagesFragment = new SearchImagesFragment(CreatePostActivity.this, new MyImageSelectionListener() {
+                                @Override
+                                public void selectedImage(GetMyImagesListResponse imageData) {
+                                    selectedImageURL = imageData.getImage();
+                                    mBinding.editor.insertImage(selectedImageURL,"",120,100);
+                                    selectedImageURL ="";
+                                }
+
+                                @Override
+                                public void selectedFreeImage(GetFreeImageListResponse.ImageData imageData) {
+                                    selectedImageURL = imageData.getImage();
+                                    mBinding.editor.insertImage(selectedImageURL,"",120,100);
+                                    selectedImageURL ="";
+                                }
+
+                            });
+                            searchImagesFragment.show(getSupportFragmentManager(), "Search Images");
+                        }
+                    }
+                });
+                chooseOptionBottomSheetFragment.show(getSupportFragmentManager(), "Choose");
+            }
+        });
+    }
+
+    private void openColorPicker(Boolean isText){
+        new ColorPickerDialog
+                .Builder(this)
+                .setTitle("Pick Color")
+                .setColorShape(ColorShape.SQAURE)
+                .setDefaultColor(R.color.black)
+                .setColorListener(new ColorListener() {
+                    @Override
+                    public void onColorSelected(int color, @NotNull String colorHex) {
+                        if (isText){
+                            mBinding.editor.setTextColor(color);
+                        }else {
+                            mBinding.editor.setTextBackgroundColor(color);
+                        }
+                    }
+                })
+                .show();
+    }
+
+    private void showLinkDialog() {
+        final Dialog dialog = new Dialog(this);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setCancelable(false);
+        dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        dialog.setContentView(R.layout.dialog_insert_link);
+        dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+
+        AppCompatTextView tvInsert = dialog.findViewById(R.id.tvInsert);
+        AppCompatTextView tvCancel = dialog.findViewById(R.id.tvCancel);
+        AppCompatEditText edtLinkTitle = dialog.findViewById(R.id.edtLinkTitle);
+        AppCompatEditText edtLink = dialog.findViewById(R.id.edtLink);
+        tvInsert.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (edtLinkTitle.getText().toString().equalsIgnoreCase("")){
+                    Toast.makeText(CreatePostActivity.this, "Please enter Link title", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                if (edtLink.getText().toString().equalsIgnoreCase("")){
+                    Toast.makeText(CreatePostActivity.this, "Please insert your link", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                mBinding.editor.insertLink(edtLink.getText().toString(),edtLinkTitle.getText().toString());
+                dialog.dismiss();
+            }
+        });
+
+        tvCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+            }
+        });
         dialog.show();
     }
 }

@@ -128,7 +128,7 @@ public class SplashScreen extends AppCompatActivity {
                 Logger.Log("RES Fail", "" + call.toString());
                 if (pd.isShowing()) pd.dismiss();
 
-                Toast.makeText(context, "Response Error:  Can't Connect to server.", Toast.LENGTH_LONG).show();
+//                Toast.makeText(context, "Response Error:  Can't Connect to server.", Toast.LENGTH_LONG).show();
             }
 
             @Override

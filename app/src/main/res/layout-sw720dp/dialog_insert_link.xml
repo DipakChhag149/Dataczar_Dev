@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="10dp"
+    android:layout_marginStart="120dp"
+    android:layout_marginEnd="120dp"
+    android:background="@drawable/rounded_light_gray"
+    android:paddingTop="15dp"
+    android:paddingBottom="10dp">
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tvTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:fontFamily="@font/metropolis_semibold"
+        android:gravity="center"
+        android:text="Insert Link"
+        android:textColor="@color/black"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+    <LinearLayout
+        android:id="@+id/llField"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:orientation="vertical"
+        android:background="@drawable/rounded_gray_border"
+        app:layout_constraintTop_toBottomOf="@id/tvTitle">
+        <androidx.appcompat.widget.AppCompatEditText
+            android:id="@+id/edtLinkTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:autofillHints=""
+            android:background="@null"
+            android:inputType="text"
+            android:padding="15dp"
+            android:hint="Enter Link Title"
+            android:textColor="@color/black"
+            android:textSize="14sp"
+            android:textColorHint="@color/text_title"
+            android:fontFamily="@font/metropolis_medium"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:singleLine="true"
+            app:layout_constraintTop_toBottomOf="@id/tvTitle" />
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/app_sidebar_gray"/>
+        <androidx.appcompat.widget.AppCompatEditText
+            android:id="@+id/edtLink"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:autofillHints=""
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:background="@null"
+            android:inputType="text"
+            android:padding="15dp"
+            android:hint="Insert your link"
+            android:textColor="@color/black"
+            android:textSize="14sp"
+            android:textColorHint="@color/text_title"
+            android:fontFamily="@font/metropolis_medium"
+            android:singleLine="true"
+            app:layout_constraintTop_toBottomOf="@id/edtLinkTitle" />
+    </LinearLayout>
+
+
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_marginTop="10dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/llField">
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvInsert"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/metropolis_semibold"
+            android:gravity="center"
+            android:padding="10dp"
+            android:text="Insert"
+            android:layout_marginEnd="20dp"
+            android:textColor="@color/blue"
+            android:textSize="16sp"
+            />
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvCancel"
+            android:layout_width="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/metropolis_semibold"
+            android:gravity="center"
+            android:padding="10dp"
+            android:text="Cancel"
+            android:textColor="@color/blue"
+            android:textSize="16sp"
+            />
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

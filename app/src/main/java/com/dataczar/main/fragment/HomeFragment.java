@@ -376,7 +376,7 @@ horizontalProgress.setVisibility(View.VISIBLE);
                 @Override
                 public Map<String, String> getHeaders() throws AuthFailureError {
                     Map<String, String> params = new HashMap<String, String>();
-                    params.put(ClsCommon.COOKIE, getCookie(requireContext()));
+                    params.put(ClsCommon.COOKIE, getCookie(context));
                     return params;
                 }
 
@@ -496,7 +496,7 @@ horizontalProgress.setVisibility(View.VISIBLE);
                 @Override
                 public Map<String, String> getHeaders() throws AuthFailureError {
                     Map<String, String> params = new HashMap<String, String>();
-                    params.put(ClsCommon.COOKIE, getCookie(requireContext()));
+                    params.put(ClsCommon.COOKIE, getCookie(context));
                     return params;
                 }
 

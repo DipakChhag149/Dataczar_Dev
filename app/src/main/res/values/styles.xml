@@ -82,4 +82,21 @@
       <item name="android:textColor">@color/black</item>
    </style>
 
+   <style name="editorStyle">
+      <item name="android:padding">5dp</item>
+      <item name="android:layout_width">wrap_content</item>
+      <item name="android:layout_height">wrap_content</item>
+      <item name="android:tint">@color/colorIconTint</item>
+      <item name="android:background">@null</item>
+      <item name="android:contentDescription">@null</item>
+   </style>
+
+   <style name="editorStyleWithoutTint">
+      <item name="android:padding">5dp</item>
+      <item name="android:layout_width">wrap_content</item>
+      <item name="android:layout_height">30dp</item>
+      <item name="android:background">@null</item>
+      <item name="android:contentDescription">@null</item>
+   </style>
+
 </resources>

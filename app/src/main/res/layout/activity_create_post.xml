@@ -61,7 +61,7 @@
         <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/clEditButton"
             app:layout_constraintTop_toBottomOf="@id/horizontalProgress">
 
             <LinearLayout
@@ -114,6 +114,19 @@
                     android:padding="12dp"
                     android:textColor="@color/black"
                     android:textSize="14sp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="120dp"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/edittext_white_round">
+
+                    <jp.wasabeef.richeditor.RichEditor
+                        android:id="@+id/editor"
+                        android:background="@null"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
+                </LinearLayout>
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:layout_width="wrap_content"
@@ -175,5 +188,299 @@
                     app:layout_constraintTop_toTopOf="parent" />
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/clContentOption"
+            android:background="@drawable/rounded_white_bg"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_margin="15dp"
+            android:padding="10dp"
+            android:visibility="gone"
+            android:elevation="5dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvHtmlTitle"
+                android:text="@string/html_content_editor"
+                android:gravity="center"
+                android:textColor="@color/black"
+                android:textSize="12sp"
+                app:layout_constraintTop_toTopOf="parent"
+                android:fontFamily="@font/metropolis_medium"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="5dp"
+                android:id="@+id/llOne"
+                android:gravity="center"
+                android:orientation="horizontal"
+                app:layout_constraintTop_toBottomOf="@id/tvHtmlTitle">
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/actionUndo"
+                    style="@style/editorStyle"
+                    android:layout_weight="1"
+                    android:src="@drawable/ic_undo_left" />
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/actionRedo"
+                    style="@style/editorStyle"
+                    android:layout_weight="1"
+                    android:src="@drawable/ic_redo" />
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/actionBold"
+                    style="@style/editorStyle"
+                    android:layout_weight="1"
+                    android:src="@drawable/ic_bold" />
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/actionItalic"
+                    style="@style/editorStyle"
+                    android:layout_weight="1"
+                    android:src="@drawable/ic_italic" />
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/actionSubscript"
+                    style="@style/editorStyle"
+                    android:layout_weight="1"
+                    android:src="@drawable/ic_subscript" />
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/actionSuperscript"
+                    style="@style/editorStyle"
+                    android:layout_weight="1"
+                    android:src="@drawable/ic_superscript" />
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/actionStrikethrough"
+                    style="@style/editorStyle"
+                    android:layout_weight="1"
+                    android:src="@drawable/ic_strike" />
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/actionUnderline"
+                    style="@style/editorStyle"
+                    android:layout_weight="1"
+                    android:src="@drawable/ic_underline" />
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/action_insert_checkbox"
+                    style="@style/editorStyle"
+                    android:layout_weight="1"
+                    android:src="@drawable/ic_checkbox_check" />
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="5dp"
+                android:orientation="horizontal"
+                android:id="@+id/llTwo"
+                android:gravity="center"
+                app:layout_constraintTop_toBottomOf="@id/llOne">
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/action_heading1"
+                    style="@style/editorStyle"
+                    android:layout_weight="1"
+                    android:src="@drawable/ic_h1" />
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/action_heading2"
+                    style="@style/editorStyle"
+                    android:layout_weight="1"
+                    android:src="@drawable/ic_h2" />
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/action_heading3"
+                    style="@style/editorStyle"
+                    android:layout_weight="1"
+                    android:src="@drawable/ic_h3" />
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/action_heading4"
+                    style="@style/editorStyle"
+                    android:layout_weight="1"
+                    android:src="@drawable/ic_h4" />
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/action_heading5"
+                    style="@style/editorStyle"
+                    android:layout_weight="1"
+                    android:src="@drawable/ic_h5" />
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/action_heading6"
+                    style="@style/editorStyle"
+                    android:layout_weight="1"
+                    android:src="@drawable/ic_h6" />
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/action_txt_color"
+                    android:layout_weight="1"
+                    style="@style/editorStyle"
+                    android:src="@drawable/ic_txt_color" />
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/action_bg_color"
+                    android:layout_weight="1"
+                    style="@style/editorStyle"
+                    android:src="@drawable/ic_bg_color" />
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="5dp"
+                android:orientation="horizontal"
+                android:id="@+id/llThree"
+                app:layout_constraintTop_toBottomOf="@id/llTwo">
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/action_indent"
+                    style="@style/editorStyle"
+                    android:layout_weight="1"
+                    android:src="@drawable/ic_indent" />
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/action_outdent"
+                    style="@style/editorStyle"
+                    android:layout_weight="1"
+                    android:src="@drawable/ic_outdent" />
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/action_align_left"
+                    style="@style/editorStyle"
+                    android:layout_weight="1"
+                    android:src="@drawable/ic_align_left" />
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/action_align_center"
+                    style="@style/editorStyle"
+                    android:layout_weight="1"
+                    android:src="@drawable/ic_align_center" />
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/action_align_right"
+                    style="@style/editorStyle"
+                    android:layout_weight="1"
+                    android:src="@drawable/ic_align_right" />
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/action_insert_bullets"
+                    style="@style/editorStyle"
+                    android:layout_weight="1"
+                    android:src="@drawable/ic_bullets" />
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/action_insert_numbers"
+                    style="@style/editorStyle"
+                    android:layout_weight="1"
+                    android:src="@drawable/ic_numbers" />
+
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="5dp"
+                android:orientation="horizontal"
+                android:id="@+id/llFour"
+                app:layout_constraintTop_toBottomOf="@id/llThree">
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/action_insert_image"
+                    style="@style/editorStyle"
+                    android:layout_weight="1"
+                    android:src="@drawable/ic_add_image" />
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/action_insert_link"
+                    style="@style/editorStyle"
+                    android:layout_weight="1"
+                    android:src="@drawable/ic_link" />
+                <androidx.appcompat.widget.AppCompatImageView
+                    style="@style/editorStyle"
+                    android:layout_weight="1" />
+                <androidx.appcompat.widget.AppCompatImageView
+                    style="@style/editorStyle"
+                    android:layout_weight="1" />
+                <androidx.appcompat.widget.AppCompatImageView
+                    style="@style/editorStyle"
+                    android:layout_weight="1" />
+                <androidx.appcompat.widget.AppCompatImageView
+                    style="@style/editorStyle"
+                    android:layout_weight="1" />
+                <androidx.appcompat.widget.AppCompatImageView
+                    style="@style/editorStyle"
+                    android:layout_weight="1" />
+                <androidx.appcompat.widget.AppCompatImageView
+                    style="@style/editorStyle"
+                    android:layout_weight="1" />
+            </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+        <LinearLayout
+            android:visibility="gone"
+            android:orientation="horizontal"
+            android:padding="5dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:background="@android:color/white"
+            android:id="@+id/clEditButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/action_undo"
+                style="@style/editorStyle"
+                android:layout_weight="1"
+                android:src="@drawable/ic_undo_left" />
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/action_redo"
+                style="@style/editorStyle"
+                android:layout_weight="1"
+                android:src="@drawable/ic_redo" />
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/action_bold"
+                style="@style/editorStyle"
+                android:layout_weight="1"
+                android:src="@drawable/ic_bold" />
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/action_italic"
+                style="@style/editorStyle"
+                android:layout_weight="1"
+                android:src="@drawable/ic_italic" />
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/action_strikethrough"
+                style="@style/editorStyle"
+                android:layout_weight="1"
+                android:src="@drawable/ic_strike" />
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/action_underline"
+                style="@style/editorStyle"
+                android:layout_weight="1"
+                android:src="@drawable/ic_underline" />
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/actionAlignLeft"
+                style="@style/editorStyle"
+                android:layout_weight="1"
+                android:src="@drawable/ic_align_left" />
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/actionAlignCenter"
+                style="@style/editorStyle"
+                android:layout_weight="1"
+                android:src="@drawable/ic_align_center" />
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/actionAlignRight"
+                style="@style/editorStyle"
+                android:layout_weight="1"
+                android:src="@drawable/ic_align_right" />
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/ivDot"
+                android:layout_weight="1"
+                style="@style/editorStyle"
+                android:src="@drawable/ic_dot" />
+
+        </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
