@@ -59,7 +59,8 @@ public class EBookDetailsActivity extends AppCompatActivity {
         mBinding.tvName.setText(ebook.getDescription());
         mBinding.tvDescription.setText(ebook.getDescription());
         if (!ebook.getPurchased()){
-            mBinding.btnBuy.setText("BUY | $"+ebook.getDisplayPrice());
+            mBinding.btnBuy.setText("BUY | $"+ebook.getPrice());
+
 
             mBinding.btnBuy.setOnClickListener(new View.OnClickListener() {
                 @Override

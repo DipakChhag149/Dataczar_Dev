@@ -31,6 +31,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatTextView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
@@ -88,6 +89,7 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
     TextView tvActionbartitle;
     ImageView imgActionbarlogo ;
     ImageBadgeView imgSettingMenu;
+    AppCompatTextView tvNotificationCount;
     ConstraintLayout llNotificationIcon;
     ClsCommon clsCommon;
     ConstraintLayout llLinks;
@@ -107,11 +109,14 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
         tvActionbartitle = findViewById(R.id.tvActionbartitle);
         imgActionbarlogo = findViewById(R.id.imgActionbarlogo);
         imgSettingMenu   = findViewById(R.id.imgSettingMenu);
+        tvNotificationCount   = findViewById(R.id.tvNotificationCount);
         llNotificationIcon   = findViewById(R.id.llNotificationIcon);
         llLinks   = findViewById(R.id.llLinks);
         ivExpand   = findViewById(R.id.ivExpand);
 
         imgSettingMenu.setVisibility(View.GONE);
+        tvNotificationCount.setVisibility(View.GONE);
+
         llNotificationIcon.setVisibility(View.GONE);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
@@ -157,7 +162,7 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
 
                 if(moveto != null && moveto.equals(ClsCommon.PROFILE))
                 {
-                    fragmentTransaction.replace(R.id.llFargment, new ProfileFragment(context, bottomNavigationView, imgSettingMenu,llNotificationIcon));
+                    fragmentTransaction.replace(R.id.llFargment, new ProfileFragment(context, bottomNavigationView, imgSettingMenu,tvNotificationCount,llNotificationIcon));
                     bottomNavigationView.setSelectedItemId(R.id.ic_profile);
                     bottomNavigationView.setSelected(true);
                     imgActionbarlogo.setVisibility(View.GONE);
@@ -172,6 +177,7 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
                 }
                 else {
                     llLinks.setVisibility(View.VISIBLE);
+                    tvNotificationCount.setVisibility(View.GONE);
                     fragmentTransaction.add(R.id.llFargment, new HomeFragment(context, ClsCommon.DASHBOARD, bottomNavigationView, imgSettingMenu,llNotificationIcon,llLinks,ivExpand,true));
                     bottomNavigationView.setSelectedItemId(R.id.ic_home);
                     bottomNavigationView.setSelected(true);
@@ -182,6 +188,7 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
         }else
         {
             llLinks.setVisibility(View.VISIBLE);
+            tvNotificationCount.setVisibility(View.GONE);
             fragmentTransaction.add(R.id.llFargment, new HomeFragment(context, ClsCommon.DASHBOARD, bottomNavigationView,  imgSettingMenu,llNotificationIcon,llLinks,ivExpand,true));
             bottomNavigationView.setSelected(true);
             bottomNavigationView.setSelectedItemId(R.id.ic_home);
@@ -213,6 +220,7 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
                             isHomeSelected = true;
                             bottomNavigationView.setSelected(true);
                             imgSettingMenu.setVisibility(View.GONE);
+                            tvNotificationCount.setVisibility(View.GONE);
                             llNotificationIcon.setVisibility(View.GONE);
                             tvActionbartitle.setVisibility(View.GONE);
                             imgActionbarlogo.setVisibility(View.VISIBLE);
@@ -224,6 +232,7 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
                         case R.id.ic_addpost:
                             isHomeSelected = false;
                             imgSettingMenu.setVisibility(View.GONE);
+                            tvNotificationCount.setVisibility(View.GONE);
                             llNotificationIcon.setVisibility(View.GONE);
                             tvActionbartitle.setVisibility(View.VISIBLE);
                             imgActionbarlogo.setVisibility(View.GONE);
@@ -236,6 +245,7 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
                         case R.id.ic_education:
                             isHomeSelected = false;
                             imgSettingMenu.setVisibility(View.GONE);
+                            tvNotificationCount.setVisibility(View.GONE);
                             llNotificationIcon.setVisibility(View.GONE);
                             tvActionbartitle.setVisibility(View.VISIBLE);
                             imgActionbarlogo.setVisibility(View.GONE);
@@ -248,6 +258,7 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
                         case R.id.ic_notification:
                             isHomeSelected = false;
                             imgSettingMenu.setVisibility(View.GONE);
+                            tvNotificationCount.setVisibility(View.GONE);
                             llNotificationIcon.setVisibility(View.GONE);
                             llNotificationIcon.setVisibility(View.GONE);
                             tvActionbartitle.setVisibility(View.VISIBLE);
@@ -264,7 +275,7 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
                             imgActionbarlogo.setVisibility(View.GONE);
                             llLinks.setVisibility(View.GONE);
                             tvActionbartitle.setText("Profile");
-                            fragmentTransaction.replace(R.id.llFargment, new ProfileFragment(context, bottomNavigationView, imgSettingMenu,llNotificationIcon));
+                            fragmentTransaction.replace(R.id.llFargment, new ProfileFragment(context, bottomNavigationView, imgSettingMenu,tvNotificationCount,llNotificationIcon));
                             fragmentTransaction.commit();
                             return true;
 
@@ -660,14 +671,14 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
                                             ProfileBadge.setNumber(unReadCount);
                                             ProfileBadge.setBadgeTextColor(Color.parseColor("#fefefe"));
                                             ProfileBadge.setBackgroundColor(Color.parseColor("#f1592a"));
+                                            tvNotificationCount.setText(""+unReadCount);
 
-                                            imgSettingMenu.setBadgeValue(unReadCount);
                                             /*BadgeDrawable NotifiationBadge = bottomNavigationView.getOrCreateBadge(R.id.ic_profile);
                                             NotifiationBadge.setNumber(Integer.parseInt(unreadcount));
                                             NotifiationBadge.setBackgroundColor(Color.parseColor("#f1592a"));*/
                                         }else
                                         {
-                                            imgSettingMenu.setBadgeValue(0);
+                                            tvNotificationCount.setText("0");
                                             /*BadgeDrawable NotifiationBadge = bottomNavigationView.getOrCreateBadge(R.id.ic_notification);
                                             NotifiationBadge.setNumber(Integer.parseInt(unreadcount));
                                             NotifiationBadge.setBackgroundColor(getResources().getColor(android.R.color.transparent));*/

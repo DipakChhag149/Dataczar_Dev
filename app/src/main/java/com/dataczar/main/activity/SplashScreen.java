@@ -23,6 +23,11 @@ import com.dataczar.main.utils.Logger;
 import com.dataczar.main.viewmodel.ClsCommon;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.play.core.appupdate.AppUpdateInfo;
+import com.google.android.play.core.appupdate.AppUpdateManager;
+import com.google.android.play.core.appupdate.AppUpdateManagerFactory;
+import com.google.android.play.core.install.model.AppUpdateType;
+import com.google.android.play.core.install.model.UpdateAvailability;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.gson.Gson;
 
@@ -58,6 +63,19 @@ public class SplashScreen extends AppCompatActivity {
             checkUserLoginStatus();
         }
 
+
+        AppUpdateManager appUpdateManager = AppUpdateManagerFactory.create(context);
+
+// Returns an intent object that you use to check for an update.
+        Task<AppUpdateInfo> appUpdateInfoTask = appUpdateManager.getAppUpdateInfo();
+
+// Checks that the platform will allow the specified type of update.
+        appUpdateInfoTask.addOnSuccessListener(appUpdateInfo -> {
+            if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE
+                    ) {
+              Toast.makeText(this,"YES",Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
     private void checkUserLoginStatus() {

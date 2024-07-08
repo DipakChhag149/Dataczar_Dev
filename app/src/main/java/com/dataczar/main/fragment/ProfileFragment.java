@@ -19,6 +19,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.widget.AppCompatTextView;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 
@@ -62,6 +63,7 @@ public class ProfileFragment extends Fragment
     ArrayList<HashMap<String, String>> teammap = new ArrayList<>();
     BottomNavigationView bottomNavigationView;
     ImageBadgeView imgSettingMenu;
+    AppCompatTextView tvNotificationCount;
     ConstraintLayout llNotificationIcon;
 
     LinearLayout llswitfprof,llSetting;
@@ -74,12 +76,13 @@ public class ProfileFragment extends Fragment
         userprofile = new ArrayList<>();
     }
 
-    public ProfileFragment(Context context, BottomNavigationView bottomNavigationView, ImageBadgeView imgSettingMenu,ConstraintLayout llNotificationIcon) {
+    public ProfileFragment(Context context, BottomNavigationView bottomNavigationView, ImageBadgeView imgSettingMenu, AppCompatTextView tvNotificationCount,ConstraintLayout llNotificationIcon) {
         this.context = context;
         requestQueue = Volley.newRequestQueue(context);
         userprofile = new ArrayList<>();
         this.bottomNavigationView = bottomNavigationView;
         this.imgSettingMenu = imgSettingMenu;
+        this.tvNotificationCount = tvNotificationCount;
         this.llNotificationIcon = llNotificationIcon;
     }
 
@@ -91,6 +94,7 @@ public class ProfileFragment extends Fragment
         item.setChecked(true);
 
         imgSettingMenu.setVisibility(View.VISIBLE);
+        tvNotificationCount.setVisibility(View.VISIBLE);
         llNotificationIcon.setVisibility(View.VISIBLE);
     }
 
@@ -208,13 +212,13 @@ public class ProfileFragment extends Fragment
 
                                         if(unreadcount != null && unreadcount.trim().length()>0 && !unreadcount.equals("0"))
                                         {
-                                            imgSettingMenu.setBadgeValue(Integer.parseInt(unreadcount));
+                                            tvNotificationCount.setText(unreadcount);
                                            /* BadgeDrawable NotifiationBadge = bottomNavigationView.getOrCreateBadge(R.id.imgSettingMenu);
                                             NotifiationBadge.setNumber(Integer.parseInt(unreadcount));
                                             NotifiationBadge.setBackgroundColor(Color.parseColor("#f1592a"));*/
                                         }else
                                         {
-                                            imgSettingMenu.setBadgeValue(0);
+                                            tvNotificationCount.setText("0");
                                             /*BadgeDrawable NotifiationBadge = bottomNavigationView.getOrCreateBadge(R.id.imgSettingMenu);
                                             NotifiationBadge.setNumber(Integer.parseInt(unreadcount));
                                             NotifiationBadge.setBackgroundColor(Color.parseColor("#00000000"));*/

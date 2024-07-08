@@ -44,6 +44,10 @@ public class GetEBooksListResponse {
         @SerializedName("price")
         @Expose
         private String price;
+        @SerializedName("regular_price")
+        @Expose
+        private String regularPrice;
+
         @SerializedName("display_price")
         @Expose
         private String displayPrice;
@@ -77,6 +81,14 @@ public class GetEBooksListResponse {
         @SerializedName("route")
         @Expose
         private String route;
+
+        public String getRegularPrice() {
+            return regularPrice;
+        }
+
+        public void setRegularPrice(String regularPrice) {
+            this.regularPrice = regularPrice;
+        }
 
         public Integer getId() {
             return id;

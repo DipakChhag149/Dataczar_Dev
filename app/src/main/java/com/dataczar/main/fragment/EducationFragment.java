@@ -143,8 +143,8 @@ public class EducationFragment extends Fragment {
                 @Override
                 public void onErrorResponse(VolleyError error) {
                     mBinding.horizontalProgress.setVisibility(View.INVISIBLE);
-
-                    Toast.makeText(requireContext(), "Response Error: " + error + " Can't Connect to server.", Toast.LENGTH_LONG).show();
+                    Log.e("Error",""+new Gson().toJson(error));
+                    //Toast.makeText(requireContext(), "Response Error: " + error + " Can't Connect to server.", Toast.LENGTH_LONG).show();
                 }
             }) {
                 @Override
