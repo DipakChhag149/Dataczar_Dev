@@ -50,6 +50,7 @@ import com.dataczar.R;
 import com.dataczar.main.fragment.AddPostNewFragment;
 import com.dataczar.main.fragment.EducationFragment;
 import com.dataczar.main.fragment.HomeFragment;
+import com.dataczar.main.fragment.NewHomeFragment;
 import com.dataczar.main.fragment.NotificationFragment;
 import com.dataczar.main.fragment.ProfileFragment;
 import com.dataczar.main.utils.AppPreferenceManager;
@@ -178,7 +179,7 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
                 else {
                     llLinks.setVisibility(View.VISIBLE);
                     tvNotificationCount.setVisibility(View.GONE);
-                    fragmentTransaction.add(R.id.llFargment, new HomeFragment(context, ClsCommon.DASHBOARD, bottomNavigationView, imgSettingMenu,llNotificationIcon,llLinks,ivExpand,true));
+                    fragmentTransaction.add(R.id.llFargment, new NewHomeFragment(context, ClsCommon.DASHBOARD, bottomNavigationView, imgSettingMenu,llNotificationIcon,llLinks,ivExpand,true));
                     bottomNavigationView.setSelectedItemId(R.id.ic_home);
                     bottomNavigationView.setSelected(true);
                     fragmentTransaction.commit();
@@ -189,7 +190,7 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
         {
             llLinks.setVisibility(View.VISIBLE);
             tvNotificationCount.setVisibility(View.GONE);
-            fragmentTransaction.add(R.id.llFargment, new HomeFragment(context, ClsCommon.DASHBOARD, bottomNavigationView,  imgSettingMenu,llNotificationIcon,llLinks,ivExpand,true));
+            fragmentTransaction.add(R.id.llFargment, new NewHomeFragment(context, ClsCommon.DASHBOARD, bottomNavigationView,  imgSettingMenu,llNotificationIcon,llLinks,ivExpand,true));
             bottomNavigationView.setSelected(true);
             bottomNavigationView.setSelectedItemId(R.id.ic_home);
             fragmentTransaction.commit();
@@ -225,7 +226,7 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
                             tvActionbartitle.setVisibility(View.GONE);
                             imgActionbarlogo.setVisibility(View.VISIBLE);
                             llLinks.setVisibility(View.VISIBLE);
-                            fragmentTransaction.replace(R.id.llFargment, new HomeFragment(context, ClsCommon.DASHBOARD, bottomNavigationView, imgSettingMenu,llNotificationIcon,llLinks,ivExpand,true));
+                            fragmentTransaction.replace(R.id.llFargment, new NewHomeFragment(context, ClsCommon.DASHBOARD, bottomNavigationView, imgSettingMenu,llNotificationIcon,llLinks,ivExpand,true));
                             fragmentTransaction.commit();
                             return true;
 

@@ -50,6 +50,8 @@ public class WSMethods
     public static String LOGOUT  = WSURL + "/api/logout";
     public static String ADD_NOTIFICATION  = WSURL + "/api/notifications/token";
     public static String DELETE_NOTIFICATION  = WSURL + "/api/notifications/token";
+    public static String GET_SLIDER_DATA  = WSURL + "/api/engagement?type=feature-slider";
+    public static String GET_HOME_PAGE_DATA  = WSURL + "/api/blog/data";
 
 
     public static String GET_MY_IMAGE_LIST  = WSURL + "/content/list";
