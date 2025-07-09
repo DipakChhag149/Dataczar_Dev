@@ -1,3 +1,6 @@
 
 rootProject.name = "DataCzar"
 include ':app'
+include ':HtmlTextView'
+include ':android-badgify'
+include ':fontawesome'

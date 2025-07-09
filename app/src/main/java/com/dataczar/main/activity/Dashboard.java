@@ -5,7 +5,6 @@
 package com.dataczar.main.activity;
 
 
-
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 
 import android.Manifest;
@@ -63,7 +62,6 @@ import com.google.android.material.navigation.NavigationBarView;
 import com.google.android.material.navigation.NavigationView;
 
 
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -88,32 +86,32 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
     RequestQueue requestQueue;
     FragmentTransaction fragmentTransaction = null;
     TextView tvActionbartitle;
-    ImageView imgActionbarlogo ;
+    ImageView imgActionbarlogo;
     ImageBadgeView imgSettingMenu;
     AppCompatTextView tvNotificationCount;
     ConstraintLayout llNotificationIcon;
     ClsCommon clsCommon;
     ConstraintLayout llLinks;
     ImageView ivExpand;
-   //public static  CustomHorizontalProgressBar horizontalProgress;
+    //public static  CustomHorizontalProgressBar horizontalProgress;
     private FragmentRefreshListener fragmentRefreshListener;
     private int unReadCount = 0;
-    private boolean isHomeSelected =true;
+    private boolean isHomeSelected = true;
+
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.dashboard);
-      //  horizontalProgress = findViewById(R.id.horizontalProgress);
+        //  horizontalProgress = findViewById(R.id.horizontalProgress);
 
         toolbar = findViewById(R.id.toolbar);
         tvActionbartitle = findViewById(R.id.tvActionbartitle);
         imgActionbarlogo = findViewById(R.id.imgActionbarlogo);
-        imgSettingMenu   = findViewById(R.id.imgSettingMenu);
-        tvNotificationCount   = findViewById(R.id.tvNotificationCount);
-        llNotificationIcon   = findViewById(R.id.llNotificationIcon);
-        llLinks   = findViewById(R.id.llLinks);
-        ivExpand   = findViewById(R.id.ivExpand);
+        imgSettingMenu = findViewById(R.id.imgSettingMenu);
+        tvNotificationCount = findViewById(R.id.tvNotificationCount);
+        llNotificationIcon = findViewById(R.id.llNotificationIcon);
+        llLinks = findViewById(R.id.llLinks);
+        ivExpand = findViewById(R.id.ivExpand);
 
         imgSettingMenu.setVisibility(View.GONE);
         tvNotificationCount.setVisibility(View.GONE);
@@ -150,140 +148,122 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
         bottomNavigationView = findViewById(R.id.bottom_navigation);
 
         fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        if(getIntent() != null)
-        {
-            String action= getIntent().getAction();
-            if (action!=null && action.equalsIgnoreCase("com.notification")){
+        if (getIntent() != null) {
+            String action = getIntent().getAction();
+            if (action != null && action.equalsIgnoreCase("com.notification")) {
                 fragmentTransaction.add(R.id.llFargment, new NotificationFragment(context));
                 bottomNavigationView.setSelectedItemId(R.id.ic_profile);
                 bottomNavigationView.setSelected(true);
                 fragmentTransaction.commit();
-            }else {
+            } else {
                 String moveto = getIntent().getStringExtra("NeedNavigate");
 
-                if(moveto != null && moveto.equals(ClsCommon.PROFILE))
-                {
-                    fragmentTransaction.replace(R.id.llFargment, new ProfileFragment(context, bottomNavigationView, imgSettingMenu,tvNotificationCount,llNotificationIcon));
+                if (moveto != null && moveto.equals(ClsCommon.PROFILE)) {
+                    fragmentTransaction.replace(R.id.llFargment, new ProfileFragment(context, bottomNavigationView, imgSettingMenu, tvNotificationCount, llNotificationIcon));
                     bottomNavigationView.setSelectedItemId(R.id.ic_profile);
                     bottomNavigationView.setSelected(true);
                     imgActionbarlogo.setVisibility(View.GONE);
                     tvActionbartitle.setVisibility(View.VISIBLE);
                     tvActionbartitle.setText("Profile");
                     fragmentTransaction.commit();
-                }else if(moveto!=null && moveto.equals(ClsCommon.NOTIFICATION)){
+                } else if (moveto != null && moveto.equals(ClsCommon.NOTIFICATION)) {
                     fragmentTransaction.add(R.id.llFargment, new NotificationFragment(context));
                     bottomNavigationView.setSelectedItemId(R.id.ic_profile);
                     bottomNavigationView.setSelected(true);
                     fragmentTransaction.commit();
-                }
-                else {
+                } else {
                     llLinks.setVisibility(View.VISIBLE);
                     tvNotificationCount.setVisibility(View.GONE);
-                    fragmentTransaction.add(R.id.llFargment, new NewHomeFragment(context, ClsCommon.DASHBOARD, bottomNavigationView, imgSettingMenu,llNotificationIcon,llLinks,ivExpand,true));
+                    fragmentTransaction.add(R.id.llFargment, new NewHomeFragment(context, ClsCommon.DASHBOARD, bottomNavigationView, imgSettingMenu, llNotificationIcon, llLinks, ivExpand, true));
                     bottomNavigationView.setSelectedItemId(R.id.ic_home);
                     bottomNavigationView.setSelected(true);
                     fragmentTransaction.commit();
                 }
             }
 
-        }else
-        {
+        } else {
             llLinks.setVisibility(View.VISIBLE);
             tvNotificationCount.setVisibility(View.GONE);
-            fragmentTransaction.add(R.id.llFargment, new NewHomeFragment(context, ClsCommon.DASHBOARD, bottomNavigationView,  imgSettingMenu,llNotificationIcon,llLinks,ivExpand,true));
+            fragmentTransaction.add(R.id.llFargment, new NewHomeFragment(context, ClsCommon.DASHBOARD, bottomNavigationView, imgSettingMenu, llNotificationIcon, llLinks, ivExpand, true));
             bottomNavigationView.setSelected(true);
             bottomNavigationView.setSelectedItemId(R.id.ic_home);
             fragmentTransaction.commit();
         }
 
 
-
         //fragmentTransaction.commit();
 
         bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item)
-            {
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
 
-                if(!clsCommon.checkConnection()) {
+                if (!clsCommon.checkConnection()) {
                     clsCommon.showSnackBar(false, imgActionbarlogo.getRootView());
-                }
-                else
-                {
+                } else {
                     int id = item.getItemId();
 
                     fragmentTransaction = getSupportFragmentManager().beginTransaction();
                     fragmentTransaction.disallowAddToBackStack();
-
-                    switch(id)
-                    {
-                        case R.id.ic_home:
-                            isHomeSelected = true;
-                            bottomNavigationView.setSelected(true);
-                            imgSettingMenu.setVisibility(View.GONE);
-                            tvNotificationCount.setVisibility(View.GONE);
-                            llNotificationIcon.setVisibility(View.GONE);
-                            tvActionbartitle.setVisibility(View.GONE);
-                            imgActionbarlogo.setVisibility(View.VISIBLE);
-                            llLinks.setVisibility(View.VISIBLE);
-                            fragmentTransaction.replace(R.id.llFargment, new NewHomeFragment(context, ClsCommon.DASHBOARD, bottomNavigationView, imgSettingMenu,llNotificationIcon,llLinks,ivExpand,true));
-                            fragmentTransaction.commit();
-                            return true;
-
-                        case R.id.ic_addpost:
-                            isHomeSelected = false;
-                            imgSettingMenu.setVisibility(View.GONE);
-                            tvNotificationCount.setVisibility(View.GONE);
-                            llNotificationIcon.setVisibility(View.GONE);
-                            tvActionbartitle.setVisibility(View.VISIBLE);
-                            imgActionbarlogo.setVisibility(View.GONE);
-                            llLinks.setVisibility(View.GONE);
-                            tvActionbartitle.setText("Add Post");
-                            fragmentTransaction.replace(R.id.llFargment, new AddPostNewFragment(context));
-                            fragmentTransaction.commit();
-                            return true;
-
-                        case R.id.ic_education:
-                            isHomeSelected = false;
-                            imgSettingMenu.setVisibility(View.GONE);
-                            tvNotificationCount.setVisibility(View.GONE);
-                            llNotificationIcon.setVisibility(View.GONE);
-                            tvActionbartitle.setVisibility(View.VISIBLE);
-                            imgActionbarlogo.setVisibility(View.GONE);
-                            llLinks.setVisibility(View.GONE);
-                            tvActionbartitle.setText("Education");
-                            fragmentTransaction.replace(R.id.llFargment, new EducationFragment());
-                            fragmentTransaction.commit();
-                            return true;
-
-                        case R.id.ic_notification:
-                            isHomeSelected = false;
-                            imgSettingMenu.setVisibility(View.GONE);
-                            tvNotificationCount.setVisibility(View.GONE);
-                            llNotificationIcon.setVisibility(View.GONE);
-                            llNotificationIcon.setVisibility(View.GONE);
-                            tvActionbartitle.setVisibility(View.VISIBLE);
-                            imgActionbarlogo.setVisibility(View.GONE);
-                            llLinks.setVisibility(View.GONE);
-                            tvActionbartitle.setText("Notifications");
-                            fragmentTransaction.replace(R.id.llFargment, new NotificationFragment(context));
-                            fragmentTransaction.commit();
-                            return true;
-
-                        case R.id.ic_profile:
-                            isHomeSelected = false;
-                            tvActionbartitle.setVisibility(View.VISIBLE);
-                            imgActionbarlogo.setVisibility(View.GONE);
-                            llLinks.setVisibility(View.GONE);
-                            tvActionbartitle.setText("Profile");
-                            fragmentTransaction.replace(R.id.llFargment, new ProfileFragment(context, bottomNavigationView, imgSettingMenu,tvNotificationCount,llNotificationIcon));
-                            fragmentTransaction.commit();
-                            return true;
-
+                    if (id == R.id.ic_home) {
+                        isHomeSelected = true;
+                        bottomNavigationView.setSelected(true);
+                        imgSettingMenu.setVisibility(View.GONE);
+                        tvNotificationCount.setVisibility(View.GONE);
+                        llNotificationIcon.setVisibility(View.GONE);
+                        tvActionbartitle.setVisibility(View.GONE);
+                        imgActionbarlogo.setVisibility(View.VISIBLE);
+                        llLinks.setVisibility(View.VISIBLE);
+                        fragmentTransaction.replace(R.id.llFargment, new NewHomeFragment(context, ClsCommon.DASHBOARD, bottomNavigationView, imgSettingMenu, llNotificationIcon, llLinks, ivExpand, true));
+                        fragmentTransaction.commit();
+                        return true;
+                    } else if (id == R.id.ic_addpost) {
+                        isHomeSelected = false;
+                        imgSettingMenu.setVisibility(View.GONE);
+                        tvNotificationCount.setVisibility(View.GONE);
+                        llNotificationIcon.setVisibility(View.GONE);
+                        tvActionbartitle.setVisibility(View.VISIBLE);
+                        imgActionbarlogo.setVisibility(View.GONE);
+                        llLinks.setVisibility(View.GONE);
+                        tvActionbartitle.setText("Add Post");
+                        fragmentTransaction.replace(R.id.llFargment, new AddPostNewFragment(context));
+                        fragmentTransaction.commit();
+                        return true;
+                    } else if (id == R.id.ic_education) {
+                        isHomeSelected = false;
+                        imgSettingMenu.setVisibility(View.GONE);
+                        tvNotificationCount.setVisibility(View.GONE);
+                        llNotificationIcon.setVisibility(View.GONE);
+                        tvActionbartitle.setVisibility(View.VISIBLE);
+                        imgActionbarlogo.setVisibility(View.GONE);
+                        llLinks.setVisibility(View.GONE);
+                        tvActionbartitle.setText("Education");
+                        fragmentTransaction.replace(R.id.llFargment, new EducationFragment());
+                        fragmentTransaction.commit();
+                        return true;
+                    } else if (id == R.id.ic_notification) {
+                        isHomeSelected = false;
+                        imgSettingMenu.setVisibility(View.GONE);
+                        tvNotificationCount.setVisibility(View.GONE);
+                        llNotificationIcon.setVisibility(View.GONE);
+                        llNotificationIcon.setVisibility(View.GONE);
+                        tvActionbartitle.setVisibility(View.VISIBLE);
+                        imgActionbarlogo.setVisibility(View.GONE);
+                        llLinks.setVisibility(View.GONE);
+                        tvActionbartitle.setText("Notifications");
+                        fragmentTransaction.replace(R.id.llFargment, new NotificationFragment(context));
+                        fragmentTransaction.commit();
+                        return true;
+                    } else if (id == R.id.ic_profile) {
+                        isHomeSelected = false;
+                        tvActionbartitle.setVisibility(View.VISIBLE);
+                        imgActionbarlogo.setVisibility(View.GONE);
+                        llLinks.setVisibility(View.GONE);
+                        tvActionbartitle.setText("Profile");
+                        fragmentTransaction.replace(R.id.llFargment, new ProfileFragment(context, bottomNavigationView, imgSettingMenu, tvNotificationCount, llNotificationIcon));
+                        fragmentTransaction.commit();
+                        return true;
                     }
                 }
-
-
 
 
                 return false;
@@ -299,13 +279,13 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
         });
 
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             ActivityCompat.requestPermissions(Dashboard.this,
                     new String[]{Manifest.permission.READ_MEDIA_IMAGES},
                     1);
-        }else{
+        } else {
             ActivityCompat.requestPermissions(Dashboard.this,
-                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE},
                     1);
         }
 
@@ -319,7 +299,7 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
     private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if(getFragmentRefreshListener()!=null){
+            if (getFragmentRefreshListener() != null) {
                 getFragmentRefreshListener().onRefresh();
             }
         }
@@ -368,8 +348,7 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item)
-    {
+    public boolean onOptionsItemSelected(MenuItem item) {
         int viewID = item.getItemId();
 
         if (mDrawerlayout.isDrawerOpen(mDrawerList_Left))
@@ -385,56 +364,37 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
 
 
     @Override
-    public boolean onNavigationItemSelected(@NonNull MenuItem item)
-    {
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
 
         int viewID = item.getItemId();
         mDrawerlayout.closeDrawer(Gravity.LEFT);
 
-        if(viewID == R.id.ic_website)
-        {
-            if (isSingleClick())
-            {
+        if (viewID == R.id.ic_website) {
+            if (isSingleClick()) {
                 Intent intent = new Intent(context, WebviewLP.class);
                 intent.putExtra(ClsCommon.WEBSITE, ClsCommon.WEBSITE);
                 startActivity(intent);
             }
-        }
-
-        else if(viewID == R.id.ic_email)
-        {
-            if (isSingleClick())
-            {
+        } else if (viewID == R.id.ic_email) {
+            if (isSingleClick()) {
                 Intent intent = new Intent(context, WebviewLP.class);
                 intent.putExtra(ClsCommon.WEBSITE, ClsCommon.EMAIL);
                 startActivity(intent);
             }
-        }
-
-        else if(viewID == R.id.ic_list)
-        {
-            if (isSingleClick())
-            {
+        } else if (viewID == R.id.ic_list) {
+            if (isSingleClick()) {
                 Intent intent = new Intent(context, WebviewLP.class);
                 intent.putExtra(ClsCommon.WEBSITE, ClsCommon.LIST);
                 startActivity(intent);
             }
-        }
-
-        else if(viewID == R.id.ic_domain)
-        {
-            if (isSingleClick())
-            {
+        } else if (viewID == R.id.ic_domain) {
+            if (isSingleClick()) {
                 Intent intent = new Intent(context, WebviewLP.class);
                 intent.putExtra(ClsCommon.WEBSITE, ClsCommon.DOMAIN);
                 startActivity(intent);
             }
-        }
-
-        else if(viewID == R.id.ic_content)
-        {
-            if (isSingleClick())
-            {
+        } else if (viewID == R.id.ic_content) {
+            if (isSingleClick()) {
                 Intent intent = new Intent(context, WebviewLP.class);
                 intent.putExtra(ClsCommon.WEBSITE, ClsCommon.CONTENT);
                 startActivity(intent);
@@ -442,12 +402,10 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
         }
 
 
-
         return true;
     }
 
-    private boolean isSingleClick()
-    {
+    private boolean isSingleClick() {
         long clickTime = System.currentTimeMillis();
         long transcureTime = clickTime - lastClickTime;
         lastClickTime = clickTime;
@@ -458,8 +416,8 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
     protected void onResume() {
         super.onResume();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            context.registerReceiver(broadcastReceiver, new IntentFilter("notification_update"),RECEIVER_NOT_EXPORTED);
-        }else {
+            context.registerReceiver(broadcastReceiver, new IntentFilter("notification_update"), RECEIVER_NOT_EXPORTED);
+        } else {
             context.registerReceiver(broadcastReceiver, new IntentFilter("notification_update"));
         }
 
@@ -479,7 +437,6 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
         }*/
 
 
-
         new getNotificatioCount(context).execute();
     }
 
@@ -491,20 +448,16 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
 
     @Override
     public boolean onMenuItemClick(MenuItem menuItem) {
-        switch (menuItem.getItemId())
-        {
-            case R.id.menu_settings:
-                startActivity(new Intent(context, Setting.class));
-                return true;
+        if (menuItem.getItemId() == R.id.menu_settings) {
+            startActivity(new Intent(context, Setting.class));
+            return true;
         }
         return false;
     }
 
 
-    class getHomeData extends AsyncTask<String, Void, Boolean>
-    {
-        public getHomeData(Context context)
-        {
+    class getHomeData extends AsyncTask<String, Void, Boolean> {
+        public getHomeData(Context context) {
         }
 
         @Override
@@ -515,26 +468,22 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
         }
 
         @Override
-        protected Boolean doInBackground(String... strings)
-        {
+        protected Boolean doInBackground(String... strings) {
             return null;
         }
 
         @Override
-        protected void onPostExecute(Boolean aBoolean)
-        {
+        protected void onPostExecute(Boolean aBoolean) {
             super.onPostExecute(aBoolean);
 
             Log.d("Method Call", "getHomeData");
 
             StringRequest stringRequest = new StringRequest(Request.Method.GET, WSMethods.GETUSERPROFILE,
-                    new Response.Listener<String>()
-                    {
+                    new Response.Listener<String>() {
                         @Override
-                        public void onResponse(String response)
-                        {
-                            Log.e("Response",""+response);
-                          //  horizontalProgress.setVisibility(View.GONE);
+                        public void onResponse(String response) {
+                            Log.e("Response", "" + response);
+                            //  horizontalProgress.setVisibility(View.GONE);
 
 
                             runOnUiThread(new Runnable() {
@@ -544,25 +493,20 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
                                 }
                             });
 
-                            if(response!= null && !response.isEmpty())
-                            {
-                                try
-                                {
+                            if (response != null && !response.isEmpty()) {
+                                try {
                                     JSONObject jsonObject = new JSONObject(response);
 
-                                    if(jsonObject.has("data"))
-                                    {
-                                        JSONObject uDatas =  jsonObject.getJSONObject("data");
+                                    if (jsonObject.has("data")) {
+                                        JSONObject uDatas = jsonObject.getJSONObject("data");
 
-                                        if(uDatas.has("team"))
-                                        {
+                                        if (uDatas.has("team")) {
                                             JSONObject userdata = uDatas.getJSONObject("team");
 
-                                               String status  = userdata.get("status").toString();
+                                            String status = userdata.get("status").toString();
 
-                                            if(!status.equals("active"))
-                                            {
-                                                if (unReadCount<=0){
+                                            if (!status.equals("active")) {
+                                                if (unReadCount <= 0) {
                                                     BadgeDrawable ProfileBadge = bottomNavigationView.getOrCreateBadge(R.id.ic_profile);
                                                     ProfileBadge.setVisible(true);
                                                     ProfileBadge.setNumber(0);
@@ -580,29 +524,25 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
                                 } catch (JSONException e) {
                                     e.printStackTrace();
                                 }
-                            }else
-                            {
-                                Intent intent=new Intent(context, SessionExpiredActivity.class);
+                            } else {
+                                Intent intent = new Intent(context, SessionExpiredActivity.class);
                                 startActivity(intent);
                                 //Toast.makeText(context," Can't Connect to server.", Toast.LENGTH_LONG).show();
                             }
 
-                           // new getNotificatioCount(context).execute();
+                            // new getNotificatioCount(context).execute();
                         }
                     }, new Response.ErrorListener() {
                 @Override
-                public void onErrorResponse(VolleyError error)
-                {
-                   // horizontalProgress.setVisibility(View.GONE);
+                public void onErrorResponse(VolleyError error) {
+                    // horizontalProgress.setVisibility(View.GONE);
 
                     //Toast.makeText(context,"Response Error: "+ error + " Can't Connect to server.", Toast.LENGTH_LONG).show();
                 }
-            })
-            {
+            }) {
                 @Override
-                public Map<String, String> getHeaders() throws AuthFailureError
-                {
-                    Map<String, String>  params = new HashMap<String, String>();
+                public Map<String, String> getHeaders() throws AuthFailureError {
+                    Map<String, String> params = new HashMap<String, String>();
                     params.put(ClsCommon.COOKIE, AppUtils.getCookie(Dashboard.this));
                     return params;
                 }
@@ -612,38 +552,32 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
         }
     }
 
-    class getNotificatioCount extends AsyncTask<String, Void, Boolean>
-    {
-        public getNotificatioCount(Context context)
-        {
+    class getNotificatioCount extends AsyncTask<String, Void, Boolean> {
+        public getNotificatioCount(Context context) {
 
         }
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-           // horizontalProgress.setVisibility(View.VISIBLE);
+            // horizontalProgress.setVisibility(View.VISIBLE);
 
         }
 
         @Override
-        protected Boolean doInBackground(String... strings)
-        {
+        protected Boolean doInBackground(String... strings) {
             return null;
         }
 
         @Override
-        protected void onPostExecute(Boolean aBoolean)
-        {
+        protected void onPostExecute(Boolean aBoolean) {
             super.onPostExecute(aBoolean);
             Log.d("Method Call", "getHomeData");
             StringRequest stringRequest = new StringRequest(Request.Method.GET, WSMethods.NOTIFICATION_COUNT,
-                    new Response.Listener<String>()
-                    {
+                    new Response.Listener<String>() {
                         @Override
-                        public void onResponse(String response)
-                        {
-                        //    horizontalProgress.setVisibility(View.GONE);
+                        public void onResponse(String response) {
+                            //    horizontalProgress.setVisibility(View.GONE);
 
                             runOnUiThread(new Runnable() {
                                 @Override
@@ -653,32 +587,27 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
                             });
 
 
-                            if(response!= null && !response.isEmpty())
-                            {
-                                try
-                                {
+                            if (response != null && !response.isEmpty()) {
+                                try {
                                     JSONObject jsonObject = new JSONObject(response);
 
-                                    if(jsonObject.has("count"))
-                                    {
-                                        String count =  jsonObject.getString("count");
-                                        String unreadcount =  jsonObject.getString("unread_count");
+                                    if (jsonObject.has("count")) {
+                                        String count = jsonObject.getString("count");
+                                        String unreadcount = jsonObject.getString("unread_count");
                                         unReadCount = Integer.parseInt(unreadcount);
 
-                                        if(unreadcount != null && unreadcount.trim().length()>0 && !unreadcount.equals("0"))
-                                        {
+                                        if (unreadcount != null && unreadcount.trim().length() > 0 && !unreadcount.equals("0")) {
                                             BadgeDrawable ProfileBadge = bottomNavigationView.getOrCreateBadge(R.id.ic_profile);
                                             ProfileBadge.setVisible(true);
                                             ProfileBadge.setNumber(unReadCount);
                                             ProfileBadge.setBadgeTextColor(Color.parseColor("#fefefe"));
                                             ProfileBadge.setBackgroundColor(Color.parseColor("#f1592a"));
-                                            tvNotificationCount.setText(""+unReadCount);
+                                            tvNotificationCount.setText("" + unReadCount);
 
                                             /*BadgeDrawable NotifiationBadge = bottomNavigationView.getOrCreateBadge(R.id.ic_profile);
                                             NotifiationBadge.setNumber(Integer.parseInt(unreadcount));
                                             NotifiationBadge.setBackgroundColor(Color.parseColor("#f1592a"));*/
-                                        }else
-                                        {
+                                        } else {
                                             tvNotificationCount.setText("0");
                                             /*BadgeDrawable NotifiationBadge = bottomNavigationView.getOrCreateBadge(R.id.ic_notification);
                                             NotifiationBadge.setNumber(Integer.parseInt(unreadcount));
@@ -688,27 +617,23 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
                                 } catch (JSONException e) {
                                     e.printStackTrace();
                                 }
-                            }else
-                            {
-                                Toast.makeText(context," Can't Connect to server.", Toast.LENGTH_LONG).show();
+                            } else {
+                                Toast.makeText(context, " Can't Connect to server.", Toast.LENGTH_LONG).show();
                             }
                             new getHomeData(context).execute();
                         }
                     }, new Response.ErrorListener() {
                 @Override
-                public void onErrorResponse(VolleyError error)
-                {
+                public void onErrorResponse(VolleyError error) {
                     //horizontalProgress.setVisibility(View.GONE);
 
                     //Toast.makeText(context,"Response Error: "+ error + " Can't Connect to server.", Toast.LENGTH_LONG).show();
                 }
-            })
-            {
+            }) {
                 @Override
-                public Map<String, String> getHeaders() throws AuthFailureError
-                {
-                    Map<String, String>  params = new HashMap<String, String>();
-                    params.put(ClsCommon.COOKIE,AppUtils.getCookie(Dashboard.this));
+                public Map<String, String> getHeaders() throws AuthFailureError {
+                    Map<String, String> params = new HashMap<String, String>();
+                    params.put(ClsCommon.COOKIE, AppUtils.getCookie(Dashboard.this));
                     return params;
                 }
 
@@ -738,15 +663,15 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
         context.sendBroadcast(intent);
     }
 
-    public interface FragmentRefreshListener{
+    public interface FragmentRefreshListener {
         void onRefresh();
     }
 
     @Override
     public void onBackPressed() {
-        if (isHomeSelected){
+        if (isHomeSelected) {
             super.onBackPressed();
-        }else {
+        } else {
             bottomNavigationView.setSelectedItemId(R.id.ic_home);
         }
 

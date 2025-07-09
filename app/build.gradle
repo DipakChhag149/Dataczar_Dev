@@ -6,14 +6,14 @@ apply plugin: 'com.google.gms.google-services'
 
 
 android {
-    compileSdk 34
-
+    compileSdk 35
+    namespace 'com.dataczar'
     defaultConfig {
         applicationId "com.dataczar"
         minSdk 21
-        targetSdk 34
-        versionCode 25
-        versionName "1.3.8"
+        targetSdk 35
+        versionCode 26
+        versionName "1.3.9"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -28,7 +28,9 @@ android {
     buildFeatures
     {
         dataBinding true
+        buildConfig = true
     }
+
 
     buildTypes {
         debug {
@@ -59,6 +61,9 @@ dependencies {
 
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
     implementation 'androidx.lifecycle:lifecycle-process:2.5.1'
+    implementation project(':HtmlTextView')
+    implementation project(':android-badgify')
+    implementation project(':fontawesome')
     def lifecycle_version = "2.4.0"
     def arch_version = "2.1.0"
 
@@ -105,15 +110,11 @@ dependencies {
     //bio matric auth
     implementation 'androidx.biometric:biometric:1.1.0'
 
-    implementation 'info.androidhive:fontawesome:0.0.5'
-
     implementation 'com.github.whytot:BadgeForAppIcon:v1.0.0-beta.2'
 
     implementation "me.leolin:ShortcutBadger:1.1.22@aar"
-    implementation 'me.pie:android-badgify:1.0.2'
 
     implementation 'com.github.bumptech.glide:glide:4.15.1'
-    implementation 'org.sufficientlysecure:html-textview:4.0'
 
     implementation 'com.github.jkwiecien:EasyImage:1.3.1'
     implementation 'id.zelory:compressor:2.1.1'

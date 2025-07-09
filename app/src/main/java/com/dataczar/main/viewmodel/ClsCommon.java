@@ -84,7 +84,7 @@ public class ClsCommon
         Snackbar snackbar = Snackbar.make(uiview, message, Snackbar.LENGTH_LONG);
         View view = snackbar.getView();
 
-        TextView textView = view.findViewById(R.id.snackbar_text);
+        TextView textView = view.findViewById(com.google.android.material.R.id.snackbar_text);
 
         textView.setTextColor(color);
         snackbar.show();

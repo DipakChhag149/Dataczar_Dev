@@ -286,8 +286,11 @@ public class NewHomeFragment extends Fragment {
                             } else {
                                 Toast.makeText(requireContext(), " Can't Connect to server.", Toast.LENGTH_LONG).show();
                             }
-                            new getSliderImages(requireContext()).execute();
-                            new getHomePageData(requireContext()).execute();
+                            if (isAdded()){
+                                new getSliderImages(requireContext()).execute();
+                                new getHomePageData(requireContext()).execute();
+                            }
+
                         }
                     }, new Response.ErrorListener() {
                 @Override

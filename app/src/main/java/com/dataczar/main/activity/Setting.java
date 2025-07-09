@@ -181,37 +181,33 @@ public class Setting extends AppCompatActivity implements View.OnClickListener {
         int id = view.getId();
 
         Intent iv = new Intent(context, WebviewLP.class);
+        if (id == R.id.imgHelp) {
+            iv.putExtra(ClsCommon.WEBSITE, ClsCommon.HELP);
+            startActivity(iv);
 
-        switch (id) {
-            case R.id.imgHelp:
-                iv.putExtra(ClsCommon.WEBSITE, ClsCommon.HELP);
-                startActivity(iv);
-                break;
-            case R.id.llUserName:
-                iv.putExtra(ClsCommon.WEBSITE, ClsCommon.USERSETTINGS);
-                startActivity(iv);
-                break;
-            case R.id.llNotification:
-                iv.putExtra(ClsCommon.WEBSITE, ClsCommon.NOTIFICATION);
-                startActivity(iv);
-                break;
-            case R.id.llChangePass:
-                iv.putExtra(ClsCommon.WEBSITE, ClsCommon.CHANGEPASS);
-                startActivity(iv);
-                break;
-            case R.id.llManageAccount:
-                iv.putExtra(ClsCommon.WEBSITE, ClsCommon.MANAGEACCOUNT);
-                startActivity(iv);
-                break;
-            case R.id.llBilling:
-                iv.putExtra(ClsCommon.WEBSITE, ClsCommon.BILLINGS);
-                startActivity(iv);
-                break;
-            case R.id.llMore:
-                Intent i = new Intent(Setting.this,MoreOptionActivity.class);
-                startActivity(i);
-               // iv.putExtra(ClsCommon.WEBSITE, ClsCommon.LEGAL);
-                break;
+        } else if (id == R.id.llUserName) {
+            iv.putExtra(ClsCommon.WEBSITE, ClsCommon.USERSETTINGS);
+            startActivity(iv);
+
+        } else if (id == R.id.llNotification) {
+            iv.putExtra(ClsCommon.WEBSITE, ClsCommon.NOTIFICATION);
+            startActivity(iv);
+
+        } else if (id == R.id.llChangePass) {
+            iv.putExtra(ClsCommon.WEBSITE, ClsCommon.CHANGEPASS);
+            startActivity(iv);
+
+        } else if (id == R.id.llManageAccount) {
+            iv.putExtra(ClsCommon.WEBSITE, ClsCommon.MANAGEACCOUNT);
+            startActivity(iv);
+
+        } else if (id == R.id.llBilling) {
+            iv.putExtra(ClsCommon.WEBSITE, ClsCommon.BILLINGS);
+            startActivity(iv);
+
+        } else if (id == R.id.llMore) {
+            Intent i = new Intent(Setting.this, MoreOptionActivity.class);
+            startActivity(i);
         }
 
 
